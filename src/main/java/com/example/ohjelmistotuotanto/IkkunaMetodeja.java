@@ -1,10 +1,14 @@
 package com.example.ohjelmistotuotanto;
 
 import javafx.application.Application;
+import javafx.beans.Observable;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -13,7 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-public class Testiikkuna extends Application {
+public class IkkunaMetodeja extends Application {
 
     public static void main(String[] args) {
         launch(args);
@@ -22,7 +26,7 @@ public class Testiikkuna extends Application {
     @Override
     public void start(Stage primaryStage) {
         //saadaan esille ikkuna
-        primaryStage.setScene(luoTervetuloIkkuna());
+        primaryStage.setScene(luoMokitIkkuna());
         primaryStage.show();
 
 
@@ -81,5 +85,36 @@ public class Testiikkuna extends Application {
 
         //palautetaan luotu scene
         return new Scene(rootPaneeli,400,400);
+    }
+
+    public static Scene luoMokitIkkuna(){
+        GridPane rootPaneeli=new GridPane();
+        //tyhjä lista
+        ObservableList<String>testi= FXCollections.observableArrayList("Testi","yippee","not the real list");
+        ListView<String> mokkiLista=new ListView<>(testi);
+        mokkiLista.setPrefWidth(250);
+        mokkiLista.setPrefHeight(150);
+        //buttonit
+        Button addUusiMokki=new Button("Lisää uusi mökki");
+        Button muokkaaMokkia=new Button("Muokkaa mökkiä");
+        Button suljeBt=new Button("Sulje");
+        //asettelu
+        rootPaneeli.setAlignment(Pos.CENTER);
+        rootPaneeli.setVgap(10);
+        rootPaneeli.setHgap(10);
+        rootPaneeli.setPadding(new Insets(10,10,10,10));
+        //lisäys
+        rootPaneeli.add(mokkiLista,1,0);
+        rootPaneeli.add(addUusiMokki,0,2);
+        rootPaneeli.add(muokkaaMokkia,1,2);
+        rootPaneeli.add(suljeBt,2,2);
+
+        return new Scene(rootPaneeli,500,500);
+    }
+
+    public static Scene luoUusiMokkiIkkuna(){
+        GridPane rootPaneeli=new GridPane();
+
+        return new Scene(rootPaneeli,500,500);
     }
 }
