@@ -1,7 +1,7 @@
 package com.example.ohjelmistotuotanto;
 
 import javafx.application.Application;
-import javafx.beans.Observable;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -23,7 +24,7 @@ public class IkkunaMetodeja extends Application {
     @Override
     public void start(Stage primaryStage) {
         //saadaan esille ikkuna
-        primaryStage.setScene(luoMokitIkkuna());
+        primaryStage.setScene(luoUusiMokkiIkkuna());
         primaryStage.show();
 
 
@@ -110,12 +111,44 @@ public class IkkunaMetodeja extends Application {
     }
 
     public static Scene luoUusiMokkiIkkuna(){
-        GridPane rootPaneeli=new GridPane();
+        BorderPane rootPaneeli=new BorderPane();
+
         Label osoitelb=new Label("Osoite");
         Label hintaLb=new Label("Hinta per yö");
         Label neliotlb=new Label("Neliöt");
         Label vuodepaikatlb=new Label("Vuodepaikat");
         Label ominaisuudetlb=new Label("Ominaisuudet");
+        TextField osoiteTxt=new TextField();
+        TextField hintaTxt=new TextField();
+        TextField nelioTxt=new TextField();
+        TextField vuodeTxt=new TextField();
+        HBox row1=new HBox(osoitelb,osoiteTxt);
+        row1.setSpacing(5);
+        HBox row2=new HBox(hintaLb,hintaTxt);
+        row2.setSpacing(5);
+        HBox row3=new HBox(neliotlb,nelioTxt);
+        row3.setSpacing(5);
+        HBox row4=new HBox(vuodepaikatlb,vuodeTxt);
+        row4.setSpacing(5);
+        VBox sarake=new VBox(row1,row2,row3,row4);
+        sarake.setSpacing(5);
+        sarake.setAlignment(Pos.CENTER);
+        rootPaneeli.setTop(sarake);
+        rootPaneeli.setPadding(new Insets(70,10,10,70));
+        CheckBox rantasauna=new CheckBox("Rantasauna");
+        CheckBox ranta=new CheckBox("Oma ranta");
+        CheckBox wifi=new CheckBox("Wi-Fi");
+        CheckBox sisawc=new CheckBox("Sisä-WC");
+        CheckBox palju=new CheckBox("Palju");
+        Button tallennaBt=new Button("Tallenna uusi mökki");
+        Button suljeBt=new Button("Sulje");
+        VBox buttons=new VBox(tallennaBt,suljeBt);
+        buttons.setAlignment(Pos.BOTTOM_RIGHT);
+        VBox checkBox=new VBox(ominaisuudetlb,rantasauna,ranta,wifi,sisawc,palju);
+        checkBox.setSpacing(10);
+        checkBox.setAlignment(Pos.CENTER);
+        rootPaneeli.setCenter(checkBox);
+        rootPaneeli.setBottom(buttons);
 
 
         return new Scene(rootPaneeli,500,500);
