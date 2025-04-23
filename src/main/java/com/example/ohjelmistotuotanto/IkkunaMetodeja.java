@@ -7,10 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -102,7 +99,7 @@ public class IkkunaMetodeja extends Application {
         rootPaneeli.setAlignment(Pos.CENTER);
         rootPaneeli.setVgap(10);
         rootPaneeli.setHgap(10);
-        rootPaneeli.setPadding(new Insets(10,10,10,10));
+        rootPaneeli.setPadding(new Insets(5,5,5,5));
         //lisäys
         rootPaneeli.add(mokkiLista,1,0);
         rootPaneeli.add(addUusiMokki,0,2);
@@ -114,6 +111,12 @@ public class IkkunaMetodeja extends Application {
 
     public static Scene luoUusiMokkiIkkuna(){
         GridPane rootPaneeli=new GridPane();
+        Label osoitelb=new Label("Osoite");
+        Label hintaLb=new Label("Hinta per yö");
+        Label neliotlb=new Label("Neliöt");
+        Label vuodepaikatlb=new Label("Vuodepaikat");
+        Label ominaisuudetlb=new Label("Ominaisuudet");
+
 
         return new Scene(rootPaneeli,500,500);
     }
