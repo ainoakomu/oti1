@@ -106,6 +106,7 @@ public class IkkunaMetodeja extends Application {
         rootPaneeli.setAlignment(Pos.CENTER);
         rootPaneeli.setVgap(10);
         rootPaneeli.setHgap(10);
+
         rootPaneeli.setPadding(new Insets(10));
 
         Label osoitelb=new Label("Osoite");
