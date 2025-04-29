@@ -20,10 +20,8 @@ public class IkkunaMetodeja extends Application {
     @Override
     public void start(Stage primaryStage) {
         //saadaan esille ikkuna
-        primaryStage.setScene(luoUusiMokkiIkkuna());
+        primaryStage.setScene(luoMokitIkkuna());
         primaryStage.show();
-
-
     }
 
     public static Scene luoKirjatumisIkkuna(){
@@ -82,30 +80,26 @@ public class IkkunaMetodeja extends Application {
     }
 
     public static Scene luoMokitIkkuna(){
-        GridPane rootPaneeli=new GridPane();
+        BorderPane rootPaneeli=new BorderPane();
+        rootPaneeli.setPadding(new Insets(5,5,5,5));
         //tyhjä lista
         ObservableList<String>testi= FXCollections.observableArrayList("Testi","yippee","not the real list");
         ListView<String> mokkiLista=new ListView<>(testi);
         mokkiLista.setPrefWidth(250);
         mokkiLista.setPrefHeight(150);
+        rootPaneeli.setCenter(mokkiLista);
         //buttonit
         Button addUusiMokki=new Button("Lisää uusi mökki");
         Button muokkaaMokkia=new Button("Muokkaa mökkiä");
         Button suljeBt=new Button("Sulje");
-        //asettelu
-        rootPaneeli.setAlignment(Pos.CENTER);
-        rootPaneeli.setVgap(10);
-        rootPaneeli.setHgap(10);
+        HBox nappulaBoksi=new HBox(addUusiMokki,muokkaaMokkia,suljeBt);
+        nappulaBoksi.setSpacing(20);
+        rootPaneeli.setBottom(nappulaBoksi);
+        nappulaBoksi.setAlignment(Pos.CENTER);
         rootPaneeli.setPadding(new Insets(5,5,5,5));
-        //lisäys
-        rootPaneeli.add(mokkiLista,1,0);
-        rootPaneeli.add(addUusiMokki,0,2);
-        rootPaneeli.add(muokkaaMokkia,1,2);
-        rootPaneeli.add(suljeBt,2,2);
 
         return new Scene(rootPaneeli,500,500);
     }
-
 
     public static Scene luoUusiMokkiIkkuna(){
         GridPane rootPaneeli=new GridPane();
@@ -124,14 +118,15 @@ public class IkkunaMetodeja extends Application {
         TextField nelioTxt=new TextField();
         TextField vuodeTxt=new TextField();
         HBox row1=new HBox(osoitelb,osoiteTxt);
-        row1.setSpacing(5);
+        row1.setSpacing(45);
         HBox row2=new HBox(hintaLb,hintaTxt);
-        row2.setSpacing(5);
+        row2.setSpacing(15);
         HBox row3=new HBox(neliotlb,nelioTxt);
-        row3.setSpacing(5);
+        row3.setSpacing(48);
         HBox row4=new HBox(vuodepaikatlb,vuodeTxt);
-        row4.setSpacing(5);
+        row4.setSpacing(15);
         VBox sarake=new VBox(row1,row2,row3,row4);
+        sarake.setSpacing(20);
 
 
         sarake.setSpacing(15);
@@ -152,7 +147,9 @@ public class IkkunaMetodeja extends Application {
         checkBox.setSpacing(15);
         checkBox.setAlignment(Pos.CENTER_LEFT);
         VBox keskikohta=new VBox(sarake,checkBox);
+        keskikohta.setSpacing(20);
         rootPaneeli.add(keskikohta,1,0);
+
 
         return new Scene(rootPaneeli,500,500);
     }
@@ -174,14 +171,15 @@ public class IkkunaMetodeja extends Application {
         TextField nelioTxt=new TextField();
         TextField vuodeTxt=new TextField();
         HBox row1=new HBox(osoitelb,osoiteTxt);
-        row1.setSpacing(5);
+        row1.setSpacing(45);
         HBox row2=new HBox(hintaLb,hintaTxt);
-        row2.setSpacing(5);
+        row2.setSpacing(15);
         HBox row3=new HBox(neliotlb,nelioTxt);
-        row3.setSpacing(5);
+        row3.setSpacing(48);
         HBox row4=new HBox(vuodepaikatlb,vuodeTxt);
-        row4.setSpacing(5);
+        row4.setSpacing(15);
         VBox sarake=new VBox(row1,row2,row3,row4);
+        sarake.setSpacing(20);
 
 
         sarake.setSpacing(15);
@@ -203,6 +201,7 @@ public class IkkunaMetodeja extends Application {
         checkBox.setSpacing(15);
         checkBox.setAlignment(Pos.CENTER_LEFT);
         VBox keskikohta=new VBox(sarake,checkBox);
+        keskikohta.setSpacing(20);
         rootPaneeli.add(keskikohta,1,0);
 
 
