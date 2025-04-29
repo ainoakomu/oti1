@@ -20,7 +20,7 @@ public class IkkunaMetodeja extends Application {
     @Override
     public void start(Stage primaryStage) {
         //saadaan esille ikkuna
-        primaryStage.setScene(luoMokitIkkuna());
+        primaryStage.setScene(luolaskuIkkuna());
         primaryStage.show();
     }
 
@@ -205,6 +205,70 @@ public class IkkunaMetodeja extends Application {
         keskikohta.setSpacing(20);
         rootPaneeli.add(keskikohta,1,0);
 
+
+        return new Scene(rootPaneeli,500,500);
+    }
+
+    public static Scene luoVarauksetIkkuna(){
+        BorderPane rootPaneeli=new BorderPane();
+        rootPaneeli.setPadding(new Insets(5,5,5,5));
+        //tyhjä lista
+        ObservableList<String>testi= FXCollections.observableArrayList("Testi","yippee","not the real list");
+        ListView<String> varauslista =new ListView<>(testi);
+        varauslista.setPrefWidth(250);
+        varauslista.setPrefHeight(150);
+        rootPaneeli.setCenter(varauslista);
+        //buttonit
+        Button addLasku=new Button("Tee lasku");
+        Button muokkaaVarausta =new Button("Muokkaa varausta");
+        Button suljeBt=new Button("Sulje");
+        HBox nappulaBoksi=new HBox(addLasku, muokkaaVarausta,suljeBt);
+        nappulaBoksi.setSpacing(20);
+        rootPaneeli.setBottom(nappulaBoksi);
+        nappulaBoksi.setAlignment(Pos.CENTER);
+        rootPaneeli.setPadding(new Insets(5,5,5,5));
+
+        return new Scene(rootPaneeli,500,500);
+    }
+
+    public static Scene luoAsiakkaatIkkuna(){
+        BorderPane rootPaneeli=new BorderPane();
+        rootPaneeli.setPadding(new Insets(5,5,5,5));
+        //tyhjä lista
+        ObservableList<String>testi= FXCollections.observableArrayList("Testi","yippee","not the real list");
+        ListView<String> asiakaslista =new ListView<>(testi);
+        asiakaslista.setPrefWidth(250);
+        asiakaslista.setPrefHeight(150);
+        rootPaneeli.setCenter(asiakaslista);
+        //buttonit
+        Button muokkaaAsiakasta =new Button("Muokkaa asiakasta");
+        Button suljeBt=new Button("Sulje");
+        HBox nappulaBoksi=new HBox(muokkaaAsiakasta,suljeBt);
+        nappulaBoksi.setSpacing(20);
+        rootPaneeli.setBottom(nappulaBoksi);
+        nappulaBoksi.setAlignment(Pos.CENTER);
+        rootPaneeli.setPadding(new Insets(5,5,5,5));
+
+        return new Scene(rootPaneeli,500,500);
+    }
+
+    public static Scene luolaskuIkkuna(){
+        BorderPane rootPaneeli=new BorderPane();
+        rootPaneeli.setPadding(new Insets(5,5,5,5));
+        //tyhjä lista
+        ObservableList<String>testi= FXCollections.observableArrayList("Testi","yippee","not the real list");
+        ListView<String> laskulista =new ListView<>(testi);
+        laskulista.setPrefWidth(150);
+        laskulista.setPrefHeight(150);
+        rootPaneeli.setCenter(laskulista);
+        //buttonit
+        Button laskunTila =new Button("Päivitä laskun tila");
+        Button suljeBt=new Button("Sulje");
+        HBox nappulaBoksi=new HBox(laskunTila,suljeBt);
+        nappulaBoksi.setSpacing(20);
+        rootPaneeli.setBottom(nappulaBoksi);
+        nappulaBoksi.setAlignment(Pos.CENTER);
+        rootPaneeli.setPadding(new Insets(5,5,5,5));
 
         return new Scene(rootPaneeli,500,500);
     }
