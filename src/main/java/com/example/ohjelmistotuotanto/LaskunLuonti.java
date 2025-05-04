@@ -13,6 +13,7 @@ import java.util.Date;
 //https://www.tutorialspoint.com/pdfbox/index.htm
 //https://carbonrider.github.io/pdfbox_tutorial/pdf_add_image.html
 
+//tässä tehdään lasku
 public class LaskunLuonti {
 
     private int varausNro;
@@ -60,7 +61,7 @@ public class LaskunLuonti {
             PDPageContentStream contentStream = new PDPageContentStream(dokumentti, sivu);
 
             // lisätään logo
-            PDImageXObject logoKuva = PDImageXObject.createFromFile("mokkikotilogo.png", dokumentti);
+            PDImageXObject logoKuva = PDImageXObject.createFromFile("logo.png", dokumentti);
             contentStream.drawImage(logoKuva,20,675);
 
             // lisätään tekstit
