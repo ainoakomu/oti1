@@ -1,121 +1,50 @@
 package com.example.ohjelmistotuotanto;
 
-import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.scene.text.Text;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class IkkunaMetodeja extends Application {
+public class MokkiLuokka {
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
-    @Override
-    public void start(Stage primaryStage) {
-        //saadaan esille ikkuna
- 
-        primaryStage.setScene(luoMokitIkkuna());
-
-        primaryStage.setScene(luoUusiMokkiIkkuna());
-
-        primaryStage.show();
-
-
-    }
-
-    public static Scene luoKirjatumisIkkuna(){
+    public Stage luoMokitIkkuna(){
         BorderPane rootPaneeli=new BorderPane();
-        Scene ruutu=new Scene(rootPaneeli,400,400);
-
-        //hbox for logging in
-        VBox kirjautumisLaatikko=new VBox();
-        kirjautumisLaatikko.setSpacing(10);
-        kirjautumisLaatikko.setPadding(new Insets(5,50,5,50));
-        kirjautumisLaatikko.setAlignment(Pos.CENTER);
-        //kentät
-        Text nimi=new Text("VillaBOOK");
-        Text login=new Text("Kirjaudu sisään");
-        TextField kayttajatunnus=new TextField();
-        kayttajatunnus.setPromptText("Käyttäjätunnus");
-        kayttajatunnus.setPrefWidth(10);
-        PasswordField salasana=new PasswordField();
-        salasana.setPromptText("Salasana");
-        Button kirjautumisButton=new Button("Kirjaudu sisään");
-        //lisäys
-        kirjautumisLaatikko.getChildren().addAll(nimi,login,kayttajatunnus,salasana,kirjautumisButton);
-        rootPaneeli.setCenter(kirjautumisLaatikko);
-        //palautetaan luotu scene
-        return ruutu;
-    }
-
-    public static Scene luoTervetuloIkkuna(){
-        GridPane rootPaneeli=new GridPane();
-        rootPaneeli.setAlignment(Pos.CENTER);
-        rootPaneeli.setHgap(50);
-        rootPaneeli.setVgap(50);
-        rootPaneeli.setPadding(new Insets(10,10,10,10));
-        //buttons
-        Text terveTeksti=new Text("Tervetuloa");
-        Button mokitBt=new Button("Mökit");
-        Button laskutBt=new Button("Laskut");
-        Button varauksetBT=new Button("Varaukset");
-        Button uusiVarausBt=new Button("Uusi varaus");
-        Button asiakkaatBt=new Button("Asiakkaat");
-        Button adminOikeusBt=new Button("Admin-toiminnot");
-        Button kirjauduUlosBt=new Button("Kirjaudu ulos");
-
-        //lisäys
-        rootPaneeli.add(terveTeksti,1,0);
-        rootPaneeli.add(adminOikeusBt,2,0);
-        rootPaneeli.add(mokitBt,0,1);
-        rootPaneeli.add(varauksetBT,1,1);
-        rootPaneeli.add(asiakkaatBt,2,1);
-        rootPaneeli.add(laskutBt,0,2);
-        rootPaneeli.add(uusiVarausBt,1,2);
-        rootPaneeli.add(kirjauduUlosBt,2,2);
-
-        //palautetaan luotu scene
-        return new Scene(rootPaneeli,400,400);
-    }
-
-    public static Scene luoMokitIkkuna(){
-        GridPane rootPaneeli=new GridPane();
+        rootPaneeli.setPadding(new Insets(5,5,5,5));
         //tyhjä lista
-        ObservableList<String>testi= FXCollections.observableArrayList("Testi","yippee","not the real list");
+        ObservableList<String> testi= FXCollections.observableArrayList("Testi","yippee","not the real list");
         ListView<String> mokkiLista=new ListView<>(testi);
-        mokkiLista.setPrefWidth(250);
-        mokkiLista.setPrefHeight(150);
+        mokkiLista.setMaxSize(350,250);
+        rootPaneeli.setCenter(mokkiLista);
         //buttonit
         Button addUusiMokki=new Button("Lisää uusi mökki");
         Button muokkaaMokkia=new Button("Muokkaa mökkiä");
         Button suljeBt=new Button("Sulje");
-        //asettelu
-        rootPaneeli.setAlignment(Pos.CENTER);
-        rootPaneeli.setVgap(10);
-        rootPaneeli.setHgap(10);
+        HBox nappulaBoksi=new HBox(addUusiMokki,muokkaaMokkia,suljeBt);
+        nappulaBoksi.setSpacing(20);
+        rootPaneeli.setBottom(nappulaBoksi);
+        nappulaBoksi.setAlignment(Pos.CENTER);
         rootPaneeli.setPadding(new Insets(5,5,5,5));
-        //lisäys
-        rootPaneeli.add(mokkiLista,1,0);
-        rootPaneeli.add(addUusiMokki,0,2);
-        rootPaneeli.add(muokkaaMokkia,1,2);
-        rootPaneeli.add(suljeBt,2,2);
 
-        return new Scene(rootPaneeli,500,500);
+        Stage mokkiStage = new Stage();
+        Scene mokkiScene = new Scene(rootPaneeli,500,500);
+        mokkiStage.setScene(mokkiScene);
+        mokkiStage.setTitle("Mökit");
+        return mokkiStage;
     }
-
 
     public static Scene luoUusiMokkiIkkuna(){
         GridPane rootPaneeli=new GridPane();
         rootPaneeli.setAlignment(Pos.CENTER);
         rootPaneeli.setVgap(10);
         rootPaneeli.setHgap(10);
+
         rootPaneeli.setPadding(new Insets(10));
 
         Label osoitelb=new Label("Osoite");
@@ -128,14 +57,15 @@ public class IkkunaMetodeja extends Application {
         TextField nelioTxt=new TextField();
         TextField vuodeTxt=new TextField();
         HBox row1=new HBox(osoitelb,osoiteTxt);
-        row1.setSpacing(5);
+        row1.setSpacing(45);
         HBox row2=new HBox(hintaLb,hintaTxt);
-        row2.setSpacing(5);
+        row2.setSpacing(15);
         HBox row3=new HBox(neliotlb,nelioTxt);
-        row3.setSpacing(5);
+        row3.setSpacing(48);
         HBox row4=new HBox(vuodepaikatlb,vuodeTxt);
-        row4.setSpacing(5);
+        row4.setSpacing(15);
         VBox sarake=new VBox(row1,row2,row3,row4);
+        sarake.setSpacing(20);
 
 
         sarake.setSpacing(15);
@@ -156,7 +86,9 @@ public class IkkunaMetodeja extends Application {
         checkBox.setSpacing(15);
         checkBox.setAlignment(Pos.CENTER_LEFT);
         VBox keskikohta=new VBox(sarake,checkBox);
+        keskikohta.setSpacing(20);
         rootPaneeli.add(keskikohta,1,0);
+
 
         return new Scene(rootPaneeli,500,500);
     }
@@ -178,14 +110,15 @@ public class IkkunaMetodeja extends Application {
         TextField nelioTxt=new TextField();
         TextField vuodeTxt=new TextField();
         HBox row1=new HBox(osoitelb,osoiteTxt);
-        row1.setSpacing(5);
+        row1.setSpacing(45);
         HBox row2=new HBox(hintaLb,hintaTxt);
-        row2.setSpacing(5);
+        row2.setSpacing(15);
         HBox row3=new HBox(neliotlb,nelioTxt);
-        row3.setSpacing(5);
+        row3.setSpacing(48);
         HBox row4=new HBox(vuodepaikatlb,vuodeTxt);
-        row4.setSpacing(5);
+        row4.setSpacing(15);
         VBox sarake=new VBox(row1,row2,row3,row4);
+        sarake.setSpacing(20);
 
 
         sarake.setSpacing(15);
@@ -207,6 +140,7 @@ public class IkkunaMetodeja extends Application {
         checkBox.setSpacing(15);
         checkBox.setAlignment(Pos.CENTER_LEFT);
         VBox keskikohta=new VBox(sarake,checkBox);
+        keskikohta.setSpacing(20);
         rootPaneeli.add(keskikohta,1,0);
 
 
