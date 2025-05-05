@@ -8,9 +8,9 @@ public class testi {
 
     public static void main(String[] args) {
 
-        String url = "jdbc:mysql://127.0.0.1:3306/mokkikodit";
-        String user = "root";
-        String password ="TammiKuu2025!";
+        String url = "jdbc:mysql://host:port/mokkikodit";
+        String user = "käyttäjätunnus";
+        String password ="salasana!";
 
         try {
             Connection conn = DriverManager.getConnection(url, user, password);
