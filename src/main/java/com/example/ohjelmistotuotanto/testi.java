@@ -8,7 +8,7 @@ public class testi {
 
     public static void main(String[] args) {
 
-        String url = "jdbc:mysql://127.0.0.1:3306/mokkikodit?allowPublicKeyRetrieval=true&useSSL=false";
+        String url = "jdbc:mysql://127.0.0.1:3306/mokkikodit";
         String user = "root";
         String password ="TammiKuu2025!";
 
