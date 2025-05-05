@@ -20,7 +20,7 @@ public class IkkunaMetodeja extends Application {
     @Override
     public void start(Stage primaryStage) {
         //saadaan esille ikkuna
-        primaryStage.setScene(luoRaportitIkkuna());
+        primaryStage.setScene(luoMokitIkkuna());
         primaryStage.show();
     }
 
