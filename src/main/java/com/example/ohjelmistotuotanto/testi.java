@@ -16,6 +16,7 @@ public class testi {
             Connection conn = DriverManager.getConnection(url, user, password);
         } catch (SQLException e) {
             throw new RuntimeException(e);
+
         }
 
 
