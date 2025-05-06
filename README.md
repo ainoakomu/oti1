@@ -7,7 +7,7 @@ Projektin ajaminen edellyttää MySQL Workbenchiä
 Muista “ajaa” sql jotta database rakentuu (salama-nappula) 
 (SQL-serveri pitää olla pystyssä, jotta yhteys intellj IDEAan onnistuu.) 
 
-4. Vaihda koodissa olevat lähteet sinun oman workbenchin vastaavaksi 
+4. Vaihda koodissa olevat lähteet sinun oman workbenchin vastaavaksi luokassa YhteysLuokka
 
 -jdbc:myseql://host:port/mokkikodit
 
