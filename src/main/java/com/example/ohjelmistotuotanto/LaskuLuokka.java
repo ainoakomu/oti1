@@ -14,14 +14,20 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import static com.example.ohjelmistotuotanto.LaskutData.haeLaskut;
+import static com.example.ohjelmistotuotanto.MokkiData.haeMokit;
+
 public class LaskuLuokka {
 
     public Stage luoLaskuIkkuna(){
+        //sql yhteys
+        Yhteysluokka olio=new Yhteysluokka();
         BorderPane rootPaneeli=new BorderPane();
         rootPaneeli.setPadding(new Insets(5,5,5,5));
-        //tyhjä lista
-        ObservableList<String> testi= FXCollections.observableArrayList("Testi","yippee","not the real list");
-        ListView<String> laskulista =new ListView<>(testi);
+        //observable lista, joka lisätään list view
+        //käytetään datanhaku metodia
+        ObservableList<String> mokkiData = FXCollections.observableArrayList(haeLaskut(olio));
+        ListView<String> laskulista= new ListView<>(mokkiData);
         laskulista.setMaxSize(350,250);
         rootPaneeli.setCenter(laskulista);
         //buttonit

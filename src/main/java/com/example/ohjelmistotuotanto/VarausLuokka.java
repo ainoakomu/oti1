@@ -1,5 +1,6 @@
 package com.example.ohjelmistotuotanto;
 
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -15,14 +16,19 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import static com.example.ohjelmistotuotanto.VarausData.haeVaraukset;
+
 public class VarausLuokka {
 
+
     public Stage luoVarauksetIkkuna(){
+        //sql yhteys
+        Yhteysluokka olio=new Yhteysluokka();
         BorderPane rootPaneeli=new BorderPane();
         rootPaneeli.setPadding(new Insets(5,5,5,5));
-        //tyhjä lista
-        ObservableList<String> testi= FXCollections.observableArrayList("Testi","yippee","not the real list");
-        ListView<String> varauslista =new ListView<>(testi);
+        //käytetään datanhaku metodia datan luokasta
+        ObservableList<String> varausData = FXCollections.observableArrayList(haeVaraukset(olio));
+        ListView<String> varauslista = new ListView<>(varausData);
         varauslista.setMaxSize(350,250);
         rootPaneeli.setCenter(varauslista);
         //buttonit
