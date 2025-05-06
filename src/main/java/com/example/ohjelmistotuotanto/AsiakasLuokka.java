@@ -15,14 +15,20 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import static com.example.ohjelmistotuotanto.AsiakasData.haeAsiakkaat;
+import static com.example.ohjelmistotuotanto.MokkiData.haeMokit;
+
 public class AsiakasLuokka {
 
     public Stage luoAsiakkaatIkkuna(){
+        //sql yhteys
+        Yhteysluokka olio=new Yhteysluokka();
         BorderPane rootPaneeli=new BorderPane();
         rootPaneeli.setPadding(new Insets(5,5,5,5));
-        //tyhjä lista
-        ObservableList<String> testi= FXCollections.observableArrayList("Testi","yippee","not the real list");
-        ListView<String> asiakaslista =new ListView<>(testi);
+        //observable lista, joka lisätään list view
+        //käytetään datanhaku metodia
+        ObservableList<String> mokkiData = FXCollections.observableArrayList(haeAsiakkaat(olio));
+        ListView<String> asiakaslista = new ListView<>(mokkiData);
         asiakaslista.setMaxSize(350,250);
         rootPaneeli.setCenter(asiakaslista);
         //buttonit

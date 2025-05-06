@@ -170,10 +170,10 @@ public class AdminLuokka {
         kirjautumisLaatikko.setSpacing(10);
         kirjautumisLaatikko.setAlignment(Pos.TOP_LEFT);
         kirjautumisLaatikko.setPadding(new Insets(25,5,5,5));
-        Button testi=new Button(" testi");
-        Button testi2=new Button("testi");
-        Button testi3=new Button("testi");
-        Button testi4=new Button("testi");
+        Button testi=new Button("Testi");
+        Button testi2=new Button("Testi");
+        Button testi3=new Button("Testi");
+        Button testi4=new Button("Testi");
         kirjautumisLaatikko.getChildren().addAll(testi2,testi4,testi3,testi);
 
         //dates
