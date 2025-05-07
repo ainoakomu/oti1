@@ -20,6 +20,8 @@ import static com.example.ohjelmistotuotanto.MokkiData.haeMokit;
 public class LaskuLuokka {
 
     public Stage luoLaskuIkkuna(){
+        Stage laskutStage = new Stage();
+
         //sql yhteys
         Yhteysluokka olio=new Yhteysluokka();
         BorderPane rootPaneeli=new BorderPane();
@@ -36,11 +38,12 @@ public class LaskuLuokka {
         Button suljeBt=new Button("Sulje");
 
         laskunTila.setOnAction(e->{
-
+            //metodi, jolla tarkistetaan että lasku on valittuna listalta
+            luoPaivitaLaskuIkkuna().show();
         });
 
         suljeBt.setOnAction(e->{
-
+            laskutStage.close();
         });
 
         HBox nappulaBoksi=new HBox(laskunTila,suljeBt);
@@ -49,7 +52,7 @@ public class LaskuLuokka {
         nappulaBoksi.setAlignment(Pos.CENTER);
         rootPaneeli.setPadding(new Insets(5,5,5,5));
 
-        Stage laskutStage = new Stage();
+
         Scene laskutScene = new Scene(rootPaneeli,500,500);
         laskutStage.setScene(laskutScene);
         laskutStage.setTitle("Laskut");
@@ -57,7 +60,8 @@ public class LaskuLuokka {
 
     }
 
-    public static Scene luoPaivitaLaskuIkkuna(){
+    public Stage luoPaivitaLaskuIkkuna(){
+        Stage paivitysStage = new Stage();
         GridPane rootPaneeli=new GridPane();
 
         rootPaneeli.setAlignment(Pos.CENTER);
@@ -66,8 +70,20 @@ public class LaskuLuokka {
         rootPaneeli.setPadding(new Insets(20));
         CheckBox laskuLahetetty =new CheckBox("Lasku lähetetty");
         CheckBox maskuVastaanotto=new CheckBox("Maksu vastaanotettu");
+
+        //buttonit ja action eventit
         Button tallennaBt=new Button("Tallenna");
         Button suljeBt=new Button("Sulje");
+
+        tallennaBt.setOnAction(e->{
+            //metodi, jolla tallennetaan annetut muutokset
+        });
+
+        suljeBt.setOnAction(e->{
+            // varmista ifillä, suljetaanko
+            paivitysStage.close();
+        });
+
         VBox buttons=new VBox(tallennaBt,suljeBt);
         buttons.setSpacing(15);
         buttons.setAlignment(Pos.TOP_CENTER);
@@ -78,7 +94,12 @@ public class LaskuLuokka {
         VBox keskikohta=new VBox(checkBox);
         keskikohta.setSpacing(20);
         rootPaneeli.add(keskikohta,1,0);
-        return new Scene(rootPaneeli,500,500);
+
+
+        Scene paivitysScene = new Scene(rootPaneeli,500,500);
+        paivitysStage.setScene(paivitysScene);
+        paivitysStage.setTitle("Päivitä laskun tiedot");
+        return paivitysStage;
     }
 
 }
