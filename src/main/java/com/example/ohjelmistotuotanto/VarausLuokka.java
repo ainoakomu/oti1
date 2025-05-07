@@ -22,10 +22,13 @@ public class VarausLuokka {
 
 
     public Stage luoVarauksetIkkuna(){
+        Stage varausStage = new Stage();
+
         //sql yhteys
         Yhteysluokka olio=new Yhteysluokka();
         BorderPane rootPaneeli=new BorderPane();
         rootPaneeli.setPadding(new Insets(5,5,5,5));
+
         //käytetään datanhaku metodia datan luokasta
         ObservableList<String> varausData = FXCollections.observableArrayList(haeVaraukset(olio));
         ListView<String> varauslista = new ListView<>(varausData);
@@ -38,15 +41,18 @@ public class VarausLuokka {
         Button suljeBt=new Button("Sulje");
 
         addLasku.setOnAction(e->{
-
+            // avaa stage jolla luodaan lasku
+            // liitä kyseisen stagen painikkeeseen laskun luonnin metodi luoLasku()
+            // Ilmoita että lasku tallennettu Laskut-kansioon
+            // sitten sulje kyseinen ikkuna
         });
 
         muokkaaVarausta.setOnAction(e->{
-
+            luoMuokkaaVaraustaIkkuna().show();
         });
 
         suljeBt.setOnAction(e->{
-
+            varausStage.close();
         });
 
         HBox nappulaBoksi=new HBox(addLasku, muokkaaVarausta,suljeBt);
@@ -55,14 +61,14 @@ public class VarausLuokka {
         nappulaBoksi.setAlignment(Pos.CENTER);
         rootPaneeli.setPadding(new Insets(5,5,5,5));
 
-        Stage varausStage = new Stage();
         Scene varausScene = new Scene(rootPaneeli,500,500);
         varausStage.setScene(varausScene);
         varausStage.setTitle("Varaukset");
         return varausStage;
     }
 
-    public static Scene luoMuokkaaVaraustaIkkuna(){
+    public Stage luoMuokkaaVaraustaIkkuna(){
+        Stage muokkausStage = new Stage();
         GridPane rootPaneeli=new GridPane();
         rootPaneeli.setAlignment(Pos.CENTER);
         rootPaneeli.setVgap(20);
@@ -90,13 +96,33 @@ public class VarausLuokka {
         VBox sarake=new VBox(row1,row2,row3,row4);
         sarake.setSpacing(20);
 
-
         sarake.setSpacing(15);
         sarake.setAlignment(Pos.CENTER);
 
+        //buttonit ja action eventit
         Button tallennaBt=new Button("Tallenna");
         Button poistaBt=new Button("Poista varaus");
         Button suljeBt=new Button("Sulje");
+
+        tallennaBt.setOnAction(e->{
+            //kysy tallennetaanko muutokse
+            //tallenna muutokset sqlään
+            //ilmoita että tallennettu
+            muokkausStage.close();
+        });
+
+        poistaBt.setOnAction(e->{
+            //kysy poistetaanko mökki
+            //poista mökki sqlästä
+            //ilmoita että poistettu
+            muokkausStage.close();
+        });
+
+        suljeBt.setOnAction(e->{
+            //kysy suljetaanko ikkuna
+            muokkausStage.close();
+        });
+
         VBox buttons=new VBox(tallennaBt,poistaBt,suljeBt);
         buttons.setSpacing(20);
         rootPaneeli.add(buttons,2,2);
@@ -105,8 +131,10 @@ public class VarausLuokka {
         keskikohta.setSpacing(20);
         rootPaneeli.add(keskikohta,1,0);
 
-
-        return new Scene(rootPaneeli,500,500);
+        Scene muokkausScene = new Scene(rootPaneeli,500,500);
+        muokkausStage.setScene(muokkausScene);
+        muokkausStage.setTitle("Varaukset");
+        return muokkausStage;
     }
 
 }
