@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 public class AdminLuokka {
 
     public Stage luoAdminToiminnotIkkuna(){
+        Stage adminStage = new Stage();
         GridPane rootPaneeli=new GridPane();
         rootPaneeli.setAlignment(Pos.CENTER);
         rootPaneeli.setHgap(50);
@@ -27,31 +28,29 @@ public class AdminLuokka {
         Button suljebt=new Button("Sulje");
 
         raporttibt.setOnAction(e->{
-
+            luoRaportitIkkuna().show();
         });
 
         kayttajanhallintabt.setOnAction(e->{
-
+            luoKattajanhallintaIkkuna().show();
         });
 
         suljebt.setOnAction(e->{
-
+            adminStage.close();
         });
-
 
         rootPaneeli.add(raporttibt,2,1);
         rootPaneeli.add(kayttajanhallintabt,0,1);
         rootPaneeli.add(suljebt,2,2);
 
-
-        Stage adminStage = new Stage();
         Scene adminScene = new Scene(rootPaneeli,400,400);
         adminStage.setScene(adminScene);
         adminStage.setTitle("Admin");
         return adminStage;
     }
 
-    public static Scene luoKattajanhallintaIkkuna(){
+    public Stage luoKattajanhallintaIkkuna(){
+        Stage kayttajatStage = new Stage();
         BorderPane rootPaneeli=new BorderPane();
 
         //tyhjä lista
@@ -59,20 +58,39 @@ public class AdminLuokka {
         ListView<String> kayttajalista =new ListView<>(testi);
 
         rootPaneeli.setCenter(kayttajalista);
-        //buttonit
-        Button muokkaaAsiakasta =new Button("Muokkaa käyttäjää");
-        Button lisaaAsiakas =new Button("Lisää uusi käyttäjä");
+
+        //buttonit ja action eventit
+        Button muokkaaKayttajaa =new Button("Muokkaa käyttäjää");
+        Button lisaaKayttaja =new Button("Lisää uusi käyttäjä");
         Button suljeBt=new Button("Sulje");
-        HBox nappulaBoksi=new HBox(lisaaAsiakas,muokkaaAsiakasta,suljeBt);
+
+        muokkaaKayttajaa.setOnAction(e->{
+            //tarkista että käyttäjä on valittu listalta
+            luoMuokkaaKayttajaIkkuna().show();
+        });
+
+        lisaaKayttaja.setOnAction(e->{
+            luoUusiKayttajaIkkuna().show();
+        });
+
+        suljeBt.setOnAction(e->{
+            kayttajatStage.close();
+        });
+
+        HBox nappulaBoksi=new HBox(lisaaKayttaja,muokkaaKayttajaa,suljeBt);
         nappulaBoksi.setSpacing(50);
         rootPaneeli.setBottom(nappulaBoksi);
         nappulaBoksi.setAlignment(Pos.CENTER);
         rootPaneeli.setPadding(new Insets(15,15,15,15));
 
-        return new Scene(rootPaneeli,500,500);
+        Scene kayttajatScene = new Scene(rootPaneeli,500,500);
+        kayttajatStage.setScene(kayttajatScene);
+        kayttajatStage.setTitle("Käyttäjähallinta");
+        return kayttajatStage;
     }
 
-    public static Scene luoUusiKayttajaIkkuna(){
+    public Stage luoUusiKayttajaIkkuna(){
+        Stage uusiKayttajaStage = new Stage();
         GridPane rootPaneeli=new GridPane();
         rootPaneeli.setAlignment(Pos.CENTER);
         rootPaneeli.setVgap(10);
@@ -106,8 +124,21 @@ public class AdminLuokka {
         CheckBox anniskelu=new CheckBox("Anniskelupassi");
         CheckBox hygienia=new CheckBox("Hygieniapassi");
 
+        //buttonit ja action eventit
         Button tallennaBt=new Button("Tallenna uusi käyttäjä");
         Button suljeBt=new Button("Sulje");
+
+        tallennaBt.setOnAction(e->{
+            //metodi jolla tarkistetaan onko kaikki tarvittavat tiedot täytetty
+            //metodi joka tallentaa tiedot sqllään
+            uusiKayttajaStage.close();
+        });
+
+        suljeBt.setOnAction(e->{
+            //kysy suljetaanko
+            uusiKayttajaStage.close();
+        });
+
         VBox buttons=new VBox(tallennaBt,suljeBt);
         buttons.setSpacing(15);
         buttons.setAlignment(Pos.TOP_CENTER);
@@ -119,11 +150,14 @@ public class AdminLuokka {
         keskikohta.setSpacing(20);
         rootPaneeli.add(keskikohta,1,0);
 
-
-        return new Scene(rootPaneeli,500,500);
+        Scene uusikayttajaScene = new Scene(rootPaneeli,500,500);
+        uusiKayttajaStage.setScene(uusikayttajaScene);
+        uusiKayttajaStage.setTitle("Käyttäjähallinta");
+        return uusiKayttajaStage;
     }
 
-    public static Scene luoMuokkaaKayttajaIkkuna(){
+    public Stage luoMuokkaaKayttajaIkkuna(){
+        Stage muokkausStage = new Stage();
         GridPane rootPaneeli=new GridPane();
         rootPaneeli.setAlignment(Pos.CENTER);
         rootPaneeli.setVgap(10);
@@ -157,9 +191,30 @@ public class AdminLuokka {
         CheckBox anniskelu=new CheckBox("Anniskelupassi");
         CheckBox hygienia=new CheckBox("Hygieniapassi");
 
+        //buttonit ja action eventit
         Button tallennaBt=new Button("Tallenna uusi käyttäjä");
         Button poistaBt=new Button("Poista käyttäjä");
         Button suljeBt=new Button("Sulje");
+
+        tallennaBt.setOnAction(e->{
+            //kysy tallennetaanko muutokse
+            //tallenna muutokset sqlään
+            //ilmoita että tallennettu
+            muokkausStage.close();
+        });
+
+        poistaBt.setOnAction(e->{
+            //kysy poistetaanko mökki
+            //poista mökki sqlästä
+            //ilmoita että poistettu
+            muokkausStage.close();
+        });
+
+        suljeBt.setOnAction(e->{
+            //kysy suljetaanko ikkuna
+            muokkausStage.close();
+        });
+
         VBox buttons=new VBox(tallennaBt,poistaBt,suljeBt);
         buttons.setSpacing(15);
         buttons.setAlignment(Pos.TOP_CENTER);
@@ -171,11 +226,14 @@ public class AdminLuokka {
         keskikohta.setSpacing(20);
         rootPaneeli.add(keskikohta,1,0);
 
-
-        return new Scene(rootPaneeli,500,500);
+        Scene muokkausScene = new Scene(rootPaneeli,500,500);
+        muokkausStage.setScene(muokkausScene);
+        muokkausStage.setTitle("Varaukset");
+        return muokkausStage;
     }
 
-    public static Scene luoRaportitIkkuna(){
+    public Stage luoRaportitIkkuna(){
+        Stage raporttiStage = new Stage();
         BorderPane rootPaneeli=new BorderPane();
 
         HBox kirjautumisLaatikko=new HBox();
@@ -204,8 +262,21 @@ public class AdminLuokka {
         ylaosa.setPadding(new Insets(10,10,10,10));
         rootPaneeli.setTop(ylaosa);
 
+        //buttonit ja action eventit
         Button viePDF=new Button("Vie PDF-tiedostoon");
         Button sulje=new Button("Sulje");
+
+        viePDF.setOnAction(e->{
+            // tarkista että tarvittavat tiedot on valittu (pvm syötetty?)
+            //metodi, joka luo raportista pdf-tiedoston
+            raporttiStage.close();
+        });
+
+        sulje.setOnAction(e->{
+            raporttiStage.close();
+        });
+
+
         HBox alaosa=new HBox(viePDF,sulje);
         alaosa.setPadding(new Insets(10,10,10,10));
         alaosa.setSpacing(10);
@@ -218,8 +289,10 @@ public class AdminLuokka {
         lista.setPadding(new Insets(10,10,10,10));
         rootPaneeli.setCenter(lista);
 
-        //palautetaan luotu scene
-        return new Scene(rootPaneeli,500,500);
+        Scene raporttiScene = new Scene(rootPaneeli,500,500);
+        raporttiStage.setScene(raporttiScene);
+        raporttiStage.setTitle("Varaukset");
+        return raporttiStage;
     }
 
 }

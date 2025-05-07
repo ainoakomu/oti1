@@ -21,10 +21,13 @@ import static com.example.ohjelmistotuotanto.MokkiData.haeMokit;
 public class AsiakasLuokka {
 
     public Stage luoAsiakkaatIkkuna(){
-        //sql yhteys
-        Yhteysluokka olio=new Yhteysluokka();
+        Stage asiakasStage = new Stage();
         BorderPane rootPaneeli=new BorderPane();
         rootPaneeli.setPadding(new Insets(5,5,5,5));
+
+        //sql yhteys
+        Yhteysluokka olio=new Yhteysluokka();
+
         //observable lista, joka lisätään list view
         //käytetään datanhaku metodia
         ObservableList<String> mokkiData = FXCollections.observableArrayList(haeAsiakkaat(olio));
@@ -37,11 +40,11 @@ public class AsiakasLuokka {
         Button suljeBt=new Button("Sulje");
 
         muokkaaAsiakasta.setOnAction(e->{
-
+            luoMuokkaaAsiakastaIkkuna().show();
         });
 
         suljeBt.setOnAction(e->{
-
+            asiakasStage.close();
         });
 
         HBox nappulaBoksi=new HBox(muokkaaAsiakasta,suljeBt);
@@ -50,14 +53,14 @@ public class AsiakasLuokka {
         nappulaBoksi.setAlignment(Pos.CENTER);
         rootPaneeli.setPadding(new Insets(5,5,5,5));
 
-        Stage asiakasStage = new Stage();
         Scene asiakasScene = new Scene(rootPaneeli,500,500);
         asiakasStage.setScene(asiakasScene);
         asiakasStage.setTitle("Asiakkaat");
         return asiakasStage;
     }
 
-    public static Scene luoMuokkaaAsiakastaIkkuna(){
+    public Stage luoMuokkaaAsiakastaIkkuna(){
+        Stage muokkausStage = new Stage();
         GridPane rootPaneeli=new GridPane();
         rootPaneeli.setAlignment(Pos.CENTER);
         rootPaneeli.setVgap(20);
@@ -85,13 +88,33 @@ public class AsiakasLuokka {
         VBox sarake=new VBox(row1,row2,row3,row4);
         sarake.setSpacing(20);
 
-
         sarake.setSpacing(15);
         sarake.setAlignment(Pos.CENTER);
 
+        //buttonit ja action eventit
         Button tallennaBt=new Button("Tallenna");
         Button poistaBt=new Button("Poista asiakas");
         Button suljeBt=new Button("Sulje");
+
+        tallennaBt.setOnAction(e->{
+            //kysy tallennetaanko muutokse
+            //tallenna muutokset sqlään
+            //ilmoita että tallennettu
+            muokkausStage.close();
+        });
+
+        poistaBt.setOnAction(e->{
+            //kysy poistetaanko mökki
+            //poista mökki sqlästä
+            //ilmoita että poistettu
+            muokkausStage.close();
+        });
+
+        suljeBt.setOnAction(e->{
+            //kysy suljetaanko ikkuna
+            muokkausStage.close();
+        });
+
         VBox buttons=new VBox(tallennaBt,poistaBt,suljeBt);
         buttons.setSpacing(20);
         rootPaneeli.add(buttons,2,2);
@@ -101,7 +124,10 @@ public class AsiakasLuokka {
         rootPaneeli.add(keskikohta,1,0);
 
 
-        return new Scene(rootPaneeli,500,500);
+        Scene muokkausScene = new Scene(rootPaneeli,500,500);
+        muokkausStage.setScene(muokkausScene);
+        muokkausStage.setTitle("Asiakkaat");
+        return muokkausStage;
     }
 
 }
