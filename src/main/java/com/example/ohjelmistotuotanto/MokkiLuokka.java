@@ -20,6 +20,8 @@ public class MokkiLuokka{
 
 
     public Stage luoMokitIkkuna() {
+        Stage mokkiStage = new Stage();
+
         //sql yhteys
         Yhteysluokka olio=new Yhteysluokka();
 
@@ -30,27 +32,43 @@ public class MokkiLuokka{
         ObservableList<String> mokkiData = FXCollections.observableArrayList(haeMokit(olio));
         ListView<String> mokkiLista = new ListView<>(mokkiData);
 
-
         mokkiLista.setMaxSize(450, 250);
         rootPaneeli.setCenter(mokkiLista);
-        //buttonit
+
+        //buttonit ja action eventit
         Button addUusiMokki = new Button("Lisää uusi mökki");
         Button muokkaaMokkia = new Button("Muokkaa mökkiä");
         Button suljeBt = new Button("Sulje");
+
+        addUusiMokki.setOnAction(e->{
+            luoUusiMokkiIkkuna().show();
+
+        });
+
+        muokkaaMokkia.setOnAction(e->{
+
+        });
+
+        suljeBt.setOnAction(e->{
+            mokkiStage.close();
+        });
+
+
         HBox nappulaBoksi = new HBox(addUusiMokki, muokkaaMokkia, suljeBt);
         nappulaBoksi.setSpacing(20);
         rootPaneeli.setBottom(nappulaBoksi);
         nappulaBoksi.setAlignment(Pos.CENTER);
         rootPaneeli.setPadding(new Insets(5, 5, 5, 5));
 
-        Stage mokkiStage = new Stage();
+
         Scene mokkiScene = new Scene(rootPaneeli, 500, 500);
         mokkiStage.setScene(mokkiScene);
         mokkiStage.setTitle("Mökit");
         return mokkiStage;
     }
 
-    public static Scene luoUusiMokkiIkkuna() {
+    public Stage luoUusiMokkiIkkuna() {
+        Stage uusiMokkiStage = new Stage();
         GridPane rootPaneeli = new GridPane();
         rootPaneeli.setAlignment(Pos.CENTER);
         rootPaneeli.setVgap(10);
@@ -87,8 +105,24 @@ public class MokkiLuokka{
         CheckBox wifi = new CheckBox("Wi-Fi");
         CheckBox sisawc = new CheckBox("Sisä-WC");
         CheckBox palju = new CheckBox("Palju");
+
+        //buttonit ja action eventit
         Button tallennaBt = new Button("Tallenna");
         Button suljeBt = new Button("Sulje");
+
+        tallennaBt.setOnAction(e->{
+            //metodi jolla tarkistetaan onko kaikki tarvittavat tiedot täytetty
+            //metodi joka tallentaa tiedot sqllään
+            uusiMokkiStage.close();
+
+        });
+
+        suljeBt.setOnAction(e->{
+            //kysy suljetaanko
+            uusiMokkiStage.close();
+        });
+
+
         VBox buttons = new VBox(tallennaBt, suljeBt);
         buttons.setSpacing(15);
         buttons.setAlignment(Pos.TOP_CENTER);
@@ -100,8 +134,10 @@ public class MokkiLuokka{
         keskikohta.setSpacing(20);
         rootPaneeli.add(keskikohta, 1, 0);
 
-
-        return new Scene(rootPaneeli, 500, 500);
+        Scene uusiMokkiScene = new Scene(rootPaneeli, 500, 500);
+        uusiMokkiStage.setScene(uusiMokkiScene);
+        uusiMokkiStage.setTitle("Uusi mökki");
+        return uusiMokkiStage;
     }
 
     public static Scene luoMuokkausMokkiIkkuna() {

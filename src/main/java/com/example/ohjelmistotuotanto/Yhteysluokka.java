@@ -6,9 +6,9 @@ import java.sql.SQLException;
 
 public class Yhteysluokka {
     private Connection yhteys;
-    final static String  url = "jdbc:mysql://host:port/mokkikodit";
+    final static String  url = "jdbc:mysql://localhost:3306/mokkikodit";
     final static String user = "root";
-    final static String password ="salasana!";
+    final static String password ="UusiT0imiva@Salasana";
 
     //alustaja, joka yrittää luoda yhteyden
     public Yhteysluokka() {

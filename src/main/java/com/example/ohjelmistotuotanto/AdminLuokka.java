@@ -21,10 +21,22 @@ public class AdminLuokka {
         rootPaneeli.setVgap(100);
         rootPaneeli.setPadding(new Insets(10,10,10,10));
 
+        //buttonit ja action eventit
         Button raporttibt=new Button("Raportit");
         Button kayttajanhallintabt=new Button("Käyttäjänhallinta");
         Button suljebt=new Button("Sulje");
 
+        raporttibt.setOnAction(e->{
+
+        });
+
+        kayttajanhallintabt.setOnAction(e->{
+
+        });
+
+        suljebt.setOnAction(e->{
+
+        });
 
 
         rootPaneeli.add(raporttibt,2,1);
