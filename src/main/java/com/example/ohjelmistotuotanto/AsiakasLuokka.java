@@ -126,7 +126,7 @@ public class AsiakasLuokka {
 
         Scene muokkausScene = new Scene(rootPaneeli,500,500);
         muokkausStage.setScene(muokkausScene);
-        muokkausStage.setTitle("Asiakkaat");
+        muokkausStage.setTitle("Muokkaa asiakasta");
         return muokkausStage;
     }
 

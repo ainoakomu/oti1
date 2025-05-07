@@ -26,7 +26,7 @@ public class LaskunLuonti {
 
     public void luoLasku(int varaus){
         try {
-            setLaskuNro(12345);
+            setLaskuNro(1590);
             setVarausNro(varaus);
             // setAsiakkaanNimi --> tähän sql-query jolla haetaan varauksesta asiakkaan IDtä vastaava asiakkaan nimi
             // setAlkuPvm --> tähän sql-query jolla haetaan varauksesta alkupäivä
