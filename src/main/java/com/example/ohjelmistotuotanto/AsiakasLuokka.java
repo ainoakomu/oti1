@@ -31,9 +31,19 @@ public class AsiakasLuokka {
         ListView<String> asiakaslista = new ListView<>(mokkiData);
         asiakaslista.setMaxSize(350,250);
         rootPaneeli.setCenter(asiakaslista);
-        //buttonit
+
+        //buttonit ja action eventit
         Button muokkaaAsiakasta =new Button("Muokkaa asiakasta");
         Button suljeBt=new Button("Sulje");
+
+        muokkaaAsiakasta.setOnAction(e->{
+
+        });
+
+        suljeBt.setOnAction(e->{
+
+        });
+
         HBox nappulaBoksi=new HBox(muokkaaAsiakasta,suljeBt);
         nappulaBoksi.setSpacing(20);
         rootPaneeli.setBottom(nappulaBoksi);

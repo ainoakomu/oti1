@@ -31,10 +31,24 @@ public class VarausLuokka {
         ListView<String> varauslista = new ListView<>(varausData);
         varauslista.setMaxSize(350,250);
         rootPaneeli.setCenter(varauslista);
-        //buttonit
+
+        //buttonit ja action eventit
         Button addLasku=new Button("Tee lasku");
         Button muokkaaVarausta =new Button("Muokkaa varausta");
         Button suljeBt=new Button("Sulje");
+
+        addLasku.setOnAction(e->{
+
+        });
+
+        muokkaaVarausta.setOnAction(e->{
+
+        });
+
+        suljeBt.setOnAction(e->{
+
+        });
+
         HBox nappulaBoksi=new HBox(addLasku, muokkaaVarausta,suljeBt);
         nappulaBoksi.setSpacing(20);
         rootPaneeli.setBottom(nappulaBoksi);

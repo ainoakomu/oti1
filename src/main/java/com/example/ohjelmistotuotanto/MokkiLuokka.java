@@ -30,13 +30,27 @@ public class MokkiLuokka{
         ObservableList<String> mokkiData = FXCollections.observableArrayList(haeMokit(olio));
         ListView<String> mokkiLista = new ListView<>(mokkiData);
 
-
         mokkiLista.setMaxSize(450, 250);
         rootPaneeli.setCenter(mokkiLista);
-        //buttonit
+
+        //buttonit ja action eventit
         Button addUusiMokki = new Button("Lisää uusi mökki");
         Button muokkaaMokkia = new Button("Muokkaa mökkiä");
         Button suljeBt = new Button("Sulje");
+
+        addUusiMokki.setOnAction(e->{
+
+        });
+
+        muokkaaMokkia.setOnAction(e->{
+
+        });
+
+        suljeBt.setOnAction(e->{
+
+        });
+
+
         HBox nappulaBoksi = new HBox(addUusiMokki, muokkaaMokkia, suljeBt);
         nappulaBoksi.setSpacing(20);
         rootPaneeli.setBottom(nappulaBoksi);

@@ -30,9 +30,19 @@ public class LaskuLuokka {
         ListView<String> laskulista= new ListView<>(mokkiData);
         laskulista.setMaxSize(350,250);
         rootPaneeli.setCenter(laskulista);
-        //buttonit
+
+        //buttonit ja action eventit
         Button laskunTila =new Button("Päivitä laskun tila");
         Button suljeBt=new Button("Sulje");
+
+        laskunTila.setOnAction(e->{
+
+        });
+
+        suljeBt.setOnAction(e->{
+
+        });
+
         HBox nappulaBoksi=new HBox(laskunTila,suljeBt);
         nappulaBoksi.setSpacing(20);
         rootPaneeli.setBottom(nappulaBoksi);
