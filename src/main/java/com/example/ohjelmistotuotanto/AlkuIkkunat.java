@@ -6,12 +6,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 public class AlkuIkkunat {
 
@@ -19,13 +18,30 @@ public class AlkuIkkunat {
         BorderPane rootPaneeli=new BorderPane();
         Scene ruutu=new Scene(rootPaneeli,400,400);
 
+        //kutsutaan taustakuva
+        rootPaneeli.setBackground(Taustakuvat.TaustakuvaAsettaminen.luoTausta());
+
+        //otsikko kuva
+        Image kuva1 = new Image(getClass().getResource("/otsikko3.png").toExternalForm());
+        ImageView otsikko = new ImageView(kuva1);
+        otsikko.setPreserveRatio(true);
+        otsikko.setFitWidth(250);
+        otsikko.setLayoutX(80);
+        otsikko.setLayoutY(110);
+
+        // Pane jossa otsikko sijaitsee
+        Pane kuvaPane = new Pane();
+        kuvaPane.setPrefHeight(150);
+        kuvaPane.getChildren().add(otsikko);
+        rootPaneeli.setTop(kuvaPane);
+
         //hbox for logging in
         VBox kirjautumisLaatikko=new VBox();
         kirjautumisLaatikko.setSpacing(10);
         kirjautumisLaatikko.setPadding(new Insets(5,50,5,50));
         kirjautumisLaatikko.setAlignment(Pos.CENTER);
         //kentät
-        Text nimi=new Text("VillaBOOK");
+        //Text nimi=new Text("VillaBOOK"); korvattu kuva otsikolla
         Text login=new Text("Kirjaudu sisään");
         TextField kayttajatunnus=new TextField();
         kayttajatunnus.setPromptText("Käyttäjätunnus");
@@ -45,7 +61,7 @@ public class AlkuIkkunat {
         });
 
         //lisäys
-        kirjautumisLaatikko.getChildren().addAll(nimi,login,kayttajatunnus,salasana,kirjautumisButton);
+        kirjautumisLaatikko.getChildren().addAll(login,kayttajatunnus,salasana,kirjautumisButton);
         rootPaneeli.setCenter(kirjautumisLaatikko);
         //palautetaan luotu scene
         return ruutu;
