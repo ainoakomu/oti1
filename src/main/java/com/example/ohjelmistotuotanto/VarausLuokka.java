@@ -14,6 +14,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import static com.example.ohjelmistotuotanto.VarausData.haeVaraukset;
@@ -41,10 +42,7 @@ public class VarausLuokka {
         Button suljeBt=new Button("Sulje");
 
         addLasku.setOnAction(e->{
-            // avaa stage jolla luodaan lasku
-            // liitä kyseisen stagen painikkeeseen laskun luonnin metodi luoLasku()
-            // Ilmoita että lasku tallennettu Laskut-kansioon
-            // sitten sulje kyseinen ikkuna
+            luoLisaaLaskuIkkuna().show();
         });
 
         muokkaaVarausta.setOnAction(e->{
@@ -133,8 +131,94 @@ public class VarausLuokka {
 
         Scene muokkausScene = new Scene(rootPaneeli,500,500);
         muokkausStage.setScene(muokkausScene);
-        muokkausStage.setTitle("Varaukset");
+        muokkausStage.setTitle("Muokkaa varausta");
         return muokkausStage;
+    }
+
+    public Stage luoLisaaLaskuIkkuna(){
+        Stage lisaaLaskuStage = new Stage();
+
+        GridPane rootPaneeli=new GridPane();
+        rootPaneeli.setAlignment(Pos.CENTER);
+        rootPaneeli.setVgap(20);
+        rootPaneeli.setHgap(20);
+
+        rootPaneeli.setPadding(new Insets(10));
+
+        Label mokkilb =new Label("Mökki");
+        Label asiakasLb =new Label("Asiakas");
+        Label alkulb=new Label("Varaus alkaa");
+        Label loppulb =new Label("Varaus päättyy");
+
+        TextField mokkiTxt=new TextField();
+        TextField asiakasTxt =new TextField();
+        TextField alkuTxt =new TextField();
+        TextField loppuTxt =new TextField();
+        HBox row1=new HBox(mokkilb,mokkiTxt);
+        row1.setSpacing(50);
+        HBox row2=new HBox(asiakasLb, asiakasTxt);
+        row2.setSpacing(43);
+        HBox row3=new HBox(alkulb, alkuTxt);
+        row3.setSpacing(17);
+        HBox row4=new HBox(loppulb, loppuTxt);
+        row4.setSpacing(5);
+        VBox sarake=new VBox(row1,row2,row3,row4);
+        sarake.setSpacing(20);
+
+        sarake.setSpacing(15);
+        sarake.setAlignment(Pos.CENTER);
+
+        //buttonit ja action eventit
+        Button laskutaBt=new Button("Luo lasku");
+        Button suljeBt=new Button("Sulje");
+
+        laskutaBt.setOnAction(e->{
+            LaskunLuonti laskunLuonti =new LaskunLuonti();
+            laskunLuonti.luoLasku(1);
+            laskuValmis(laskunLuonti.getLaskuNro()).show();
+            lisaaLaskuStage.close();
+        });
+
+        suljeBt.setOnAction(e->{
+            //kysy suljetaanko ikkuna luomatta uutta laskua
+            lisaaLaskuStage.close();
+        });
+
+        VBox buttons=new VBox(laskutaBt,suljeBt);
+        buttons.setSpacing(20);
+        rootPaneeli.add(buttons,2,2);
+
+        VBox keskikohta=new VBox(sarake);
+        keskikohta.setSpacing(20);
+        rootPaneeli.add(keskikohta,1,0);
+
+        Scene lisaalaskuScene = new Scene(rootPaneeli,500,500);
+        lisaaLaskuStage.setScene(lisaalaskuScene);
+        lisaaLaskuStage.setTitle("Uusi lasku");
+        return lisaaLaskuStage;
+    }
+
+    public Stage laskuValmis(int laskunro){
+        Stage valmisStage = new Stage();
+
+        Text teksti = new Text("Lasku luotu\nonnistuneesti!\n\n" +
+                "Laskun numero: "+laskunro+"\n\n" +
+                "Lasku tallennettu Laskut-\nkansioon pdf-tiedostona.");
+
+        Button okBt = new Button("OK");
+        okBt.setOnAction(e->{
+            valmisStage.close();
+        });
+
+        BorderPane pane = new BorderPane();
+        pane.setCenter(teksti);
+        pane.setBottom(okBt);
+
+        Scene scene = new Scene(pane, 300,300);
+        valmisStage.setScene(scene);
+        valmisStage.setTitle("Lasku tallennettu");
+
+        return valmisStage;
     }
 
 }

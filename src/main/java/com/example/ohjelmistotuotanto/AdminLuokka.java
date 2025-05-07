@@ -152,7 +152,7 @@ public class AdminLuokka {
 
         Scene uusikayttajaScene = new Scene(rootPaneeli,500,500);
         uusiKayttajaStage.setScene(uusikayttajaScene);
-        uusiKayttajaStage.setTitle("Käyttäjähallinta");
+        uusiKayttajaStage.setTitle("Uusi käyttäjä");
         return uusiKayttajaStage;
     }
 
@@ -228,7 +228,7 @@ public class AdminLuokka {
 
         Scene muokkausScene = new Scene(rootPaneeli,500,500);
         muokkausStage.setScene(muokkausScene);
-        muokkausStage.setTitle("Varaukset");
+        muokkausStage.setTitle("Muokkaa käyttäjää");
         return muokkausStage;
     }
 
@@ -291,7 +291,7 @@ public class AdminLuokka {
 
         Scene raporttiScene = new Scene(rootPaneeli,500,500);
         raporttiStage.setScene(raporttiScene);
-        raporttiStage.setTitle("Varaukset");
+        raporttiStage.setTitle("Raportit");
         return raporttiStage;
     }
 
