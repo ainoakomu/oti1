@@ -1,5 +1,8 @@
 package com.example.ohjelmistotuotanto;
 
+import javafx.animation.FadeTransition;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -11,8 +14,32 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.util.Duration;
 
 public class AlkuIkkunat {
+
+    public Scene ohjelmaAukeaa(Stage stage){
+
+        //luodaan kuva
+        ImageView kuva = new ImageView(new Image(Taustakuvat.TaustakuvaAsettaminen.class.getResource("/taustakuva1.png").toExternalForm()));
+        kuva.setFitHeight(400);
+        kuva.setFitWidth(400);
+
+        //luodaan pane
+        Pane pane=new Pane();
+        pane.getChildren().add(kuva);
+
+        //feidataan sisään 2,5sek ajan ja sitten vaihdetaan scene kirjautumisikkunaan
+        FadeTransition feidi = new FadeTransition(Duration.millis(2500), kuva);
+        feidi.setFromValue(0);
+        feidi.setToValue(1);
+        feidi.setOnFinished(e->{
+            stage.setScene(luoKirjatumisIkkuna(stage));
+        });
+        feidi.play();
+
+        return new Scene(pane,400,400);
+    }
 
     public Scene luoKirjatumisIkkuna(Stage stage){
         BorderPane rootPaneeli=new BorderPane();
@@ -172,4 +199,5 @@ public class AlkuIkkunat {
         kysymysIkkuna.setTitle("Uloskirjautuminen");
         kysymysIkkuna.show();
     }
+
 }
