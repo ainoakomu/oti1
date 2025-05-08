@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+
 public class AdminLuokka {
 
     public Stage luoAdminToiminnotIkkuna(){
@@ -268,8 +269,8 @@ public class AdminLuokka {
         Button sulje=new Button("Sulje");
 
         viePDF.setOnAction(e->{
-            // tarkista että tarvittavat tiedot on valittu (pvm syötetty?)
-            //metodi, joka luo raportista pdf-tiedoston
+            RaportinLuonti raportinLuonti = new RaportinLuonti();
+            raportinLuonti.luoRaportti("testiraportti",alkupaiva.getValue(),loppupaiva.getValue());
             raporttiValmis().show();
         });
 
