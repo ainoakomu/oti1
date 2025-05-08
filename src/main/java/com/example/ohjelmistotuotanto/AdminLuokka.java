@@ -10,6 +10,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class AdminLuokka {
@@ -269,7 +270,7 @@ public class AdminLuokka {
         viePDF.setOnAction(e->{
             // tarkista että tarvittavat tiedot on valittu (pvm syötetty?)
             //metodi, joka luo raportista pdf-tiedoston
-            raporttiStage.close();
+            raporttiValmis().show();
         });
 
         sulje.setOnAction(e->{
@@ -293,6 +294,29 @@ public class AdminLuokka {
         raporttiStage.setScene(raporttiScene);
         raporttiStage.setTitle("Raportit");
         return raporttiStage;
+    }
+
+    public Stage raporttiValmis(){
+        Stage valmisStage = new Stage();
+
+        Text teksti = new Text("Raportti viety!\n\n" +
+                "Raportti tallennettu Raportit-kansioon\n" +
+                "pdf-tiedostona.");
+
+        Button okBt = new Button("OK");
+        okBt.setOnAction(e->{
+            valmisStage.close();
+        });
+
+        BorderPane pane = new BorderPane();
+        pane.setCenter(teksti);
+        pane.setBottom(okBt);
+
+        Scene scene = new Scene(pane, 300,300);
+        valmisStage.setScene(scene);
+        valmisStage.setTitle("Raportti tallennettu");
+
+        return valmisStage;
     }
 
 }
