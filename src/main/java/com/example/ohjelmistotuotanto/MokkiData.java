@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MokkiData {
 
@@ -63,5 +65,34 @@ public class MokkiData {
         }
         //palautetaan mokkien data
         return mokkiLista;
+    }
+
+    public static Map<Double, Integer> haeMokinHinta(Yhteysluokka yhteysluokka) {
+        //key-value mappi, johon ID ja siihen liityvä hinta tallennetaan
+        Map<Double, Integer> hintalista = new HashMap<>();
+
+        //yritetään saada yhteysluokan yhteys
+        try {
+            Connection conn = yhteysluokka.getYhteys();
+            if (conn == null) {
+                System.err.println("Tietokantayhteys epäonnistui.");
+                return hintalista;
+            }
+            //vaan id ja hinta per yö sarakkeet
+            String sql = "SELECT mokki_id, hinta_per_yo FROM mokit";
+            Statement statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery(sql);
+            //kerätää loopilla
+            while (resultSet.next()) {
+                int id = resultSet.getInt("mokki_id");
+                double hinta = resultSet.getDouble("hinta_per_yo");
+                hintalista.put(hinta, id);
+            }
+            //error catching
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //palautetaan hinta data
+        return hintalista;
     }
 }

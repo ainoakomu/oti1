@@ -16,7 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import static com.example.ohjelmistotuotanto.AsiakasData.haeAsiakkaat;
-import static com.example.ohjelmistotuotanto.MokkiData.haeMokit;
+
 
 public class AsiakasLuokka {
 
@@ -30,8 +30,8 @@ public class AsiakasLuokka {
 
         //observable lista, joka lisätään list view
         //käytetään datanhaku metodia
-        ObservableList<String> mokkiData = FXCollections.observableArrayList(haeAsiakkaat(olio));
-        ListView<String> asiakaslista = new ListView<>(mokkiData);
+        ObservableList<String> asiakasData = FXCollections.observableArrayList(haeAsiakkaat(olio));
+        ListView<String> asiakaslista = new ListView<>(asiakasData);
         asiakaslista.setMaxSize(350,250);
         rootPaneeli.setCenter(asiakaslista);
 

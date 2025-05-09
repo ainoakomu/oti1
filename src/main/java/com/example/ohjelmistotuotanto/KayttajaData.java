@@ -15,7 +15,7 @@ import java.util.ArrayList;
 public class KayttajaData {
 
     // Hakee käyttäjät tietokannasta
-    public ArrayList<String> haeKayttajat(Yhteysluokka yhteysluokka) {
+    public static ArrayList<String> haeKayttajat(Yhteysluokka yhteysluokka) {
         ArrayList<String> kayttajaLista = new ArrayList<>();
         //yhteys
         try {

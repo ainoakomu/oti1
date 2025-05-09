@@ -84,59 +84,9 @@ public class AdminLuokka {
         Button lisaaKayttaja =new Button("Lisää uusi käyttäjä");
         Button suljeBt=new Button("Sulje");
 
-
-
-        kayttajalista.getSelectionModel().selectedItemProperty().addListener((obs, vanha, uusi) -> {
-            if (uusi != null) {
-                String[] kentat = uusi.split(", ");
-
-                for (String kentta : kentat) {
-                    String[] avainArvo = kentta.split(": ");
-                    if (avainArvo.length < 2) continue;
-
-                    String avain = avainArvo[0].trim();
-                    String arvo = avainArvo[1].trim();
-
-                    switch (avain) {
-                        case "ID":
-                            setKayID(Integer.valueOf(arvo));
-                            break;
-                        case "Nimi":
-                            setKayNimi(arvo);
-                            break;
-                        case "Käyttäjätunnus":
-                            setKayTun(arvo);
-                            break;
-                        case "Salasana":
-                            setSalaSana(arvo);
-                            break;
-                        case "Käyttäjätaso":
-                            setKayTaso(arvo);
-                            break;
-                        case "Anniskeluoikeus":
-                            if(arvo=="Ei"){
-                                setAnnOikeus(0);
-                            } else if(arvo=="Kyllä"){
-                                setAnnOikeus(1);
-                            }
-                            break;
-                        case "Hygieniapassi":
-                            if(arvo=="Ei"){
-                                setHygPassi(0);
-                            } else if(arvo=="Kyllä"){
-                                setHygPassi(1);
-                            }
-                            break;
-                    }
-                }
-            }
-        });
-
-
-
         muokkaaKayttajaa.setOnAction(e->{
             //tarkista että käyttäjä on valittu listalta
-            luoMuokkaaKayttajaIkkuna(kayttajat,getKayID(), getKayNimi(), getKayTun(), getSalaSana(), getKayTaso(), getAnnOikeus(), getHygPassi()).show();
+            luoMuokkaaKayttajaIkkuna().show();
         });
 
         lisaaKayttaja.setOnAction(e->{
@@ -199,10 +149,10 @@ public class AdminLuokka {
 
         //käyttäjän tiedot
         peruskayttajaRbtn.setOnAction(e->{
-            setKayTaso("perus");
+            kayTaso = "perus";
         });
         adminRbtn.setOnAction(e->{
-            setKayTaso("admin");
+            kayTaso = "admin";
         });
 
         //buttonit ja action eventit
@@ -210,19 +160,19 @@ public class AdminLuokka {
         Button suljeBt=new Button("Sulje");
 
         tallennaBt.setOnAction(e->{
-            setKayID(Integer.parseInt(idTxt.getText()));
-            setKayNimi(nimiTxt.getText());
-            setKayTun(kayttajaTxt.getText());
-            setSalaSana(ssTxt.getText());
+            kayID = Integer.parseInt(idTxt.getText());
+            kayNimi = nimiTxt.getText();
+            kayTun = kayttajaTxt.getText();
+            salaSana = ssTxt.getText();
             if(anniskeluChbx.isSelected()){
-                setAnnOikeus(1);
+                annOikeus = 1;
             } else if (!anniskeluChbx.isSelected()){
-                setAnnOikeus(0);
+                annOikeus = 0;
             }
             if(hygieniaChbx.isSelected()){
-                setHygPassi(1);
+                hygPassi = 1;
             } else if (!hygieniaChbx.isSelected()){
-                setHygPassi(0);
+                hygPassi = 0;
             }
 
             //TARVITAAN: metodi jolla tarkistetaan onko kaikki tarvittavat tiedot täytetty
@@ -231,7 +181,7 @@ public class AdminLuokka {
             // tallenna tiedot tietokantaaan
             Yhteysluokka yhteysluokka = new Yhteysluokka();
             KayttajaData kayttajaData = new KayttajaData();
-            kayttajaData.lisaaKayttaja(yhteysluokka, getKayID(), getKayNimi(), getKayTun(), getSalaSana(), getKayTaso(), getAnnOikeus(), getHygPassi());
+            kayttajaData.lisaaKayttaja(yhteysluokka,kayID,kayNimi,kayTun,salaSana,kayTaso,annOikeus,hygPassi);
 
             //päivitä listviewin lista
             lista.setAll(FXCollections.observableArrayList(kayttajaData.haeKayttajat(yhteysluokka)));
@@ -265,7 +215,7 @@ public class AdminLuokka {
         return uusiKayttajaStage;
     }
 
-    public Stage luoMuokkaaKayttajaIkkuna(ObservableList<String> lista,int id, String nimi, String tunnus, String ss, String kayttajaTaso, int anniskeluOikeus, int hygieniaPassi){
+    public Stage luoMuokkaaKayttajaIkkuna(){
         Stage muokkausStage = new Stage();
         GridPane rootPaneeli=new GridPane();
         rootPaneeli.setAlignment(Pos.CENTER);
@@ -282,110 +232,45 @@ public class AdminLuokka {
         TextField idTxt=new TextField();
         TextField nimiTxt =new TextField();
         TextField kayttajaTxt =new TextField();
-        TextField ssTxt=new TextField();
+        TextField vuodeTxt=new TextField();
         HBox row1=new HBox(idlb,idTxt);
         row1.setSpacing(70);
         HBox row2=new HBox(nimiLb, nimiTxt);
         row2.setSpacing(57);
         HBox row3=new HBox(kayttajatunnuslb, kayttajaTxt);
         row3.setSpacing(5);
-        HBox row4=new HBox(salasanalb,ssTxt);
+        HBox row4=new HBox(salasanalb,vuodeTxt);
         row4.setSpacing(38);
         VBox sarake=new VBox(row1,row2,row3,row4);
         sarake.setSpacing(15);
         sarake.setAlignment(Pos.CENTER);
 
-        RadioButton peruskayttajaRbtn=new RadioButton("Peruskäyttäjä");
-        RadioButton adminRbtn=new RadioButton("Admin-käyttäjä");
-        CheckBox anniskeluChbx=new CheckBox("Anniskelupassi");
-        CheckBox hygieniaChbx=new CheckBox("Hygieniapassi");
-
-        ToggleGroup oikeusGrp = new ToggleGroup();
-        oikeusGrp.getToggles().addAll(peruskayttajaRbtn,adminRbtn);
-
-        muokkausStage.setOnShowing(e->{
-            idTxt.setText(String.valueOf(id));
-            nimiTxt.setText(nimi);
-            kayttajaTxt.setText(tunnus);
-            ssTxt.setText(salaSana);
-            if(kayttajaTaso.equals("perus")){
-                peruskayttajaRbtn.setSelected(true);
-            } else if (kayttajaTaso.equals("admin")){
-                adminRbtn.setSelected(true);
-            }
-            if(getAnnOikeus()==1){
-                anniskeluChbx.setSelected(true);
-            }
-            if(getHygPassi()==1){
-                hygieniaChbx.setSelected(true);
-            }
-
-            //KOKEILE TEHDÄ ANN + HYG RADIOBUTTONEIKSI, JOSKO SITTEN TOIMISI.
-
-        });
-
-        //käyttäjän tiedot
-        peruskayttajaRbtn.setOnAction(e->{
-            setKayTaso("perus");
-        });
-        adminRbtn.setOnAction(e->{
-            setKayTaso("admin");
-        });
+        CheckBox peruskayttaja=new CheckBox("Peruskäyttäjä");
+        CheckBox admin=new CheckBox("Admin-käyttäjä");
+        CheckBox anniskelu=new CheckBox("Anniskelupassi");
+        CheckBox hygienia=new CheckBox("Hygieniapassi");
 
         //buttonit ja action eventit
-        Button tallennaBt=new Button("Tallenna muutokset");
+        Button tallennaBt=new Button("Tallenna uusi käyttäjä");
         Button poistaBt=new Button("Poista käyttäjä");
         Button suljeBt=new Button("Sulje");
 
-        KayttajaData kayttajaData = new KayttajaData();
-        Yhteysluokka yhteysluokka = new Yhteysluokka();
-
         tallennaBt.setOnAction(e->{
-            //TARVITAAN kysy tallennetaanko muutokset
-
-            setKayID(Integer.parseInt(idTxt.getText()));
-            setKayNimi(nimiTxt.getText());
-            setKayTun(kayttajaTxt.getText());
-            setSalaSana(ssTxt.getText());
-            if(anniskeluChbx.isSelected()){
-                setAnnOikeus(1);
-            } else if (!anniskeluChbx.isSelected()){
-                setAnnOikeus(0);
-            }
-            if(hygieniaChbx.isSelected()){
-                setHygPassi(1);
-            } else if (!hygieniaChbx.isSelected()){
-                setHygPassi(0);
-            }
-
+            //kysy tallennetaanko muutokse
             //tallenna muutokset sqlään
-            kayttajaData.muokkaaKayttajaa(yhteysluokka, getKayID(), getKayNimi(), getKayTun(), getSalaSana(), getKayTaso(), getAnnOikeus(), getHygPassi());
-
-            // TARVITAAN ilmoita että tiedot muutettu
-
-            //päivitä listviewin lista
-            lista.setAll(FXCollections.observableArrayList(kayttajaData.haeKayttajat(yhteysluokka)));
-
+            //ilmoita että tallennettu
             muokkausStage.close();
         });
 
         poistaBt.setOnAction(e->{
-            setKayID(Integer.parseInt(idTxt.getText()));
-
-            //TARVITAAN kysy poistetaanko varmasti kayttäjä jonka id on kayID
-
-            kayttajaData.poistaKayttaja(yhteysluokka, getKayID());
-
-            //päivitä listviewin lista
-            lista.setAll(FXCollections.observableArrayList(kayttajaData.haeKayttajat(yhteysluokka)));
-
-            // TARVITAAN ilmoita että poistettu
-
+            //kysy poistetaanko mökki
+            //poista mökki sqlästä
+            //ilmoita että poistettu
             muokkausStage.close();
         });
 
         suljeBt.setOnAction(e->{
-            //TARVITAAN kysy suljetaanko ikkuna tekemättä muutoksia
+            //kysy suljetaanko ikkuna
             muokkausStage.close();
         });
 
@@ -393,7 +278,7 @@ public class AdminLuokka {
         buttons.setSpacing(15);
         buttons.setAlignment(Pos.TOP_CENTER);
         rootPaneeli.add(buttons,2,2);
-        VBox checkBox=new VBox(kayttooikeuslb,peruskayttajaRbtn,adminRbtn,passitlb,anniskeluChbx,hygieniaChbx);
+        VBox checkBox=new VBox(kayttooikeuslb,peruskayttaja,admin,passitlb,anniskelu,hygienia);
         checkBox.setSpacing(15);
         checkBox.setAlignment(Pos.CENTER_LEFT);
         VBox keskikohta=new VBox(sarake,checkBox);
@@ -542,59 +427,4 @@ public class AdminLuokka {
         d.setStyle(null);
     }
 
-    public int getKayID() {
-        return kayID;
-    }
-
-    public void setKayID(int kayID) {
-        this.kayID = kayID;
-    }
-
-    public String getKayNimi() {
-        return kayNimi;
-    }
-
-    public void setKayNimi(String kayNimi) {
-        this.kayNimi = kayNimi;
-    }
-
-    public String getKayTun() {
-        return kayTun;
-    }
-
-    public void setKayTun(String kayTun) {
-        this.kayTun = kayTun;
-    }
-
-    public String getSalaSana() {
-        return salaSana;
-    }
-
-    public void setSalaSana(String salaSana) {
-        this.salaSana = salaSana;
-    }
-
-    public String getKayTaso() {
-        return kayTaso;
-    }
-
-    public void setKayTaso(String kayTaso) {
-        this.kayTaso = kayTaso;
-    }
-
-    public int getAnnOikeus() {
-        return annOikeus;
-    }
-
-    public void setAnnOikeus(int annOikeus) {
-        this.annOikeus = annOikeus;
-    }
-
-    public int getHygPassi() {
-        return hygPassi;
-    }
-
-    public void setHygPassi(int hygPassi) {
-        this.hygPassi = hygPassi;
-    }
 }
