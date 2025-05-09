@@ -28,6 +28,10 @@ public class RaportinLuonti {
         setRaporttiAsti(asti);
 
         try {
+
+            Yhteysluokka olio=new Yhteysluokka();
+            VarausData varausData = new VarausData();
+
             // Luodaan dokumentti
             PDDocument dokumentti = new PDDocument();
 
@@ -42,10 +46,14 @@ public class RaportinLuonti {
             String rivi1 = "Raportti: " + getRaportinNimi();
             String rivi2 = "Ajalta: " + getRaporttiAlkaen() +" - "+ getRaporttiAsti() ;
             String rivi3 = "";
-            String rivi4 = "dataa";
-            String rivi5 = "dataa";
 
-            String[] rivit = {rivi1, rivi2, rivi3, rivi4, rivi5};
+            String[] rivit = {rivi1, rivi2, rivi3};
+            Object[] rapsa = {};
+
+            if (raportti == "Varausraportti"){
+                rapsa = varausData.varausRaportti(olio).toArray();
+            }
+
 
             // stream
             PDPageContentStream contentStream = new PDPageContentStream(dokumentti, sivu);
@@ -58,6 +66,13 @@ public class RaportinLuonti {
 
             for (int i = 0; i < rivit.length; i++) {
                 contentStream.showText(rivit[i]);
+                contentStream.newLineAtOffset(0, -14.5f);
+                contentStream.newLine();
+            }
+            contentStream.setLeading(14.5f);
+
+            for (Object rap : rapsa){
+                contentStream.showText(rap.toString());
                 contentStream.newLineAtOffset(0, -14.5f);
                 contentStream.newLine();
             }
