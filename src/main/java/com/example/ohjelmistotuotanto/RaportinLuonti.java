@@ -30,7 +30,10 @@ public class RaportinLuonti {
         try {
 
             Yhteysluokka olio=new Yhteysluokka();
+            AsiakasData asiakasData = new AsiakasData();
             VarausData varausData = new VarausData();
+
+
 
             // Luodaan dokumentti
             PDDocument dokumentti = new PDDocument();
@@ -51,7 +54,16 @@ public class RaportinLuonti {
             Object[] rapsa = {};
 
             if (raportti == "Varausraportti"){
-                rapsa = varausData.varausRaportti(olio).toArray();
+                rapsa = varausData.varausRaportti(olio,getRaporttiAlkaen(),getRaporttiAsti()).toArray();
+            }
+            else if (raportti == "Asiakasraportti"){
+                rapsa = asiakasData.asiakasRaportti(olio).toArray();
+            }
+            else if (raportti == "Talousraportti"){
+
+            }
+            else if (raportti == "testiraportti"){
+
             }
 
 
@@ -62,7 +74,7 @@ public class RaportinLuonti {
             contentStream.beginText();
             contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
             contentStream.setLeading(14.5f);
-            contentStream.newLineAtOffset(80, 750);
+            contentStream.newLineAtOffset(80, 800);
 
             for (int i = 0; i < rivit.length; i++) {
                 contentStream.showText(rivit[i]);

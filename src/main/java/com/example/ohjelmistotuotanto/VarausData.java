@@ -1,9 +1,9 @@
 package com.example.ohjelmistotuotanto;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.sql.Timestamp;
+import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class VarausData {
@@ -56,12 +56,17 @@ public class VarausData {
         }
         //valmis lista
         return varauslista;
-
     }
 
-    public static ArrayList<String> varausRaportti(Yhteysluokka olio){
+    public static ArrayList<String> varausRaportti(Yhteysluokka olio, LocalDate alkaen, LocalDate asti){
         ArrayList<String> raportti =new ArrayList<>();
         //yritetään yhteysluokan olion yhteys saada
+
+        LocalDateTime lahtien = alkaen.atStartOfDay();
+        Timestamp tsLahtien = Timestamp.valueOf(lahtien);
+        LocalDateTime saakka = asti.atStartOfDay();
+        Timestamp tsSaakka = Timestamp.valueOf(saakka);
+
         try{
             Connection lokalYhteys= olio.getYhteys();
             if (lokalYhteys== null){
@@ -73,11 +78,17 @@ public class VarausData {
                 SELECT varaus_id, varausalku_date, varausloppu_date, hinta, 
                        kayttaja_id, asiakas_id, mokki_id
                  FROM varaukset
+                 WHERE varausalku_date >= ? AND varausloppu_date <= ?
             """;
+            PreparedStatement stmt = lokalYhteys.prepareStatement(varausSql);
+            stmt.setTimestamp(1, tsLahtien);
+            stmt.setTimestamp(2, tsSaakka);
+
             //statement saa yhteyden
-            Statement stmt = lokalYhteys.createStatement();
+            //Statement stmt = lokalYhteys.createStatement();
             //yhteys ja sql scripti sinne
-            ResultSet varRs = stmt.executeQuery(varausSql);
+            ResultSet varRs = stmt.executeQuery();
+
 
             //loopilla tiedot
             while (varRs.next()) {
