@@ -28,12 +28,9 @@ public class RaportinLuonti {
         setRaporttiAsti(asti);
 
         try {
-
             Yhteysluokka olio=new Yhteysluokka();
             AsiakasData asiakasData = new AsiakasData();
             VarausData varausData = new VarausData();
-
-
 
             // Luodaan dokumentti
             PDDocument dokumentti = new PDDocument();

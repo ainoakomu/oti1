@@ -21,6 +21,15 @@ import java.time.format.DateTimeFormatter;
 public class AdminLuokka {
 
     private String valittuRaportti;
+    private int kayID = 0;
+    private String kayNimi = "";
+    private String kayTun= "";
+    private String salaSana= "";
+    private String kayTaso= "";
+    private int annOikeus = 0;
+    private int hygPassi = 0;
+
+
 
     public Stage luoAdminToiminnotIkkuna(){
         Stage adminStage = new Stage();
@@ -114,31 +123,66 @@ public class AdminLuokka {
         TextField idTxt=new TextField();
         TextField nimiTxt =new TextField();
         TextField kayttajaTxt =new TextField();
-        TextField vuodeTxt=new TextField();
+        TextField ssTxt=new TextField();
         HBox row1=new HBox(idlb,idTxt);
         row1.setSpacing(70);
         HBox row2=new HBox(nimiLb, nimiTxt);
         row2.setSpacing(57);
         HBox row3=new HBox(kayttajatunnuslb, kayttajaTxt);
         row3.setSpacing(5);
-        HBox row4=new HBox(salasanalb,vuodeTxt);
+        HBox row4=new HBox(salasanalb,ssTxt);
         row4.setSpacing(38);
         VBox sarake=new VBox(row1,row2,row3,row4);
         sarake.setSpacing(15);
         sarake.setAlignment(Pos.CENTER);
 
-        CheckBox peruskayttaja=new CheckBox("Peruskäyttäjä");
-        CheckBox admin=new CheckBox("Admin-käyttäjä");
-        CheckBox anniskelu=new CheckBox("Anniskelupassi");
-        CheckBox hygienia=new CheckBox("Hygieniapassi");
+        RadioButton peruskayttajaRbtn=new RadioButton("Peruskäyttäjä");
+        RadioButton adminRbtn=new RadioButton("Admin-käyttäjä");
+        CheckBox anniskeluChbx=new CheckBox("Anniskelupassi");
+        CheckBox hygieniaChbx=new CheckBox("Hygieniapassi");
+
+        ToggleGroup oikeusGrp = new ToggleGroup();
+        oikeusGrp.getToggles().addAll(peruskayttajaRbtn,adminRbtn);
+
+        //käyttäjän tiedot
+
+
+        peruskayttajaRbtn.setOnAction(e->{
+            kayTaso = "perus";
+        });
+        adminRbtn.setOnAction(e->{
+            kayTaso = "admin";
+        });
+
+
+
 
         //buttonit ja action eventit
         Button tallennaBt=new Button("Tallenna uusi käyttäjä");
         Button suljeBt=new Button("Sulje");
 
         tallennaBt.setOnAction(e->{
+
+            kayID = Integer.parseInt(idTxt.getText());
+            kayNimi = nimiTxt.getText();
+            kayTun = kayttajaTxt.getText();
+            salaSana = ssTxt.getText();
+            if(anniskeluChbx.isSelected()){
+                annOikeus = 1;
+            } else if (!anniskeluChbx.isSelected()){
+                annOikeus = 0;
+            }
+            if(hygieniaChbx.isSelected()){
+                hygPassi = 1;
+            } else if (!hygieniaChbx.isSelected()){
+                hygPassi = 0;
+            }
+
             //metodi jolla tarkistetaan onko kaikki tarvittavat tiedot täytetty
             //metodi joka tallentaa tiedot sqllään
+            Yhteysluokka yhteysluokka = new Yhteysluokka();
+            KayttajaData kayttajaData = new KayttajaData();
+            kayttajaData.lisaaKayttaja(yhteysluokka,kayID,kayNimi,kayTun,salaSana,kayTaso,annOikeus,hygPassi);
             uusiKayttajaStage.close();
         });
 
@@ -151,7 +195,7 @@ public class AdminLuokka {
         buttons.setSpacing(15);
         buttons.setAlignment(Pos.TOP_CENTER);
         rootPaneeli.add(buttons,2,2);
-        VBox checkBox=new VBox(kayttooikeuslb,peruskayttaja,admin,passitlb,anniskelu,hygienia);
+        VBox checkBox=new VBox(kayttooikeuslb,peruskayttajaRbtn,adminRbtn,passitlb,anniskeluChbx,hygieniaChbx);
         checkBox.setSpacing(15);
         checkBox.setAlignment(Pos.CENTER_LEFT);
         VBox keskikohta=new VBox(sarake,checkBox);
