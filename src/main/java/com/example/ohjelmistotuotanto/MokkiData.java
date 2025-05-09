@@ -67,8 +67,9 @@ public class MokkiData {
         return mokkiLista;
     }
 
-    public static ArrayList<String> haeMokinHinta(Yhteysluokka yhteysluokka) {
-        ArrayList<String> hintalista = new ArrayList<>();
+    public static Map<Double, Integer> haeMokinHinta(Yhteysluokka yhteysluokka) {
+        //key-value mappi, johon ID ja siihen liityvä hinta tallennetaan
+        Map<Double, Integer> hintalista = new HashMap<>();
 
         //yritetään saada yhteysluokan yhteys
         try {
@@ -77,25 +78,21 @@ public class MokkiData {
                 System.err.println("Tietokantayhteys epäonnistui.");
                 return hintalista;
             }
-
-            Map<Double, Integer> hintaToMokkiId = new HashMap<>();
-
+            //vaan id ja hinta per yö sarakkeet
             String sql = "SELECT mokki_id, hinta_per_yo FROM mokit";
             Statement statement = conn.createStatement();
             ResultSet resultSet = statement.executeQuery(sql);
-
+            //kerätää loopilla
             while (resultSet.next()) {
                 int id = resultSet.getInt("mokki_id");
                 double hinta = resultSet.getDouble("hinta_per_yo");
-                hintaToMokkiId.put(hinta, id);
+                hintalista.put(hinta, id);
             }
-            hintalista.add(String.valueOf(hintaToMokkiId));
-
             //error catching
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //palautetaan mokkien data
+        //palautetaan hinta data
         return hintalista;
     }
 }
