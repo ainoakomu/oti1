@@ -90,7 +90,6 @@ public class KayttajaData {
             adminLuokka.setAnnOikeus(0);
             adminLuokka.setHygPassi(0);
 
-
     } catch (Exception e) {
             e.printStackTrace();
         }
