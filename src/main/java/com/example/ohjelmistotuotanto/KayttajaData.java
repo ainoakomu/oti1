@@ -51,7 +51,8 @@ public class KayttajaData {
                         ", Salasana: " + salasana +
                         ", Käyttäjätaso: " + taso +
                         ", Anniskeluoikeus: " + (anniskelu ? "Kyllä" : "Ei") +
-                        ", Hygieniapassi: " + (hygieniapassi ? "Kyllä" : "Ei");
+                        ", Hygieniapassi: " + (hygieniapassi ? "Kyllä" : "Ei")+
+                        ", |: ";
 
                 kayttajaLista.add(rivi);
             }
@@ -64,6 +65,7 @@ public class KayttajaData {
     }
 
     public void lisaaKayttaja(Yhteysluokka yhteysluokka, int id, String nimi, String tunnus, String ss, String kayttajaTaso, int anniskeluOikeus, int hygieniaPassi){
+        AdminLuokka adminLuokka = new AdminLuokka();
         try {
             Connection yhteys = yhteysluokka.getYhteys();
             if (yhteys == null) {
@@ -80,7 +82,54 @@ public class KayttajaData {
             stmt.setInt(7,hygieniaPassi);
             stmt.executeUpdate();
 
+            adminLuokka.setKayID(0);
+            adminLuokka.setKayNimi("");
+            adminLuokka.setKayTun("");
+            adminLuokka.setSalaSana("");
+            adminLuokka.setKayTaso("");
+            adminLuokka.setAnnOikeus(0);
+            adminLuokka.setHygPassi(0);
+
     } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void muokkaaKayttajaa(Yhteysluokka yhteysluokka, int id, String nimi, String tunnus, String ss, String kayttajaTaso, int anniskeluOikeus, int hygieniaPassi){
+
+        try {
+            Connection yhteys = yhteysluokka.getYhteys();
+            if (yhteys == null) {
+                System.err.println("Tietokantayhteys epäonnistui.");
+            }
+            String sql = "UPDATE kayttajat SET nimi = ? , kayttaja_tunnus = ?, salasana = ?, kayttaja_taso = ?, onko_anniskelu_oikeus = 0, onko_hygieniapassi = 0 WHERE kayttaja_id = 1234;";
+            PreparedStatement stmt = yhteys.prepareStatement(sql);
+            stmt.setString(1, nimi);
+            stmt.setString(2, tunnus);
+            stmt.setString(3, ss);
+            stmt.setString(4, kayttajaTaso);
+            stmt.setInt(5, anniskeluOikeus);
+            stmt.setInt(6, hygieniaPassi);
+            stmt.setInt(7,id);
+            stmt.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void poistaKayttaja(Yhteysluokka yhteysluokka, int id){
+        try {
+            Connection yhteys = yhteysluokka.getYhteys();
+            if (yhteys == null) {
+                System.err.println("Tietokantayhteys epäonnistui.");
+            }
+            String sql = "DELETE FROM kayttajat WHERE kayttaja_id = ?";
+            PreparedStatement st = yhteys.prepareStatement(sql);
+            st.setInt(1,id);
+            st.executeUpdate();
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

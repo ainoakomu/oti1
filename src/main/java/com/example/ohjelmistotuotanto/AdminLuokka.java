@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -48,7 +49,7 @@ public class AdminLuokka {
         });
 
         kayttajanhallintabt.setOnAction(e->{
-            luoKattajanhallintaIkkuna().show();
+            luoKayttajanhallintaIkkuna().show();
         });
 
         suljebt.setOnAction(e->{
@@ -65,17 +66,18 @@ public class AdminLuokka {
         return adminStage;
     }
 
-    public Stage luoKattajanhallintaIkkuna(){
+    public Stage luoKayttajanhallintaIkkuna(){
         Stage kayttajatStage = new Stage();
         BorderPane rootPaneeli=new BorderPane();
-        Yhteysluokka olio =new Yhteysluokka();
 
-        //observable lista, joka lisätään list view
-        //käytetään datanhaku metodia
-        ObservableList<String> kayttajalista = FXCollections.observableArrayList(KayttajaData.haeKayttajat(olio));
-        ListView<String> kayttajat = new ListView<>(kayttajalista);
+        Yhteysluokka olio=new Yhteysluokka();
+        KayttajaData kayttajaData = new KayttajaData();
+        //tyhjä lista
+        ObservableList<String> kayttajat= FXCollections.observableArrayList(kayttajaData.haeKayttajat(olio));
+        ListView<String> kayttajalista =new ListView<>(kayttajat);
 
-        rootPaneeli.setCenter(kayttajat);
+        kayttajalista.setMaxSize(600,250);
+        rootPaneeli.setCenter(kayttajalista);
 
         //buttonit ja action eventit
         Button muokkaaKayttajaa =new Button("Muokkaa käyttäjää");
@@ -88,7 +90,7 @@ public class AdminLuokka {
         });
 
         lisaaKayttaja.setOnAction(e->{
-            luoUusiKayttajaIkkuna().show();
+            luoUusiKayttajaIkkuna(kayttajat).show();
         });
 
         suljeBt.setOnAction(e->{
@@ -101,13 +103,13 @@ public class AdminLuokka {
         nappulaBoksi.setAlignment(Pos.CENTER);
         rootPaneeli.setPadding(new Insets(15,15,15,15));
 
-        Scene kayttajatScene = new Scene(rootPaneeli,500,500);
+        Scene kayttajatScene = new Scene(rootPaneeli,650,500);
         kayttajatStage.setScene(kayttajatScene);
         kayttajatStage.setTitle("Käyttäjähallinta");
         return kayttajatStage;
     }
 
-    public Stage luoUusiKayttajaIkkuna(){
+    public Stage luoUusiKayttajaIkkuna(ObservableList<String> lista){
         Stage uusiKayttajaStage = new Stage();
         GridPane rootPaneeli=new GridPane();
         rootPaneeli.setAlignment(Pos.CENTER);
@@ -146,8 +148,6 @@ public class AdminLuokka {
         oikeusGrp.getToggles().addAll(peruskayttajaRbtn,adminRbtn);
 
         //käyttäjän tiedot
-
-
         peruskayttajaRbtn.setOnAction(e->{
             kayTaso = "perus";
         });
@@ -155,15 +155,11 @@ public class AdminLuokka {
             kayTaso = "admin";
         });
 
-
-
-
         //buttonit ja action eventit
         Button tallennaBt=new Button("Tallenna uusi käyttäjä");
         Button suljeBt=new Button("Sulje");
 
         tallennaBt.setOnAction(e->{
-
             kayID = Integer.parseInt(idTxt.getText());
             kayNimi = nimiTxt.getText();
             kayTun = kayttajaTxt.getText();
@@ -179,11 +175,19 @@ public class AdminLuokka {
                 hygPassi = 0;
             }
 
-            //metodi jolla tarkistetaan onko kaikki tarvittavat tiedot täytetty
-            //metodi joka tallentaa tiedot sqllään
+            //TARVITAAN: metodi jolla tarkistetaan onko kaikki tarvittavat tiedot täytetty
+            // jos ei ole kaikkia tarvittavia tietoja, pitää tulla kehote täydentää
+
+            // tallenna tiedot tietokantaaan
             Yhteysluokka yhteysluokka = new Yhteysluokka();
             KayttajaData kayttajaData = new KayttajaData();
             kayttajaData.lisaaKayttaja(yhteysluokka,kayID,kayNimi,kayTun,salaSana,kayTaso,annOikeus,hygPassi);
+
+            //päivitä listviewin lista
+            lista.setAll(FXCollections.observableArrayList(kayttajaData.haeKayttajat(yhteysluokka)));
+
+            // TARVITAAN ilmoitus että tiedot tallennettu
+
             uusiKayttajaStage.close();
         });
 
