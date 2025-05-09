@@ -1,6 +1,9 @@
 package com.example.ohjelmistotuotanto;
 
+import javafx.collections.ObservableList;
+import javafx.scene.control.ListView;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,7 +15,7 @@ import java.util.ArrayList;
 public class KayttajaData {
 
     // Hakee käyttäjät tietokannasta
-    public static ArrayList<String> haeKayttajat(Yhteysluokka yhteysluokka) {
+    public ArrayList<String> haeKayttajat(Yhteysluokka yhteysluokka) {
         ArrayList<String> kayttajaLista = new ArrayList<>();
         //yhteys
         try {
@@ -76,8 +79,6 @@ public class KayttajaData {
             stmt.setInt(6, anniskeluOikeus);
             stmt.setInt(7,hygieniaPassi);
             stmt.executeUpdate();
-
-
 
     } catch (Exception e) {
             e.printStackTrace();
