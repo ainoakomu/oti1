@@ -21,6 +21,9 @@ import java.time.format.DateTimeFormatter;
 public class AdminLuokka {
 
     private String valittuRaportti;
+    private String kayttoOikeus;
+    private int anniskeluPassi;
+    private int hygieniaPassi;
 
     public Stage luoAdminToiminnotIkkuna(){
         Stage adminStage = new Stage();
@@ -114,14 +117,14 @@ public class AdminLuokka {
         TextField idTxt=new TextField();
         TextField nimiTxt =new TextField();
         TextField kayttajaTxt =new TextField();
-        TextField vuodeTxt=new TextField();
+        TextField ssTxt=new TextField();
         HBox row1=new HBox(idlb,idTxt);
         row1.setSpacing(70);
         HBox row2=new HBox(nimiLb, nimiTxt);
         row2.setSpacing(57);
         HBox row3=new HBox(kayttajatunnuslb, kayttajaTxt);
         row3.setSpacing(5);
-        HBox row4=new HBox(salasanalb,vuodeTxt);
+        HBox row4=new HBox(salasanalb,ssTxt);
         row4.setSpacing(38);
         VBox sarake=new VBox(row1,row2,row3,row4);
         sarake.setSpacing(15);
@@ -135,6 +138,10 @@ public class AdminLuokka {
         //buttonit ja action eventit
         Button tallennaBt=new Button("Tallenna uusi käyttäjä");
         Button suljeBt=new Button("Sulje");
+
+        peruskayttaja.setOnAction(e->{
+            kayttoOikeus = "perus";
+        });
 
         tallennaBt.setOnAction(e->{
             //metodi jolla tarkistetaan onko kaikki tarvittavat tiedot täytetty

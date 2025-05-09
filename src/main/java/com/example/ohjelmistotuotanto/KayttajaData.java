@@ -1,7 +1,10 @@
 package com.example.ohjelmistotuotanto;
 
+import javafx.scene.text.Text;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
@@ -54,5 +57,19 @@ public class KayttajaData {
         }
         //valmis lista
         return kayttajaLista;
+    }
+
+    //tämän metodin rakentelussa otettu vaikutteita tästä:
+    //https://codespindle.com/Java/Java_JavaFX%20with%20JDBC.html
+    public void lisaaKayttaja(Yhteysluokka yhteys, Text id, Text nimi, Text kayttis, Text salasana) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
+        try {
+            Connection conn = yhteys.getYhteys();
+            if (yhteys == null) {
+                System.err.println("Tietokantayhteys epäonnistui.");
+
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
