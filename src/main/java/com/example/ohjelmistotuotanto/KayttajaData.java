@@ -1,7 +1,11 @@
 package com.example.ohjelmistotuotanto;
 
+import javafx.scene.text.Text;
+
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
@@ -55,4 +59,29 @@ public class KayttajaData {
         //valmis lista
         return kayttajaLista;
     }
+
+    public void lisaaKayttaja(Yhteysluokka yhteysluokka, int id, String nimi, String tunnus, String ss, String kayttajaTaso, int anniskeluOikeus, int hygieniaPassi){
+        try {
+            Connection yhteys = yhteysluokka.getYhteys();
+            if (yhteys == null) {
+                System.err.println("Tietokantayhteys epäonnistui.");
+            }
+            String sql = "insert into kayttajat values (?,?,?,?,?,?,?);";
+            PreparedStatement stmt = yhteys.prepareStatement(sql);
+            stmt.setInt(1, id);
+            stmt.setString(2, nimi);
+            stmt.setString(3, tunnus);
+            stmt.setString(4, ss);
+            stmt.setString(5, kayttajaTaso);
+            stmt.setInt(6, anniskeluOikeus);
+            stmt.setInt(7,hygieniaPassi);
+            stmt.executeUpdate();
+
+
+
+    } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
