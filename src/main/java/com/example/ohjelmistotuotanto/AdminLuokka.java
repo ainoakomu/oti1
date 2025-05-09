@@ -17,6 +17,9 @@ import javafx.stage.Stage;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import static com.example.ohjelmistotuotanto.AsiakasData.haeAsiakkaat;
+import static com.example.ohjelmistotuotanto.KayttajaData.haeKayttajat;
+
 
 public class AdminLuokka {
 
@@ -69,10 +72,14 @@ public class AdminLuokka {
     public Stage luoKattajanhallintaIkkuna(){
         Stage kayttajatStage = new Stage();
         BorderPane rootPaneeli=new BorderPane();
+        //sql yhteys
+        Yhteysluokka olio=new Yhteysluokka();
 
-        //tyhjä lista
-        ObservableList<String> testi= FXCollections.observableArrayList("Testi","yippee","not the real list");
-        ListView<String> kayttajalista =new ListView<>(testi);
+        //observable lista, joka lisätään list view
+        //käytetään datanhaku metodia
+        ObservableList<String> kayttajadata = FXCollections.observableArrayList(haeKayttajat(olio));
+        ListView<String> kayttajalista = new ListView<>(kayttajadata);
+
 
         rootPaneeli.setCenter(kayttajalista);
 
