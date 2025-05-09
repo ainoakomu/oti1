@@ -162,7 +162,7 @@ public class AlkuIkkunat {
         //avaa ikkunan, josta voi tehdä uuden varauksen
         uusiVarausBt.setOnAction(e->{
             VarausLuokka uusiVarausIkkuna = new VarausLuokka();
-            // lisää metodi, joka avaa uuden varausikkunan
+            uusiVarausIkkuna.luoUusiVarausIkkuna().show();
         });
 
         //avaa asiakkaiden ikkunan
