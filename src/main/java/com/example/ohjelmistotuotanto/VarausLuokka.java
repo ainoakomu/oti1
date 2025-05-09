@@ -18,9 +18,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -324,7 +328,16 @@ public Stage luoUusiVarausIkkuna() {
 
     // Painikkeet
     Button tallennaButton = new Button("Tallenna");
+    tallennaButton.setOnAction(e->{
+        String asiakasID= String.valueOf(annaAsiakasID());
+
+        lisaaVaraus(yhteys,annaVarausID() ,annaAsiakasID(),valittuMokki.getValue(),alkuVarausTextField.getText() ,paattyVarausTextField.getText(),hintaToMokkiId.toString(),annaKayttajaID());
+        lisaaUusiAsiakas(yhteys,asiakasID,nimiTextField.getText(),emailTextField.getText(),puhelinTextField.getText(),osoiteTextField.getText());
+        valmisStage.close();
+    });
+
     Button suljeButton = new Button("Sulje");
+
     //sulje kun sulje
     suljeButton.setOnAction(e ->
 
@@ -405,6 +418,75 @@ public Stage luoUusiVarausIkkuna() {
             }
         }
     }
+    //lisää varaus
+    public void lisaaVaraus(Yhteysluokka yhteysluokka,Integer varaus_id, Integer asiakas_id, String mokki_id, String varausalku_date, String varausloppu_date, String hinta, Integer kayttaja_id){
 
+        try {
+            Connection yhteys = yhteysluokka.getYhteys();
+            if (yhteys == null) {
+                System.err.println("Tietokantayhteys epäonnistui.");
+            }
+            String sql = "insert into varaukset values (?,?,?,?,?,?,?);";
+            PreparedStatement stmt = yhteys.prepareStatement(sql);
+            stmt.setInt(1, varaus_id);
+            stmt.setInt(2, asiakas_id);
+            stmt.setString(3, mokki_id);
+            stmt.setString(4, varausalku_date);
+            stmt.setString(5, varausloppu_date);
+            stmt.setString(6, hinta);
+            stmt.setInt(7, kayttaja_id);
+            stmt.executeUpdate();
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    //lisää asiakas
+    public void lisaaUusiAsiakas(Yhteysluokka yhteysluokka,String asiakas_id, String asiakkaan_nimi, String asiakkaan_sahkoposti, String puhelinnumero, String koti_osoite){
+
+        try {
+            Connection yhteys = yhteysluokka.getYhteys();
+            if (yhteys == null) {
+                System.err.println("Tietokantayhteys epäonnistui.");
+            }
+            String sql = "insert into asiakkaat values (?,?,?,?,?);";
+            PreparedStatement stmt = yhteys.prepareStatement(sql);
+            stmt.setString(1, asiakas_id);
+            stmt.setString(2, asiakkaan_nimi);
+            stmt.setString(3, asiakkaan_sahkoposti);
+            stmt.setString(4, puhelinnumero);
+            stmt.setString(5, koti_osoite);
+            stmt.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public Integer annaVarausID() {
+        Random random = new Random();
+        int varausID = 0;
+        for (int i = 0; i < 4; i++) {
+            varausID = random.nextInt(100);
+            return varausID;
+        }
+        return varausID;
+    }
+
+    public Integer annaAsiakasID() {
+        Random random = new Random();
+        int asiakasID = 0;
+        for (int i = 0; i < 3; i++) {
+            asiakasID = random.nextInt(100);
+            return asiakasID;
+        }
+        return asiakasID;
+    }
+
+    public Integer annaKayttajaID() {
+        int[] kayttajat = {3887, 4459, 7866, 2644};
+        Random random = new Random();
+        int annaNumero=random.nextInt(kayttajat.length);
+        int valitseNumero=kayttajat[annaNumero];
+        return valitseNumero;
+    }
 }

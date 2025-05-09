@@ -13,7 +13,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -69,12 +68,14 @@ public class AdminLuokka {
     public Stage luoKattajanhallintaIkkuna(){
         Stage kayttajatStage = new Stage();
         BorderPane rootPaneeli=new BorderPane();
+        Yhteysluokka olio =new Yhteysluokka();
 
-        //tyhjä lista
-        ObservableList<String> testi= FXCollections.observableArrayList("Testi","yippee","not the real list");
-        ListView<String> kayttajalista =new ListView<>(testi);
+        //observable lista, joka lisätään list view
+        //käytetään datanhaku metodia
+        ObservableList<String> kayttajalista = FXCollections.observableArrayList(KayttajaData.haeKayttajat(olio));
+        ListView<String> kayttajat = new ListView<>(kayttajalista);
 
-        rootPaneeli.setCenter(kayttajalista);
+        rootPaneeli.setCenter(kayttajat);
 
         //buttonit ja action eventit
         Button muokkaaKayttajaa =new Button("Muokkaa käyttäjää");
