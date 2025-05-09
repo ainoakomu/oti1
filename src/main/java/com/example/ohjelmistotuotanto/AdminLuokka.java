@@ -206,6 +206,7 @@ public class AdminLuokka {
         uusiKayttajaStage.setScene(uusikayttajaScene);
         uusiKayttajaStage.setTitle("Uusi käyttäjä");
 
+
         return uusiKayttajaStage;
     }
 

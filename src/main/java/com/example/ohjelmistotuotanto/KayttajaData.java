@@ -78,6 +78,7 @@ public class KayttajaData {
             stmt.executeUpdate();
 
 
+
     } catch (Exception e) {
             e.printStackTrace();
         }
