@@ -105,6 +105,7 @@ public class AlkuIkkunat {
         rootPaneeli.setHgap(50);
         rootPaneeli.setVgap(50);
         rootPaneeli.setPadding(new Insets(10,10,10,10));
+        rootPaneeli.setBackground(Taustakuvat.TaustakuvaAsettaminen.luoTausta());
         //buttons
         Text terveTeksti=new Text("Tervetuloa");
         Button mokitBt=new Button("Mökit");
