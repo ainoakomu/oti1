@@ -11,9 +11,16 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+
 public class AdminLuokka {
+
+    private String valittuRaportti;
 
     public Stage luoAdminToiminnotIkkuna(){
         Stage adminStage = new Stage();
@@ -237,27 +244,64 @@ public class AdminLuokka {
         Stage raporttiStage = new Stage();
         BorderPane rootPaneeli=new BorderPane();
 
-        HBox kirjautumisLaatikko=new HBox();
-        kirjautumisLaatikko.setSpacing(10);
-        kirjautumisLaatikko.setAlignment(Pos.TOP_LEFT);
-        kirjautumisLaatikko.setPadding(new Insets(25,5,5,5));
-        Button testi=new Button("Testi");
-        Button testi2=new Button("Testi");
-        Button testi3=new Button("Testi");
-        Button testi4=new Button("Testi");
-        kirjautumisLaatikko.getChildren().addAll(testi2,testi4,testi3,testi);
+        HBox rapsaBox =new HBox();
+        rapsaBox.setSpacing(10);
+        rapsaBox.setAlignment(Pos.TOP_LEFT);
+        rapsaBox.setPadding(new Insets(25,5,5,5));
+        ToggleButton asiakasRaporttiBtn =new ToggleButton("Asiakasraportti");
+        ToggleButton varausRaporttiBtn =new ToggleButton("Varausraportti");
+        ToggleButton talousRaporttiBtn =new ToggleButton("Talousraportti");
+        ToggleButton testi4=new ToggleButton("Testi");
+        rapsaBox.getChildren().addAll(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn,testi4);
+
+        ToggleGroup btnGroup = new ToggleGroup();
+        btnGroup.getToggles().addAll(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn,testi4);
+
+        asiakasRaporttiBtn.setOnAction(e->{
+            valittuRaportti="Asiakasraportti";
+            napitReset(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn,testi4);
+            asiakasRaporttiBtn.setStyle(
+                    "-fx-background-color: green;" +
+                            "-fx-text-fill: white");
+            // metodi jolla haetaan asiakastiedot listviewiin
+        });
+        varausRaporttiBtn.setOnAction(e->{
+            valittuRaportti="Varausraportti";
+            napitReset(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn,testi4);
+            varausRaporttiBtn.setStyle(
+                    "-fx-background-color: green;" +
+                            "-fx-text-fill: white");
+            // metodi jolla haetaan varaukset listviewiin
+        });
+        talousRaporttiBtn.setOnAction(e->{
+            valittuRaportti="Talousraportti";
+            napitReset(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn,testi4);
+            talousRaporttiBtn.setStyle(
+                    "-fx-background-color: green;" +
+                            "-fx-text-fill: white");
+            // metodi jolla haetaan taloustietoja?? listviewiin
+            // taloustietoja voisi olla esim. aikaväliltä varaukset (esim. pelkkä tunnus tms) ja varauksen hintaa
+        });
+        testi4.setOnAction(e->{
+            valittuRaportti="testiraportti";
+            napitReset(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn,testi4);
+            testi4.setStyle(
+                    "-fx-background-color: green;" +
+                            "-fx-text-fill: white");
+            // metodi jolla haetaan xxxx listviewiin ???
+        });
 
         //dates
         DatePicker alkupaiva=new DatePicker();
-        alkupaiva.setPrefWidth(40);
+        alkupaiva.setPrefWidth(100);
         alkupaiva.setPrefHeight(20);
         DatePicker loppupaiva=new DatePicker();
-        loppupaiva.setPrefWidth(40);
+        loppupaiva.setPrefWidth(100);
         loppupaiva.setPrefHeight(20);
         HBox datebox=new HBox(alkupaiva,loppupaiva);
         datebox.setAlignment(Pos.TOP_RIGHT);
 
-        HBox ylaosa =new HBox(kirjautumisLaatikko,datebox);
+        HBox ylaosa =new HBox(rapsaBox,datebox);
         ylaosa.setAlignment(Pos.TOP_CENTER);
         ylaosa.setSpacing(10);
         ylaosa.setPadding(new Insets(10,10,10,10));
@@ -268,8 +312,8 @@ public class AdminLuokka {
         Button sulje=new Button("Sulje");
 
         viePDF.setOnAction(e->{
-            // tarkista että tarvittavat tiedot on valittu (pvm syötetty?)
-            //metodi, joka luo raportista pdf-tiedoston
+            RaportinLuonti raportinLuonti = new RaportinLuonti();
+            raportinLuonti.luoRaportti(valittuRaportti,alkupaiva.getValue(),loppupaiva.getValue());
             raporttiValmis().show();
         });
 
@@ -286,11 +330,11 @@ public class AdminLuokka {
 
         ObservableList<String> tyja = FXCollections.observableArrayList("Testi","yippee","not the real list");
         ListView<String> lista=new ListView<>(tyja);
-        lista.setMaxSize(350,250);
+        lista.setMaxSize(600,350);
         lista.setPadding(new Insets(10,10,10,10));
         rootPaneeli.setCenter(lista);
 
-        Scene raporttiScene = new Scene(rootPaneeli,500,500);
+        Scene raporttiScene = new Scene(rootPaneeli,700,700);
         raporttiStage.setScene(raporttiScene);
         raporttiStage.setTitle("Raportit");
         return raporttiStage;
@@ -298,10 +342,16 @@ public class AdminLuokka {
 
     public Stage raporttiValmis(){
         Stage valmisStage = new Stage();
+        LocalDate date = LocalDate.now();
+        String paivaNyt = date.format(DateTimeFormatter.BASIC_ISO_DATE);
 
-        Text teksti = new Text("Raportti viety!\n\n" +
-                "Raportti tallennettu Raportit-kansioon\n" +
-                "pdf-tiedostona.");
+        Text teksti = new Text(
+                "Raportti valmis!\n\n" +
+                "Raportti on tallennettu Raportit-kansioon\n" +
+                "pdf-tiedostona nimellä \n\n" +
+                valittuRaportti+"_"+ paivaNyt + ".pdf");
+
+        teksti.setTextAlignment(TextAlignment.CENTER);
 
         Button okBt = new Button("OK");
         okBt.setOnAction(e->{
@@ -317,6 +367,13 @@ public class AdminLuokka {
         valmisStage.setTitle("Raportti tallennettu");
 
         return valmisStage;
+    }
+
+    public void napitReset(ToggleButton a, ToggleButton b, ToggleButton c, ToggleButton d){
+        a.setStyle(null);
+        b.setStyle(null);
+        c.setStyle(null);
+        d.setStyle(null);
     }
 
 }

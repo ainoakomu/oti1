@@ -15,6 +15,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import static com.example.ohjelmistotuotanto.VarausData.haeVaraukset;
@@ -204,6 +205,8 @@ public class VarausLuokka {
         Text teksti = new Text("Lasku luotu\nonnistuneesti!\n\n" +
                 "Laskun numero: "+laskunro+"\n\n" +
                 "Lasku tallennettu Laskut-\nkansioon pdf-tiedostona.");
+
+        teksti.setTextAlignment(TextAlignment.CENTER);
 
         Button okBt = new Button("OK");
         okBt.setOnAction(e->{
