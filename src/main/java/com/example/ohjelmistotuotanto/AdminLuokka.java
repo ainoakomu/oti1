@@ -205,6 +205,7 @@ public class AdminLuokka {
         Scene uusikayttajaScene = new Scene(rootPaneeli,500,500);
         uusiKayttajaStage.setScene(uusikayttajaScene);
         uusiKayttajaStage.setTitle("Uusi käyttäjä");
+
         return uusiKayttajaStage;
     }
 

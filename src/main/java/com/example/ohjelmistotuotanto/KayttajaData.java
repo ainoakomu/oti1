@@ -74,6 +74,7 @@ public class KayttajaData {
             stmt.setInt(7,hygieniaPassi);
             stmt.executeUpdate();
 
+
     } catch (Exception e) {
             e.printStackTrace();
         }
