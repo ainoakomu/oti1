@@ -8,7 +8,10 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
@@ -44,6 +47,12 @@ public class AlkuIkkunat {
         BorderPane rootPaneeli=new BorderPane();
         Scene ruutu=new Scene(rootPaneeli,400,400);
 
+        DropShadow varjostus = new DropShadow();
+        varjostus.setOffsetX(1);
+        varjostus.setOffsetY(1);
+        varjostus.setColor(Color.BLACK);
+        varjostus.setRadius(10);
+
         //kutsutaan taustakuva
         rootPaneeli.setBackground(Taustakuvat.TaustakuvaAsettaminen.luoTausta());
 
@@ -69,6 +78,9 @@ public class AlkuIkkunat {
         //kentät
         //Text nimi=new Text("VillaBOOK"); korvattu kuva otsikolla
         Text login=new Text("Kirjaudu sisään");
+        login.setFill(Color.WHITE);
+        login.setEffect(varjostus);
+
         TextField kayttajatunnus=new TextField();
         kayttajatunnus.setPromptText("Käyttäjätunnus");
         kayttajatunnus.setPrefWidth(10);
@@ -180,8 +192,18 @@ public class AlkuIkkunat {
 
     // metodilla avataan ikkuna, jolla varmistetaan uloskirjaus
     public static void suljetaankoIkkuna(Stage stage){
+        //Tekstin varjostus
+        DropShadow varjostus = new DropShadow();
+        varjostus.setOffsetX(1);
+        varjostus.setOffsetY(1);
+        varjostus.setColor(Color.BLACK);
+        varjostus.setRadius(10);
+
         Stage kysymysIkkuna = new Stage();
         Text kysymys = new Text("Kirjaudutaanko ulos?");
+        kysymys.setFont(Font.font(20));
+        kysymys.setFill(Color.WHITE);
+        kysymys.setEffect(varjostus);
 
         Button kyllaBt = new Button("Kirjaudu ulos");
         Button eiBt = new Button("Peruuta");
@@ -190,6 +212,10 @@ public class AlkuIkkunat {
         HBox hBox = new HBox(kyllaBt,eiBt);
         pane.setCenter(kysymys);
         pane.setBottom(hBox);
+        hBox.setAlignment(Pos.CENTER);
+
+        //kutsutaan taustakuva
+        pane.setBackground(Taustakuvat.TaustakuvaAsettaminen.luoTausta());
 
         kyllaBt.setOnAction(e->{
             kysymysIkkuna.close();
