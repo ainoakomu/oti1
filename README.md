@@ -8,12 +8,10 @@ Muista “ajaa” sql jotta database rakentuu (salama-nappula)
 (SQL-serveri pitää olla pystyssä, jotta yhteys intellj IDEAan onnistuu.) 
 
 4. Vaihda koodissa olevat lähteet sinun oman workbenchin vastaavaksi luokassa YhteysLuokka
-
--jdbc:myseql://host:port/mokkikodit
 -rootin tilalla on sun connection/workbench username 
 -salasanan tilalla on sun connection/workbench salasana 
 
-VAIHDA TIEDOT luokassa YhteysLuokka
+VAIHDA NÄMÄ TIEDOT luokassa YhteysLuokka omaksi yhteydeksi!!
 String url = "jdbc:mysql://host:port/mokkikodit"; 
 String user = "root"; 
 String password ="salasana"; 
