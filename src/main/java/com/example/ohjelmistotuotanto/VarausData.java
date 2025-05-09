@@ -58,7 +58,7 @@ public class VarausData {
         return varauslista;
     }
 
-    public static ArrayList<String> varausRaportti(Yhteysluokka olio, LocalDate alkaen, LocalDate asti){
+    public ArrayList<String> varausRaportti(Yhteysluokka olio, LocalDate alkaen, LocalDate asti){
         ArrayList<String> raportti =new ArrayList<>();
         //yritetään yhteysluokan olion yhteys saada
 
@@ -119,4 +119,69 @@ public class VarausData {
 
         return raportti;
     }
+
+    public ArrayList<String> talousRaportti(Yhteysluokka olio, LocalDate alkaen, LocalDate asti){
+        ArrayList<String> raportti =new ArrayList<>();
+        //yritetään yhteysluokan olion yhteys saada
+
+        LocalDateTime lahtien = alkaen.atStartOfDay();
+        Timestamp tsLahtien = Timestamp.valueOf(lahtien);
+        LocalDateTime saakka = asti.atStartOfDay();
+        Timestamp tsSaakka = Timestamp.valueOf(saakka);
+
+        try{
+            Connection lokalYhteys= olio.getYhteys();
+            if (lokalYhteys== null){
+                System.err.println("Yhdistys epäonnistui");
+                return raportti;
+            }
+            //sql script komento
+            String talousSql = """
+                SELECT varaus_id, varausalku_date, varausloppu_date, hinta, kayttaja_id
+                 FROM varaukset
+                 WHERE varausalku_date >= ? AND varausloppu_date <= ?
+            """;
+            PreparedStatement stmt = lokalYhteys.prepareStatement(talousSql);
+            stmt.setTimestamp(1, tsLahtien);
+            stmt.setTimestamp(2, tsSaakka);
+
+            //statement saa yhteyden
+            //Statement stmt = lokalYhteys.createStatement();
+            //yhteys ja sql scripti sinne
+            ResultSet talRs = stmt.executeQuery();
+
+            int tuotto = 0;
+
+            //loopilla tiedot
+            while (talRs.next()) {
+                int varausId = talRs.getInt("varaus_id");
+                Timestamp alku = talRs.getTimestamp("varausalku_date");
+                Timestamp loppu = talRs.getTimestamp("varausloppu_date");
+                int hinta = talRs.getInt("hinta");
+                int kayttajaId = talRs.getInt("kayttaja_id");
+
+                //rivit
+                String rivi1 = "Varaus: " + varausId +
+                        " | Välillä: " + alku + " - " + loppu;
+                String rivi2 = " | Tuotto: " + hinta + " €" +
+                        " | Varauksen tekijä: " + kayttajaId;
+                String rivi3 = "";
+
+                raportti.add(rivi1);
+                raportti.add(rivi2);
+                raportti.add(rivi3);
+
+                tuotto += hinta;
+            }
+
+            raportti.add("Tuotto yhteensä: " + String.valueOf(tuotto)+ " €");
+
+            //error handling
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return raportti;
+    }
+
 }

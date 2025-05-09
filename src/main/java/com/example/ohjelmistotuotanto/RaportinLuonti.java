@@ -60,7 +60,7 @@ public class RaportinLuonti {
                 rapsa = asiakasData.asiakasRaportti(olio).toArray();
             }
             else if (raportti == "Talousraportti"){
-
+                rapsa = varausData.talousRaportti(olio, getRaporttiAlkaen(), getRaporttiAsti()).toArray();
             }
             else if (raportti == "testiraportti"){
 
