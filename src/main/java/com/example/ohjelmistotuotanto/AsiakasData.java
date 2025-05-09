@@ -1,8 +1,8 @@
 package com.example.ohjelmistotuotanto;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class AsiakasData {
@@ -49,5 +49,49 @@ public class AsiakasData {
         }
         //valmislista
         return asiakasLista;
+    }
+
+    public ArrayList<String> asiakasRaportti(Yhteysluokka olio){
+        ArrayList<String> raportti =new ArrayList<>();
+
+        try{
+            Connection lokalYhteys= olio.getYhteys();
+            if (lokalYhteys== null){
+                System.err.println("Yhdistys epäonnistui");
+                return raportti;
+            }
+            //sql script komento
+            String asiakasSql = """
+                SELECT asiakas_id, asiakkaan_nimi, asiakkaan_sahkoposti, 
+                       puhelinnumero, koti_osoite
+                FROM asiakkaat
+            """;
+            PreparedStatement stmt = lokalYhteys.prepareStatement(asiakasSql);
+
+            //yhteys ja sql scripti sinne
+            ResultSet asiRs = stmt.executeQuery();
+
+            //loopilla tiedot
+            while (asiRs.next()) {
+                int asiakasId = asiRs.getInt("asiakas_id");
+                String nimi = asiRs.getString("asiakkaan_nimi");
+                String sahkoposti = asiRs.getString("asiakkaan_sahkoposti");
+                String puhelin = asiRs.getString("puhelinnumero");
+                String osoite = asiRs.getString("koti_osoite");
+                //ja riville
+                String rivi1 = "ID: " + asiakasId + " | Nimi: " + nimi + " | Sähköposti: " + sahkoposti;
+                String rivi2 =  "Puhelin: " + puhelin + " | Osoite: " + osoite;
+                String rivi3 = "";
+
+                raportti.add(rivi1);
+                raportti.add(rivi2);
+                raportti.add(rivi3);
+            }
+            //error handling
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return raportti;
     }
 }
