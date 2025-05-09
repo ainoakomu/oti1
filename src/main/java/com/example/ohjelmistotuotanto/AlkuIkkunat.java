@@ -4,6 +4,7 @@ import javafx.animation.FadeTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -77,12 +78,17 @@ public class AlkuIkkunat {
 
         //kun painaa kirjaudu, tervetuloikkuna aukeaa.
         kirjautumisButton.setOnAction(e->{
-
-            // tee tähän if & if, joilla tarkistetaan käyttäjätunnus ja salasana
-            //jos jompi kumpi väärin, avaa herjaikkuna, jossa valitetaan että väärin.
-            //jos oikein, suorita ao metodi.
-
-            stage.setScene(luoTervetuloIkkuna(stage));
+            // Jos käyttäjätunnus on oikein, avautuu ohjelma ikkuna
+            if (kayttajatunnus.getText().equals("admin") && salasana.getText().equals("1234")) {
+                stage.setScene(luoTervetuloIkkuna(stage));
+            } else {
+                // Jos väärin, käyttäjä saa vinkkinä oikeat tiedot
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Virhe");
+                alert.setHeaderText("Virheellinen käyttäjätunnus tai salasana");
+                alert.setContentText("Vinkki!\nKäyttäjätunnus on admin, salasana on 1234");
+                alert.showAndWait();
+            }
         });
 
         //lisäys

@@ -12,5 +12,4 @@ public class MainIkkuna extends Application {
         stage.setTitle("VillaBOOK");
         stage.show();
     }
-
 }
