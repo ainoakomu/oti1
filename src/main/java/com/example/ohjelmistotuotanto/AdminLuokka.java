@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 
 public class AdminLuokka {
@@ -79,6 +80,57 @@ public class AdminLuokka {
         kayttajalista.setMaxSize(600,250);
         rootPaneeli.setCenter(kayttajalista);
 
+
+        // KÄYTTÄJÄN VALINTA LISTALTA
+
+        kayttajalista.getSelectionModel().selectedItemProperty().addListener((obs, vanha, uusi) -> {
+            if (uusi != null) {
+                String[] kentat = uusi.split(", ");
+
+                for (String kentta : kentat) {
+                    String[] avainArvo = kentta.split(": ");
+                    if (avainArvo.length < 2) continue;
+
+                    String avain = avainArvo[0].trim();
+                    String arvo = avainArvo[1].trim();
+
+                    switch (avain) {
+                        case "ID":
+                            setKayID(Integer.valueOf(arvo));
+                            break;
+                        case "Nimi":
+                            setKayNimi(arvo);
+                            break;
+                        case "Käyttäjätunnus":
+                            setKayTun(arvo);
+                            break;
+                        case "Salasana":
+                            setSalaSana(arvo);
+                            break;
+                        case "Käyttäjätaso":
+                            setKayTaso(arvo);
+                            break;
+                        case "Anniskeluoikeus":
+                            if (arvo.equals("Kyllä")) {
+                                setAnnOikeus(1);
+                            } else if (arvo.equals("Ei")) {
+                                setAnnOikeus(0);
+                            }
+                            break;
+                        case "Hygieniapassi":
+                            if (arvo.equals("Kyllä")) {
+                                setHygPassi(1);
+                            } else if (arvo.equals("Ei")) {
+                                setHygPassi(0);
+                            }
+                            break;
+                    }
+                }
+            }
+        });
+
+
+
         //buttonit ja action eventit
         Button muokkaaKayttajaa =new Button("Muokkaa käyttäjää");
         Button lisaaKayttaja =new Button("Lisää uusi käyttäjä");
@@ -86,10 +138,18 @@ public class AdminLuokka {
 
         muokkaaKayttajaa.setOnAction(e->{
             //tarkista että käyttäjä on valittu listalta
-            luoMuokkaaKayttajaIkkuna().show();
+            luoMuokkaaKayttajaIkkuna(kayttajat).show();
         });
 
         lisaaKayttaja.setOnAction(e->{
+            setKayID(0);
+            setKayNimi("");
+            setKayTun("");
+            setSalaSana("");
+            setKayTaso("");
+            setAnnOikeus(0);
+            setHygPassi(0);
+
             luoUusiKayttajaIkkuna(kayttajat).show();
         });
 
@@ -215,7 +275,7 @@ public class AdminLuokka {
         return uusiKayttajaStage;
     }
 
-    public Stage luoMuokkaaKayttajaIkkuna(){
+    public Stage luoMuokkaaKayttajaIkkuna(ObservableList<String> lista){
         Stage muokkausStage = new Stage();
         GridPane rootPaneeli=new GridPane();
         rootPaneeli.setAlignment(Pos.CENTER);
@@ -232,41 +292,90 @@ public class AdminLuokka {
         TextField idTxt=new TextField();
         TextField nimiTxt =new TextField();
         TextField kayttajaTxt =new TextField();
-        TextField vuodeTxt=new TextField();
+        TextField ssTxt=new TextField();
         HBox row1=new HBox(idlb,idTxt);
         row1.setSpacing(70);
         HBox row2=new HBox(nimiLb, nimiTxt);
         row2.setSpacing(57);
         HBox row3=new HBox(kayttajatunnuslb, kayttajaTxt);
         row3.setSpacing(5);
-        HBox row4=new HBox(salasanalb,vuodeTxt);
+        HBox row4=new HBox(salasanalb,ssTxt);
         row4.setSpacing(38);
         VBox sarake=new VBox(row1,row2,row3,row4);
         sarake.setSpacing(15);
         sarake.setAlignment(Pos.CENTER);
 
-        CheckBox peruskayttaja=new CheckBox("Peruskäyttäjä");
-        CheckBox admin=new CheckBox("Admin-käyttäjä");
-        CheckBox anniskelu=new CheckBox("Anniskelupassi");
-        CheckBox hygienia=new CheckBox("Hygieniapassi");
+        RadioButton peruskayttajaRbtn=new RadioButton("Peruskäyttäjä");
+        RadioButton adminRbtn=new RadioButton("Admin-käyttäjä");
+        CheckBox anniskeluChbx=new CheckBox("Anniskelupassi");
+        CheckBox hygieniaChbx=new CheckBox("Hygieniapassi");
+
+        ToggleGroup oikeusGrp = new ToggleGroup();
+        oikeusGrp.getToggles().addAll(peruskayttajaRbtn,adminRbtn);
+
+        // setataan valitun käyttäjän tiedot
+        idTxt.setText(String.valueOf(getKayID()));
+        nimiTxt.setText(getKayNimi());
+        kayttajaTxt.setText(getKayTaso());
+        ssTxt.setText(getSalaSana());
+
+        if (getKayTaso().equals("perus")) {
+            peruskayttajaRbtn.setSelected(true);
+        } else if (getKayTaso().equals("admin")) {
+            adminRbtn.setSelected(true);
+        }
+        anniskeluChbx.setSelected(getAnnOikeus() == 1);
+        hygieniaChbx.setSelected(getHygPassi() == 1);
+
+
 
         //buttonit ja action eventit
         Button tallennaBt=new Button("Tallenna uusi käyttäjä");
         Button poistaBt=new Button("Poista käyttäjä");
         Button suljeBt=new Button("Sulje");
 
+        KayttajaData kayttajaData = new KayttajaData();
+        Yhteysluokka yhteysluokka = new Yhteysluokka();
+
         tallennaBt.setOnAction(e->{
-            //kysy tallennetaanko muutokse
-            //tallenna muutokset sqlään
-            //ilmoita että tallennettu
-            muokkausStage.close();
+            if(!idTxt.getText().isEmpty()){
+                //kysy tallennetaanko muutokset
+
+                //tallenna muutokset sqlään
+
+
+                //ilmoita että tallennettu
+                muokkausStage.close();
+            } else {
+                // anna warning että jottain puuttuu
+            }
         });
 
         poistaBt.setOnAction(e->{
-            //kysy poistetaanko mökki
-            //poista mökki sqlästä
-            //ilmoita että poistettu
-            muokkausStage.close();
+            if(!idTxt.getText().isEmpty()){
+                //kysy poistetaaanko käyttäjä varmasti
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Käyttäjätietojen poisto");
+                alert.setHeaderText("Poistetaanko käyttäjätiedot tietokannasta?");
+                alert.setContentText("Tätä toimintoa ei voi enää peruuttaa.");
+                Optional<ButtonType> valinta = alert.showAndWait();
+
+                // jos painaa ok, poistetaan, jos painaa cancel, ei poisteta
+                if (valinta.isPresent() && valinta.get() == ButtonType.OK) {
+                    kayttajaData.poistaKayttaja(yhteysluokka,getKayID());
+                    lista.setAll(FXCollections.observableArrayList(kayttajaData.haeKayttajat(yhteysluokka)));
+
+                    // TARVITAAN ilmoita että käyttäjätiedot poistettu
+                    muokkausStage.close();
+                } else {
+                    e.consume();
+                }
+
+            } else {
+                // anna warning että jottain puuttuu
+                e.consume();
+                System.out.println("kayttajaid tyhjä");
+            }
         });
 
         suljeBt.setOnAction(e->{
@@ -278,7 +387,7 @@ public class AdminLuokka {
         buttons.setSpacing(15);
         buttons.setAlignment(Pos.TOP_CENTER);
         rootPaneeli.add(buttons,2,2);
-        VBox checkBox=new VBox(kayttooikeuslb,peruskayttaja,admin,passitlb,anniskelu,hygienia);
+        VBox checkBox=new VBox(kayttooikeuslb,peruskayttajaRbtn,adminRbtn,passitlb,anniskeluChbx,hygieniaChbx);
         checkBox.setSpacing(15);
         checkBox.setAlignment(Pos.CENTER_LEFT);
         VBox keskikohta=new VBox(sarake,checkBox);
