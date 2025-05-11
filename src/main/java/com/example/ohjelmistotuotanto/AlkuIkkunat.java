@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -88,26 +89,60 @@ public class AlkuIkkunat {
         salasana.setPromptText("Salasana");
         Button kirjautumisButton=new Button("Kirjaudu sisään");
 
-        //kun painaa kirjaudu, tervetuloikkuna aukeaa.
-        kirjautumisButton.setOnAction(e->{
-            // Jos käyttäjätunnus on oikein, avautuu ohjelma ikkuna
-            if (kayttajatunnus.getText().equals("admin") && salasana.getText().equals("1234")) {
-                stage.setScene(luoTervetuloIkkuna(stage));
-            } else {
-                // Jos väärin, käyttäjä saa vinkkinä oikeat tiedot
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Virhe");
-                alert.setHeaderText("Virheellinen käyttäjätunnus tai salasana");
-                alert.setContentText("Vinkki!\nKäyttäjätunnus on admin, salasana on 1234");
-                alert.showAndWait();
+        kayttajatunnus.setOnKeyPressed(e->{
+            if(e.getCode()== KeyCode.ENTER){
+                salasana.requestFocus();
             }
         });
+
+        salasana.setOnKeyPressed(e->{
+            if((e.getCode()== KeyCode.ENTER)){
+                if((kayttajatunnus.getText().isEmpty())&&salasana.getText().isEmpty()){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Virhe");
+                    alert.setHeaderText("Käyttäjätunnus ja salasana puuttuu.");
+                    alert.showAndWait();
+                } else if(kayttajatunnus.getText().isEmpty()){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Virhe");
+                    alert.setHeaderText("Käyttäjätunnus puuttuu.");
+                    alert.showAndWait();
+                } else if (salasana.getText().isEmpty()){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Virhe");
+                    alert.setHeaderText("Salasana puuttuu.");
+                    alert.showAndWait();
+                } else {
+                    voikoKirjauatua(kayttajatunnus,salasana,stage);
+                }
+            }
+        });
+
+        //kun painaa kirjaudu, tervetuloikkuna aukeaa.
+        kirjautumisButton.setOnAction(e->{
+            voikoKirjauatua(kayttajatunnus,salasana,stage);
+        });
+
 
         //lisäys
         kirjautumisLaatikko.getChildren().addAll(login,kayttajatunnus,salasana,kirjautumisButton);
         rootPaneeli.setCenter(kirjautumisLaatikko);
         //palautetaan luotu scene
         return ruutu;
+    }
+
+    public void voikoKirjauatua(TextField kayttajatunnus, PasswordField salasana,Stage stage){
+        if (kayttajatunnus.getText().equals("admin") && salasana.getText().equals("1234")) {
+            stage.setScene(luoTervetuloIkkuna(stage));
+        } else {
+            // Jos väärin, käyttäjä saa vinkkinä oikeat tiedot
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Virhe");
+            alert.setHeaderText("Virheellinen käyttäjätunnus tai salasana");
+            alert.setContentText("Vinkki!\nKäyttäjätunnus on admin, salasana on 1234");
+            alert.showAndWait();
+        }
+
     }
 
     public static Scene luoTervetuloIkkuna(Stage stage){
