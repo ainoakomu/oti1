@@ -149,10 +149,10 @@ public class AdminLuokka {
 
         //käyttäjän tiedot
         peruskayttajaRbtn.setOnAction(e->{
-            kayTaso = "perus";
+            setKayTaso("perus");
         });
         adminRbtn.setOnAction(e->{
-            kayTaso = "admin";
+            setKayTaso("admin");
         });
 
         //buttonit ja action eventit
@@ -160,19 +160,19 @@ public class AdminLuokka {
         Button suljeBt=new Button("Sulje");
 
         tallennaBt.setOnAction(e->{
-            kayID = Integer.parseInt(idTxt.getText());
-            kayNimi = nimiTxt.getText();
-            kayTun = kayttajaTxt.getText();
-            salaSana = ssTxt.getText();
+            setKayID(Integer.parseInt(idTxt.getText()));
+            setKayNimi(nimiTxt.getText());
+            setKayTun(kayttajaTxt.getText());
+            setSalaSana(ssTxt.getText());
             if(anniskeluChbx.isSelected()){
-                annOikeus = 1;
+                setAnnOikeus(1);
             } else if (!anniskeluChbx.isSelected()){
-                annOikeus = 0;
+                setAnnOikeus(0);
             }
             if(hygieniaChbx.isSelected()){
-                hygPassi = 1;
+                setHygPassi(1);
             } else if (!hygieniaChbx.isSelected()){
-                hygPassi = 0;
+                setHygPassi(0);
             }
 
             //TARVITAAN: metodi jolla tarkistetaan onko kaikki tarvittavat tiedot täytetty
@@ -181,7 +181,7 @@ public class AdminLuokka {
             // tallenna tiedot tietokantaaan
             Yhteysluokka yhteysluokka = new Yhteysluokka();
             KayttajaData kayttajaData = new KayttajaData();
-            kayttajaData.lisaaKayttaja(yhteysluokka,kayID,kayNimi,kayTun,salaSana,kayTaso,annOikeus,hygPassi);
+            kayttajaData.lisaaKayttaja(yhteysluokka, getKayID(), getKayNimi(), getKayTun(), getSalaSana(), getKayTaso(), getAnnOikeus(), getHygPassi());
 
             //päivitä listviewin lista
             lista.setAll(FXCollections.observableArrayList(kayttajaData.haeKayttajat(yhteysluokka)));
@@ -379,6 +379,8 @@ public class AdminLuokka {
         alaosa.setAlignment(Pos.BASELINE_RIGHT);
         rootPaneeli.setBottom(alaosa);
 
+
+        // tähän pitää laaittaa et päivittää valittavan listaan valitun raportin perusteella
         ObservableList<String> tyja = FXCollections.observableArrayList("Testi","yippee","not the real list");
         ListView<String> lista=new ListView<>(tyja);
         lista.setMaxSize(600,350);
@@ -427,4 +429,59 @@ public class AdminLuokka {
         d.setStyle(null);
     }
 
+    public int getKayID() {
+        return kayID;
+    }
+
+    public void setKayID(int kayID) {
+        this.kayID = kayID;
+    }
+
+    public String getKayNimi() {
+        return kayNimi;
+    }
+
+    public void setKayNimi(String kayNimi) {
+        this.kayNimi = kayNimi;
+    }
+
+    public String getKayTun() {
+        return kayTun;
+    }
+
+    public void setKayTun(String kayTun) {
+        this.kayTun = kayTun;
+    }
+
+    public String getSalaSana() {
+        return salaSana;
+    }
+
+    public void setSalaSana(String salaSana) {
+        this.salaSana = salaSana;
+    }
+
+    public String getKayTaso() {
+        return kayTaso;
+    }
+
+    public void setKayTaso(String kayTaso) {
+        this.kayTaso = kayTaso;
+    }
+
+    public int getAnnOikeus() {
+        return annOikeus;
+    }
+
+    public void setAnnOikeus(int annOikeus) {
+        this.annOikeus = annOikeus;
+    }
+
+    public int getHygPassi() {
+        return hygPassi;
+    }
+
+    public void setHygPassi(int hygPassi) {
+        this.hygPassi = hygPassi;
+    }
 }

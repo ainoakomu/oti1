@@ -21,9 +21,14 @@ import javafx.stage.Stage;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -329,19 +334,73 @@ public Stage luoUusiVarausIkkuna() {
     // Painikkeet
     Button tallennaButton = new Button("Tallenna");
     tallennaButton.setOnAction(e->{
-        String asiakasID= String.valueOf(annaAsiakasID());
 
-        lisaaVaraus(yhteys,annaVarausID() ,annaAsiakasID(),valittuMokki.getValue(),alkuVarausTextField.getText() ,paattyVarausTextField.getText(),hintaToMokkiId.toString(),annaKayttajaID());
-        lisaaUusiAsiakas(yhteys,asiakasID,nimiTextField.getText(),emailTextField.getText(),puhelinTextField.getText(),osoiteTextField.getText());
-        valmisStage.close();
+        // jos kaikki kentät täytetty, tallennetaan ja suljetaan
+        if((!mokkiTextField.getText().isEmpty())&&(!alkuVarausTextField.getText().isEmpty())&&(!paattyVarausTextField.getText().isEmpty())&&
+                (!nimiTextField.getText().isEmpty())&&(!emailTextField.getText().isEmpty())&&(!puhelinTextField.getText().isEmpty())&&(!osoiteTextField.getText().isEmpty())){
+            String asiakasID= String.valueOf(annaAsiakasID());
+
+            lisaaVaraus(yhteys,annaVarausID() ,annaAsiakasID(),valittuMokki.getValue(),checkInDatePicker.getValue() ,checkOutDatePicker.getValue(),hintaToMokkiId.toString(),annaKayttajaID());
+            lisaaUusiAsiakas(yhteys,asiakasID,nimiTextField.getText(),emailTextField.getText(),puhelinTextField.getText(),osoiteTextField.getText());
+
+            /*
+            Alert alert = new Alert(Alert.AlertType.NONE);
+            ButtonType type = new ButtonType("Ok", ButtonBar.ButtonData.OK_DONE);
+
+
+            alert.setTitle("Uusi varaus tallennettu");
+            alert.setHeaderText("Varaus tallennettu!");
+            alert.setContentText("Mökki: "+ mokkiTextField.getText()+
+                    "\nVaraus alkaa: " + alkuVarausTextField.getText()+
+                    "\nVaraus päättyy: " + paattyVarausTextField.getText()+
+                    "\nHinta: "+ // tähän joku millä näytetään varauksen hinta
+                    "\nAsiakas: " + nimiTextField.getText()
+            // plus tähän joku info, että jos asiakas oli uusi asiakas, että uusi asiakas on lisätty järjestlemään?
+            );
+            alert.showAndWait();
+             */
+
+            valmisStage.close();
+
+        } else {
+            // Jos joku puuttuu, huomautetaan
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Pakollisia tietoja puuttuu");
+            alert.setHeaderText("Pakollisia varaustietojaa puuttuu.");
+            alert.setContentText("Vinkki!\nValitse mökki, check-in - ja check-out päivät." +
+                    "\nTäytä asiakkaan nimi, sähköpostiosoite, puhelinnumero ja kotiosoite.");
+            alert.showAndWait();
+        }
+
     });
 
     Button suljeButton = new Button("Sulje");
 
     //sulje kun sulje
-    suljeButton.setOnAction(e ->
+    suljeButton.setOnAction(e ->{
 
-            valmisStage.close());
+        //tarkistetaan että jos jossain kentässä on tekstiä, suljetaanko varmasti?
+        if((!mokkiTextField.getText().isEmpty())||(!alkuVarausTextField.getText().isEmpty())||(!paattyVarausTextField.getText().isEmpty())||
+                (!nimiTextField.getText().isEmpty())||(!emailTextField.getText().isEmpty())||(!puhelinTextField.getText().isEmpty())||(!osoiteTextField.getText().isEmpty())){
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Varoitus");
+            alert.setHeaderText("Varaustietoja ei ole tallennettu");
+            alert.setContentText("Poistu tallentamatta varaustietoja?");
+            Optional<ButtonType> valinta = alert.showAndWait();
+
+            // jos painaa ok, suljetaan, jos painaa cancel, ei suljeta
+            if (valinta.isPresent() && valinta.get() == ButtonType.OK) {
+                valmisStage.close();
+            } else {
+                e.consume();
+            }
+
+        } else {
+            valmisStage.close();
+        }
+    });
+
+
 
     //lisäys
     oikeapuoli.getChildren().addAll(rowBox, varausLabel, hintaLabel, tallennaButton, suljeButton);
@@ -419,9 +478,21 @@ public Stage luoUusiVarausIkkuna() {
         }
     }
     //lisää varaus
-    public void lisaaVaraus(Yhteysluokka yhteysluokka,Integer varaus_id, Integer asiakas_id, String mokki_id, String varausalku_date, String varausloppu_date, String hinta, Integer kayttaja_id){
+    public void lisaaVaraus(Yhteysluokka yhteysluokka,Integer varaus_id, Integer asiakas_id, String mokki_id, LocalDate varausalku_date, LocalDate varausloppu_date, String hinta, Integer kayttaja_id){
+
+        LocalDateTime lahtien = varausalku_date.atStartOfDay();
+        Timestamp tsLahtien = Timestamp.valueOf(lahtien);
+        LocalDateTime saakka = varausloppu_date.atStartOfDay();
+        Timestamp tsSaakka = Timestamp.valueOf(saakka);
+        Integer mokkiIntID = Integer.parseInt(mokki_id);
 
         try {
+            //tietojen datatyyppejä pitää muuttaa;
+            /*
+            `hinta` INT
+            `mokki_id` INT
+             */
+
             Connection yhteys = yhteysluokka.getYhteys();
             if (yhteys == null) {
                 System.err.println("Tietokantayhteys epäonnistui.");
@@ -430,9 +501,9 @@ public Stage luoUusiVarausIkkuna() {
             PreparedStatement stmt = yhteys.prepareStatement(sql);
             stmt.setInt(1, varaus_id);
             stmt.setInt(2, asiakas_id);
-            stmt.setString(3, mokki_id);
-            stmt.setString(4, varausalku_date);
-            stmt.setString(5, varausloppu_date);
+            stmt.setInt(3, mokkiIntID);
+            stmt.setTimestamp(4, tsLahtien);
+            stmt.setTimestamp(5, tsSaakka);
             stmt.setString(6, hinta);
             stmt.setInt(7, kayttaja_id);
             stmt.executeUpdate();
@@ -473,6 +544,8 @@ public Stage luoUusiVarausIkkuna() {
     }
 
     public Integer annaAsiakasID() {
+
+        // tää on hyvä näin, vielä lisätään, että checkataan, ettei se ID ole jo olemassa asiakastiedoissa
         Random random = new Random();
         int asiakasID = 0;
         for (int i = 0; i < 3; i++) {
