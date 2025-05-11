@@ -22,11 +22,9 @@ import javafx.stage.Stage;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
@@ -36,7 +34,11 @@ import java.util.regex.Pattern;
 import static com.example.ohjelmistotuotanto.MokkiData.haeMokit;
 import static com.example.ohjelmistotuotanto.VarausData.haeVaraukset;
 
+
 public class VarausLuokka {
+
+    private int valitunMokinID;
+    private int varauksenHinta;
 
     public Stage luoVarauksetIkkuna(){
         Stage varausStage = new Stage();
@@ -62,7 +64,7 @@ public class VarausLuokka {
         });
 
         muokkaaVarausta.setOnAction(e->{
-            luoMuokkaaVaraustaIkkuna().show();
+            luoMuokkaaVaraustaIkkuna(varausData).show();
         });
 
         suljeBt.setOnAction(e->{
@@ -81,7 +83,7 @@ public class VarausLuokka {
         return varausStage;
     }
 
-    public Stage luoMuokkaaVaraustaIkkuna(){
+    public Stage luoMuokkaaVaraustaIkkuna(ObservableList<String> lista){
         Stage muokkausStage = new Stage();
         GridPane rootPaneeli=new GridPane();
         rootPaneeli.setAlignment(Pos.CENTER);
@@ -118,10 +120,13 @@ public class VarausLuokka {
         Button poistaBt=new Button("Poista varaus");
         Button suljeBt=new Button("Sulje");
 
+        Yhteysluokka yhteysluokka = new Yhteysluokka();
+
         tallennaBt.setOnAction(e->{
             //kysy tallennetaanko muutokse
             //tallenna muutokset sqlään
             //ilmoita että tallennettu
+            lista.setAll(FXCollections.observableArrayList(haeVaraukset(yhteysluokka)));
             muokkausStage.close();
         });
 
@@ -129,11 +134,13 @@ public class VarausLuokka {
             //kysy poistetaanko mökki
             //poista mökki sqlästä
             //ilmoita että poistettu
+            lista.setAll(FXCollections.observableArrayList(haeVaraukset(yhteysluokka)));
             muokkausStage.close();
         });
 
         suljeBt.setOnAction(e->{
             //kysy suljetaanko ikkuna
+            lista.setAll(FXCollections.observableArrayList(haeVaraukset(yhteysluokka)));
             muokkausStage.close();
         });
 
@@ -309,6 +316,7 @@ public Stage luoUusiVarausIkkuna() {
     // Arvojen sitominen hinnan laskua varten
     StringProperty valittuMokki = new SimpleStringProperty();
 
+
     // ListView valinta -> päivittää valittuMokki & mokkiTextField
     mokkiLista.setOnMouseClicked(e -> {
         String valittu = mokkiLista.getSelectionModel().getSelectedItem();
@@ -316,6 +324,27 @@ public Stage luoUusiVarausIkkuna() {
         valittuMokki.set(valittu);
         //jotta kenttään tulee oikea valittu tieto
         mokkiTextField.setText(valittu);
+
+        mokkiLista.getSelectionModel().selectedItemProperty().addListener((obs, vanha, uusi) -> {
+            if (uusi != null) {
+                String[] kentat = uusi.split(", ");
+
+                for (String kentta : kentat) {
+                    String[] avainArvo = kentta.split(": ");
+                    if (avainArvo.length < 2) continue;
+
+                    String avain = avainArvo[0].trim();
+                    String arvo = avainArvo[1].trim();
+
+                    switch (avain) {
+                        case "ID":
+                            setValitunMokinID(Integer.parseInt(avain));
+                            break;
+
+                    }
+                }
+            }
+        });
     });
     //alustetaan mökin hinnan laskua hakemalla metodilla sql id+hintaperyö
     Map<Double, Integer> hintaToMokkiId = MokkiData.haeMokinHinta(yhteys);
@@ -331,6 +360,8 @@ public Stage luoUusiVarausIkkuna() {
     checkInDatePicker.valueProperty().addListener(paivamaaraListener);
     checkOutDatePicker.valueProperty().addListener(paivamaaraListener);
 
+    Yhteysluokka yhteysluokka = new Yhteysluokka();
+
     // Painikkeet
     Button tallennaButton = new Button("Tallenna");
     tallennaButton.setOnAction(e->{
@@ -340,7 +371,7 @@ public Stage luoUusiVarausIkkuna() {
                 (!nimiTextField.getText().isEmpty())&&(!emailTextField.getText().isEmpty())&&(!puhelinTextField.getText().isEmpty())&&(!osoiteTextField.getText().isEmpty())){
             String asiakasID= String.valueOf(annaAsiakasID());
 
-            lisaaVaraus(yhteys,annaVarausID() ,annaAsiakasID(),valittuMokki.getValue(),checkInDatePicker.getValue() ,checkOutDatePicker.getValue(),hintaToMokkiId.toString(),annaKayttajaID());
+            lisaaVaraus(yhteys,annaVarausID() ,annaAsiakasID(), getValitunMokinID(),checkInDatePicker.getValue() ,checkOutDatePicker.getValue(),getVarauksenHinta(),annaKayttajaID());
             lisaaUusiAsiakas(yhteys,asiakasID,nimiTextField.getText(),emailTextField.getText(),puhelinTextField.getText(),osoiteTextField.getText());
 
             /*
@@ -413,6 +444,23 @@ public Stage luoUusiVarausIkkuna() {
     valmisStage.setTitle("Luo uusi varaus");
     return valmisStage;
 }
+
+    public int getValitunMokinID() {
+        return valitunMokinID;
+    }
+
+    public void setValitunMokinID(int valitunMokinID) {
+        this.valitunMokinID = valitunMokinID;
+    }
+
+    public int getVarauksenHinta() {
+        return varauksenHinta;
+    }
+
+    public void setVarauksenHinta(int varauksenHinta) {
+        this.varauksenHinta = varauksenHinta;
+    }
+
     //sisäluokka päivämäärien ja muiden updatemiseen
     public static class PaivamaaraListener implements ChangeListener<LocalDate> {
         private DatePicker checkIn;
@@ -470,6 +518,10 @@ public Stage luoUusiVarausIkkuna() {
                         double price = Double.parseDouble(matcher.group(1));
                         //päivät kertaa hinta on koko hinta
                         double total = valipaivat * price;
+                        VarausLuokka varausLuokka = new VarausLuokka();
+                        int smallInt = 0;
+                        varausLuokka.setVarauksenHinta(smallInt=(int)total);
+
                         //asetetaan hinta -labelille arvoksi
                         hinta.setText("Hinta yhteensä: " + total + " €");
                     }
@@ -478,20 +530,14 @@ public Stage luoUusiVarausIkkuna() {
         }
     }
     //lisää varaus
-    public void lisaaVaraus(Yhteysluokka yhteysluokka,Integer varaus_id, Integer asiakas_id, String mokki_id, LocalDate varausalku_date, LocalDate varausloppu_date, String hinta, Integer kayttaja_id){
+    public void lisaaVaraus(Yhteysluokka yhteysluokka,Integer varaus_id, Integer asiakas_id, int mokki_id, LocalDate varausalku_date, LocalDate varausloppu_date, int hinta, Integer kayttaja_id){
 
         LocalDateTime lahtien = varausalku_date.atStartOfDay();
         Timestamp tsLahtien = Timestamp.valueOf(lahtien);
         LocalDateTime saakka = varausloppu_date.atStartOfDay();
         Timestamp tsSaakka = Timestamp.valueOf(saakka);
-        Integer mokkiIntID = Integer.parseInt(mokki_id);
 
         try {
-            //tietojen datatyyppejä pitää muuttaa;
-            /*
-            `hinta` INT
-            `mokki_id` INT
-             */
 
             Connection yhteys = yhteysluokka.getYhteys();
             if (yhteys == null) {
@@ -501,10 +547,10 @@ public Stage luoUusiVarausIkkuna() {
             PreparedStatement stmt = yhteys.prepareStatement(sql);
             stmt.setInt(1, varaus_id);
             stmt.setInt(2, asiakas_id);
-            stmt.setInt(3, mokkiIntID);
+            stmt.setInt(3, mokki_id);
             stmt.setTimestamp(4, tsLahtien);
             stmt.setTimestamp(5, tsSaakka);
-            stmt.setString(6, hinta);
+            stmt.setInt(6, hinta);
             stmt.setInt(7, kayttaja_id);
             stmt.executeUpdate();
 
@@ -515,6 +561,8 @@ public Stage luoUusiVarausIkkuna() {
     //lisää asiakas
     public void lisaaUusiAsiakas(Yhteysluokka yhteysluokka,String asiakas_id, String asiakkaan_nimi, String asiakkaan_sahkoposti, String puhelinnumero, String koti_osoite){
 
+        int asiakkaanID = Integer.valueOf(asiakas_id);
+
         try {
             Connection yhteys = yhteysluokka.getYhteys();
             if (yhteys == null) {
@@ -522,7 +570,7 @@ public Stage luoUusiVarausIkkuna() {
             }
             String sql = "insert into asiakkaat values (?,?,?,?,?);";
             PreparedStatement stmt = yhteys.prepareStatement(sql);
-            stmt.setString(1, asiakas_id);
+            stmt.setInt(1, asiakkaanID);
             stmt.setString(2, asiakkaan_nimi);
             stmt.setString(3, asiakkaan_sahkoposti);
             stmt.setString(4, puhelinnumero);
