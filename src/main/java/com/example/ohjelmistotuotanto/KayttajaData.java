@@ -102,7 +102,7 @@ public class KayttajaData {
             if (yhteys == null) {
                 System.err.println("Tietokantayhteys epäonnistui.");
             }
-            String sql = "UPDATE kayttajat SET nimi = ? , kayttaja_tunnus = ?, salasana = ?, kayttaja_taso = ?, onko_anniskelu_oikeus = 0, onko_hygieniapassi = 0 WHERE kayttaja_id = 1234;";
+            String sql = "UPDATE kayttajat SET nimi = ? , kayttaja_tunnus = ?, salasana = ?, kayttaja_taso = ?, onko_anniskelu_oikeus = ?, onko_hygieniapassi = ? WHERE kayttaja_id = ?;";
             PreparedStatement stmt = yhteys.prepareStatement(sql);
             stmt.setString(1, nimi);
             stmt.setString(2, tunnus);

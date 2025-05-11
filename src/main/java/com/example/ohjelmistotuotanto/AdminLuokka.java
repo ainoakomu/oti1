@@ -330,7 +330,7 @@ public class AdminLuokka {
 
 
         //buttonit ja action eventit
-        Button tallennaBt=new Button("Tallenna uusi käyttäjä");
+        Button tallennaBt=new Button("Tallenna muutokset");
         Button poistaBt=new Button("Poista käyttäjä");
         Button suljeBt=new Button("Sulje");
 
@@ -339,10 +339,28 @@ public class AdminLuokka {
 
         tallennaBt.setOnAction(e->{
             if(!idTxt.getText().isEmpty()){
-                //kysy tallennetaanko muutokset
+
+                setKayNimi(nimiTxt.getText());
+                setKayTun(kayttajaTxt.getText());
+                setSalaSana(ssTxt.getText());
+                if(anniskeluChbx.isSelected()){
+                    setAnnOikeus(1);
+                } else if (!anniskeluChbx.isSelected()){
+                    setAnnOikeus(0);
+                }
+                if(hygieniaChbx.isSelected()){
+                    setHygPassi(1);
+                } else if (!hygieniaChbx.isSelected()){
+                    setHygPassi(0);
+                }
+
+                //TARVITAAN kysy tallennetaanko muutokset
 
                 //tallenna muutokset sqlään
+                kayttajaData.muokkaaKayttajaa(yhteysluokka,getKayID(), getKayNimi(), getKayTun(), getSalaSana(), getKayTaso(), getAnnOikeus(), getHygPassi());
 
+                //päivitetään lista
+                lista.setAll(FXCollections.observableArrayList(kayttajaData.haeKayttajat(yhteysluokka)));
 
                 //ilmoita että tallennettu
                 muokkausStage.close();
