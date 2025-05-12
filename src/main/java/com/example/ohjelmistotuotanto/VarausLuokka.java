@@ -59,7 +59,7 @@ public class VarausLuokka {
         //käytetään datanhaku metodia datan luokasta
         ObservableList<String> varausData = FXCollections.observableArrayList(haeVaraukset(olio));
         ListView<String> varauslista = new ListView<>(varausData);
-        varauslista.setMaxSize(350,250);
+        varauslista.setMaxSize(900,350);
         rootPaneeli.setCenter(varauslista);
 
         //buttonit ja action eventit
@@ -79,7 +79,7 @@ public class VarausLuokka {
         nappulaBoksi.setAlignment(Pos.CENTER);
         rootPaneeli.setPadding(new Insets(5,5,5,5));
 
-        Scene varausScene = new Scene(rootPaneeli,500,500);
+        Scene varausScene = new Scene(rootPaneeli,1000,800);
         varausStage.setScene(varausScene);
         varausStage.setTitle("Varaukset");
         return varausStage;
@@ -429,7 +429,7 @@ public Stage luoUusiVarausIkkuna() {
     rootPaneeli.setRight(oikeapuoli);
     rootPaneeli.setStyle("-fx-background-color: #bfddf2;");
 
-    Scene scene = new Scene(rootPaneeli, 600, 600);
+    Scene scene = new Scene(rootPaneeli, 700, 600);
     valmisStage.setScene(scene);
     valmisStage.setTitle("Luo uusi varaus");
     return valmisStage;
