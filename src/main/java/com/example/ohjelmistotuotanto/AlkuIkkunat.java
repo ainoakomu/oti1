@@ -13,6 +13,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
@@ -63,7 +64,7 @@ public class AlkuIkkunat {
         otsikko.setPreserveRatio(true);
         otsikko.setFitWidth(250);
         otsikko.setLayoutX(80);
-        otsikko.setLayoutY(110);
+        otsikko.setLayoutY(90);
 
         // Pane jossa otsikko sijaitsee
         Pane kuvaPane = new Pane();
@@ -153,8 +154,15 @@ public class AlkuIkkunat {
         rootPaneeli.setVgap(50);
         rootPaneeli.setPadding(new Insets(10,10,10,10));
         rootPaneeli.setBackground(Taustakuvat.TaustakuvaAsettaminen.luoTausta());
+
+        //otsikko kuva
+        Image kuva2 = new Image(AlkuIkkunat.class.getClassLoader().getResource("otsikko4.png").toExternalForm());
+        ImageView slogan = new ImageView(kuva2);
+        slogan.setPreserveRatio(true);
+        slogan.setFitWidth(270);
+
         //buttons
-        Text terveTeksti=new Text("Tervetuloa");
+        // terveTeksti=new Text("Tervetuloa");
         Button mokitBt=new Button("Mökit");
         Button laskutBt=new Button("Laskut");
         Button varauksetBT=new Button("Varaukset");
@@ -164,7 +172,7 @@ public class AlkuIkkunat {
         Button kirjauduUlosBt=new Button("Kirjaudu ulos");
 
         //lisäys
-        rootPaneeli.add(terveTeksti,1,0);
+        //rootPaneeli.add(terveTeksti,1,0);
         rootPaneeli.add(adminOikeusBt,2,0);
         rootPaneeli.add(mokitBt,0,1);
         rootPaneeli.add(varauksetBT,1,1);
@@ -172,6 +180,7 @@ public class AlkuIkkunat {
         rootPaneeli.add(laskutBt,0,2);
         rootPaneeli.add(uusiVarausBt,1,2);
         rootPaneeli.add(kirjauduUlosBt,2,2);
+        rootPaneeli.add(slogan, 0, 0, 3, 1);
 
 
         //painikkeiden action eventit.
@@ -236,7 +245,7 @@ public class AlkuIkkunat {
 
         Stage kysymysIkkuna = new Stage();
         Text kysymys = new Text("Kirjaudutaanko ulos?");
-        kysymys.setFont(Font.font(20));
+        kysymys.setFont(Font.font("Courier New", FontWeight.BOLD, 20));
         kysymys.setFill(Color.WHITE);
         kysymys.setEffect(varjostus);
 
@@ -250,7 +259,7 @@ public class AlkuIkkunat {
         hBox.setAlignment(Pos.CENTER);
 
         //kutsutaan taustakuva
-        pane.setBackground(Taustakuvat.TaustakuvaAsettaminen.luoTausta());
+        pane.setBackground(Taustakuvat.TaustakuvaAsettaminen.luoToinenTausta());
 
         kyllaBt.setOnAction(e->{
             kysymysIkkuna.close();
