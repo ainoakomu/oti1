@@ -44,6 +44,7 @@ public class VarausLuokka {
     private int varauksenHinta;
     private int asiakasID;
     private int sekuntti = 0;
+    private int varausID;
 
     public Stage luoVarauksetIkkuna(){
         Stage varausStage = new Stage();
@@ -481,6 +482,12 @@ public Stage luoUusiVarausIkkuna() {
     public void setAsiakasID(int idnumero){
         this.asiakasID=idnumero;
     }
+    public int getVarauksenID(){
+        return varausID;
+    }
+    public void setVarauksenID(Integer varausnumero){
+        this.varausID=varausnumero;
+    }
     //sisäluokka päivämäärien ja muiden updatemiseen
     public static class PaivamaaraListener implements ChangeListener<LocalDate> {
         private DatePicker checkIn;
@@ -620,38 +627,47 @@ public Stage luoUusiVarausIkkuna() {
     }
     //nelinumeroinen
     public Integer annaVarausID() {
-        Random random = new Random();
-        //tarkista onko jo varausID
-        int varausID = 0;
-        varausID = random.nextInt(9999);
+        Yhteysluokka yhteysolio=new Yhteysluokka();
 
-        return varausID;
+        boolean onkosamanlaista=true;
+        int asiakasnumero =0;
+        VarausData tarkistusvaraus=new VarausData();
+        Random random = new Random();
+
+        //niinkauan generate uusi asiakasnumero, kunnes tulee sellainen joka ei ole jo databasessa
+        while (onkosamanlaista){
+            asiakasnumero=random.nextInt(999);
+            int tarkistusnumero =tarkistusvaraus.tarkistaVarausID(yhteysolio,asiakasnumero);
+
+            if (tarkistusnumero !=asiakasnumero){
+                setAsiakasID(asiakasnumero);
+                return asiakasnumero;
+            }
+        }
+        setVarauksenID(asiakasnumero);
+        return getAsiakasID();
     }
     //kolmenumeroinen
     public Integer annaAsiakasID() {
         Yhteysluokka yhteysolio=new Yhteysluokka();
 
-
-        // tää on hyvä näin, vielä lisätään, että checkataan, ettei se ID ole jo olemassa asiakastiedoissa
-        //tarkistAsiakas
-        //while true tee uusi ja tarkista, jos löytyy false
         boolean onkosamanlaista=true;
-        Random random = new Random();
-        int asiakasnumero;
-        asiakasnumero = random.nextInt(999);
+        int asiakasnumero=0;
         AsiakasData tarkistusOlio=new AsiakasData();
-        int tarkistunumero=tarkistusOlio.tarkistaAsiakasID(yhteysolio,asiakasnumero);
-        while (tarkistunumero!=asiakasnumero){
-            Random random2 = new Random();
-            int asiakasnumero2 = 0;
-            asiakasnumero = random.nextInt(999);
-            AsiakasData tarkistusOlio2=new AsiakasData();
-            int tarkistunumero=tarkistusOlio.tarkistaAsiakasID(yhteysolio,asiakasnumero);
-            return tarkistunumero;
+        Random random = new Random();
 
+        //niinkauan generate uusi asiakasnumero, kunnes tulee sellainen joka ei ole jo databasessa
+        while (onkosamanlaista){
+            asiakasnumero=random.nextInt(999);
+            int tarkistusnumero =tarkistusOlio.tarkistaAsiakasID(yhteysolio,asiakasnumero);
+
+            if (tarkistusnumero !=asiakasnumero){
+                setAsiakasID(asiakasnumero);
+                return asiakasnumero;
+            }
         }
-
-            //setAsiakasID(asiakasID);
+        setAsiakasID(asiakasnumero);
+        return getAsiakasID();
     }
 
     //kayttaja

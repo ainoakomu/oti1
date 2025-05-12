@@ -189,5 +189,34 @@ public class VarausData {
         return raportti;
     }
 
+    public int tarkistaVarausID(Yhteysluokka yhteysluokka, Integer varausnumero){
 
+        int varausID = 0;
+
+        try{
+            Connection lokalYhteys= yhteysluokka.getYhteys();
+            if (lokalYhteys== null){
+                System.err.println("Yhdistys epäonnistui");
+            }
+            //sql script komento
+            String asiakasSql = """
+                SELECT varaus_id FROM varaukset WHERE varaus_id = ?;
+            """;
+            PreparedStatement stmt = lokalYhteys.prepareStatement(asiakasSql);
+            stmt.setInt(1, varausnumero);
+
+            //yhteys ja sql scripti sinne
+            ResultSet asiRs = stmt.executeQuery();
+
+            //loopilla tiedot
+            if (asiRs.next()) {
+                varausID = asiRs.getInt("varaus_id");
+            }
+            //error handling
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return varausID;
+    }
 }
