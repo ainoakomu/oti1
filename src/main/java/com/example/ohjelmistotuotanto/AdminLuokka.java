@@ -19,6 +19,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
+import static com.example.ohjelmistotuotanto.AsiakasData.haeAsiakkaat;
+import static com.example.ohjelmistotuotanto.VarausData.haeVaraukset;
+
 
 public class AdminLuokka {
 
@@ -373,6 +376,7 @@ public class AdminLuokka {
                 muokkausStage.close();
             } else {
                 // anna warning että jottain puuttuu
+                e.consume();
             }
         });
 
@@ -430,6 +434,34 @@ public class AdminLuokka {
         BorderPane rootPaneeli=new BorderPane();
         rootPaneeli.setBackground(Taustakuvat.TaustakuvaAsettaminen.luoToinenTausta());
 
+        //dates
+        DatePicker alkupaiva=new DatePicker();
+        alkupaiva.setValue(LocalDate.now());
+        alkupaiva.setPrefWidth(100);
+        alkupaiva.setPrefHeight(20);
+        DatePicker loppupaiva=new DatePicker();
+        loppupaiva.setValue(LocalDate.now());
+        loppupaiva.setPrefWidth(100);
+        loppupaiva.setPrefHeight(20);
+        HBox datebox=new HBox(alkupaiva,loppupaiva);
+        datebox.setAlignment(Pos.TOP_RIGHT);
+
+        Yhteysluokka yhteysluokka = new Yhteysluokka();
+        VarausData varausData = new VarausData();
+
+
+
+        // tähän pitää laaittaa et päivittää valittavan listaan valitun raportin perusteella
+        ObservableList<String> raporttidata = FXCollections.observableArrayList("Valitse ensin tarkasteltava raportti");
+        ObservableList<String> varausRaporttidata = FXCollections.observableArrayList(FXCollections.observableArrayList(haeVaraukset(yhteysluokka)));
+        ObservableList<String> talousRaporttidata = FXCollections.observableArrayList(FXCollections.observableArrayList(varausData.haeTaloustiedot(yhteysluokka)));
+        ObservableList<String> asiakasRaporttidata = FXCollections.observableArrayList(FXCollections.observableArrayList(haeAsiakkaat(yhteysluokka)));
+
+        ListView<String> lista=new ListView<>(raporttidata);
+        lista.setMaxSize(600,350);
+        lista.setPadding(new Insets(10,10,10,10));
+        rootPaneeli.setCenter(lista);
+
         HBox rapsaBox =new HBox();
         rapsaBox.setSpacing(10);
         rapsaBox.setAlignment(Pos.TOP_LEFT);
@@ -437,55 +469,39 @@ public class AdminLuokka {
         ToggleButton asiakasRaporttiBtn =new ToggleButton("Asiakasraportti");
         ToggleButton varausRaporttiBtn =new ToggleButton("Varausraportti");
         ToggleButton talousRaporttiBtn =new ToggleButton("Talousraportti");
-        ToggleButton testi4=new ToggleButton("Testi");
-        rapsaBox.getChildren().addAll(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn,testi4);
+
+        rapsaBox.getChildren().addAll(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn);
 
         ToggleGroup btnGroup = new ToggleGroup();
-        btnGroup.getToggles().addAll(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn,testi4);
+        btnGroup.getToggles().addAll(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn);
 
         asiakasRaporttiBtn.setOnAction(e->{
             valittuRaportti="Asiakasraportti";
-            napitReset(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn,testi4);
+            napitReset(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn);
             asiakasRaporttiBtn.setStyle(
                     "-fx-background-color: green;" +
                             "-fx-text-fill: white");
-            // metodi jolla haetaan asiakastiedot listviewiin
+            raporttidata.setAll(asiakasRaporttidata);
         });
         varausRaporttiBtn.setOnAction(e->{
             valittuRaportti="Varausraportti";
-            napitReset(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn,testi4);
+            napitReset(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn);
             varausRaporttiBtn.setStyle(
                     "-fx-background-color: green;" +
                             "-fx-text-fill: white");
-            // metodi jolla haetaan varaukset listviewiin
+            raporttidata.setAll(varausRaporttidata);
         });
         talousRaporttiBtn.setOnAction(e->{
             valittuRaportti="Talousraportti";
-            napitReset(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn,testi4);
+            napitReset(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn);
             talousRaporttiBtn.setStyle(
                     "-fx-background-color: green;" +
                             "-fx-text-fill: white");
-            // metodi jolla haetaan taloustietoja?? listviewiin
-            // taloustietoja voisi olla esim. aikaväliltä varaukset (esim. pelkkä tunnus tms) ja varauksen hintaa
-        });
-        testi4.setOnAction(e->{
-            valittuRaportti="testiraportti";
-            napitReset(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn,testi4);
-            testi4.setStyle(
-                    "-fx-background-color: green;" +
-                            "-fx-text-fill: white");
-            // metodi jolla haetaan xxxx listviewiin ???
+            raporttidata.setAll(talousRaporttidata);
         });
 
-        //dates
-        DatePicker alkupaiva=new DatePicker();
-        alkupaiva.setPrefWidth(100);
-        alkupaiva.setPrefHeight(20);
-        DatePicker loppupaiva=new DatePicker();
-        loppupaiva.setPrefWidth(100);
-        loppupaiva.setPrefHeight(20);
-        HBox datebox=new HBox(alkupaiva,loppupaiva);
-        datebox.setAlignment(Pos.TOP_RIGHT);
+
+
 
         HBox ylaosa =new HBox(rapsaBox,datebox);
         ylaosa.setAlignment(Pos.TOP_CENTER);
@@ -515,12 +531,7 @@ public class AdminLuokka {
         rootPaneeli.setBottom(alaosa);
 
 
-        // tähän pitää laaittaa et päivittää valittavan listaan valitun raportin perusteella
-        ObservableList<String> tyja = FXCollections.observableArrayList("Testi","yippee","not the real list");
-        ListView<String> lista=new ListView<>(tyja);
-        lista.setMaxSize(600,350);
-        lista.setPadding(new Insets(10,10,10,10));
-        rootPaneeli.setCenter(lista);
+
 
         Scene raporttiScene = new Scene(rootPaneeli,700,610);
         raporttiStage.setScene(raporttiScene);
@@ -557,11 +568,10 @@ public class AdminLuokka {
         return valmisStage;
     }
 
-    public void napitReset(ToggleButton a, ToggleButton b, ToggleButton c, ToggleButton d){
+    public void napitReset(ToggleButton a, ToggleButton b, ToggleButton c){
         a.setStyle(null);
         b.setStyle(null);
         c.setStyle(null);
-        d.setStyle(null);
     }
 
     public int getKayID() {

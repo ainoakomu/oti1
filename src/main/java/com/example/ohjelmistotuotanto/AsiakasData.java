@@ -133,6 +133,7 @@ public class AsiakasData {
             Connection yhteys = yhteysluokka.getYhteys();
             if (yhteys == null) {
                 System.err.println("Tietokantayhteys epäonnistui.");
+                return;
             }
             String sql = "UPDATE asiakkaat SET asiakkaan_nimi = ? , asiakkaan_sahkoposti = ?, puhelinnumero = ?, koti_osoite = ? WHERE asiakas_id = ?;";
             PreparedStatement stmt = yhteys.prepareStatement(sql);
@@ -153,6 +154,7 @@ public class AsiakasData {
             Connection yhteys = yhteysluokka.getYhteys();
             if (yhteys == null) {
                 System.err.println("Tietokantayhteys epäonnistui.");
+                return;
             }
             String sql = "DELETE FROM asiakkaat WHERE asiakas_id = ?";
             PreparedStatement st = yhteys.prepareStatement(sql);
