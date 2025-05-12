@@ -345,6 +345,8 @@ public class AdminLuokka {
         tallennaBt.setOnAction(e->{
             if(!idTxt.getText().isEmpty()){
 
+                //TARVITAAN kysy tallennetaanko muutokset
+
                 setKayNimi(nimiTxt.getText());
                 setKayTun(kayttajaTxt.getText());
                 setSalaSana(ssTxt.getText());
@@ -359,10 +361,10 @@ public class AdminLuokka {
                     setHygPassi(0);
                 }
 
-                //TARVITAAN kysy tallennetaanko muutokset
-
                 //tallenna muutokset sqlään
                 kayttajaData.muokkaaKayttajaa(yhteysluokka,getKayID(), getKayNimi(), getKayTun(), getSalaSana(), getKayTaso(), getAnnOikeus(), getHygPassi());
+
+                //TARVITAAN ilmoita että tallennettu
 
                 //päivitetään lista
                 lista.setAll(FXCollections.observableArrayList(kayttajaData.haeKayttajat(yhteysluokka)));
