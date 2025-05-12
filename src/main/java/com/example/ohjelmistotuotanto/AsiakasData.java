@@ -126,23 +126,21 @@ public class AsiakasData {
         return kayttajanID;
     }
 
-    // TÄTÄ PITÄÄ MUUTTAA SOPIVAKSI  -  NYT KOPSATTU KÄYTTÄJÄSTÄ METODI
-    public void muokkaaAsiakasta(Yhteysluokka yhteysluokka, int id, String nimi, String tunnus, String ss, String kayttajaTaso, int anniskeluOikeus, int hygieniaPassi){
+
+    public void muokkaaAsiakasta(Yhteysluokka yhteysluokka, int asid, String nimi, String sposti, String puhelin, String kotiosoite){
 
         try {
             Connection yhteys = yhteysluokka.getYhteys();
             if (yhteys == null) {
                 System.err.println("Tietokantayhteys epäonnistui.");
             }
-            String sql = "UPDATE kayttajat SET nimi = ? , kayttaja_tunnus = ?, salasana = ?, kayttaja_taso = ?, onko_anniskelu_oikeus = ?, onko_hygieniapassi = ? WHERE kayttaja_id = ?;";
+            String sql = "UPDATE asiakkaat SET asiakkaan_nimi = ? , asiakkaan_sahkoposti = ?, puhelinnumero = ?, koti_osoite = ? WHERE asiakas_id = ?;";
             PreparedStatement stmt = yhteys.prepareStatement(sql);
             stmt.setString(1, nimi);
-            stmt.setString(2, tunnus);
-            stmt.setString(3, ss);
-            stmt.setString(4, kayttajaTaso);
-            stmt.setInt(5, anniskeluOikeus);
-            stmt.setInt(6, hygieniaPassi);
-            stmt.setInt(7,id);
+            stmt.setString(2, sposti);
+            stmt.setString(3, puhelin);
+            stmt.setString(4, kotiosoite);
+            stmt.setInt(5, asid);
             stmt.executeUpdate();
 
         } catch (Exception e) {
@@ -150,16 +148,15 @@ public class AsiakasData {
         }
     }
 
-    // TÄTÄ PITÄÄ MUUTTAA SOPIVAKSI  -  NYT KOPSATTU KÄYTTÄJÄSTÄ METODI
-    public void poistaAsiakas(Yhteysluokka yhteysluokka, int id){
+    public void poistaAsiakas(Yhteysluokka yhteysluokka, int asid){
         try {
             Connection yhteys = yhteysluokka.getYhteys();
             if (yhteys == null) {
                 System.err.println("Tietokantayhteys epäonnistui.");
             }
-            String sql = "DELETE FROM kayttajat WHERE kayttaja_id = ?";
+            String sql = "DELETE FROM asiakkaat WHERE asiakas_id = ?";
             PreparedStatement st = yhteys.prepareStatement(sql);
-            st.setInt(1,id);
+            st.setInt(1,asid);
             st.executeUpdate();
 
         } catch (Exception e) {

@@ -20,6 +20,12 @@ import static com.example.ohjelmistotuotanto.AsiakasData.haeAsiakkaat;
 
 public class AsiakasLuokka {
 
+    private int asiakasID;
+    private String asiakkaanNimi;
+    private String asiakkaanSposti;
+    private String puhelinnumero;
+    private String kotiosoite;
+
     public Stage luoAsiakkaatIkkuna(){
         Stage asiakasStage = new Stage();
         BorderPane rootPaneeli=new BorderPane();
@@ -35,12 +41,46 @@ public class AsiakasLuokka {
         asiakaslista.setMaxSize(350,250);
         rootPaneeli.setCenter(asiakaslista);
 
+
+        asiakaslista.getSelectionModel().selectedItemProperty().addListener((obs, vanha, uusi) -> {
+            if (uusi != null) {
+                String[] kentat = uusi.split(", ");
+
+                for (String kentta : kentat) {
+                    String[] avainArvo = kentta.split(": ");
+                    if (avainArvo.length < 2) continue;
+
+                    String avain = avainArvo[0].trim();
+                    String arvo = avainArvo[1].trim();
+
+                    switch (avain) {
+                        case "ID":
+                            setAsiakasID(Integer.valueOf(arvo));
+                            break;
+                        case "Nimi":
+                            setAsiakkaanNimi(arvo);
+                            break;
+                        case "Sähköposti":
+                            setAsiakkaanSposti(arvo);
+                            break;
+                        case "Puhelin":
+                            setPuhelinnumero(arvo);
+                            break;
+                        case "Osoite":
+                            setKotiosoite(arvo);
+                            break;
+                    }
+                }
+            }
+        });
+
+
         //buttonit ja action eventit
         Button muokkaaAsiakasta =new Button("Muokkaa asiakasta");
         Button suljeBt=new Button("Sulje");
 
         muokkaaAsiakasta.setOnAction(e->{
-            luoMuokkaaAsiakastaIkkuna().show();
+            luoMuokkaaAsiakastaIkkuna(asiakasData).show();
         });
 
         suljeBt.setOnAction(e->{
@@ -59,7 +99,7 @@ public class AsiakasLuokka {
         return asiakasStage;
     }
 
-    public Stage luoMuokkaaAsiakastaIkkuna(){
+    public Stage luoMuokkaaAsiakastaIkkuna(ObservableList<String> lista){
         Stage muokkausStage = new Stage();
         GridPane rootPaneeli=new GridPane();
         rootPaneeli.setAlignment(Pos.CENTER);
@@ -92,21 +132,33 @@ public class AsiakasLuokka {
         sarake.setAlignment(Pos.CENTER);
 
         //buttonit ja action eventit
-        Button tallennaBt=new Button("Tallenna");
+        Button tallennaBt=new Button("Tallenna muutokset");
         Button poistaBt=new Button("Poista asiakas");
         Button suljeBt=new Button("Sulje");
+
+        AsiakasData asiakasData = new AsiakasData();
+        Yhteysluokka yhteysluokka = new Yhteysluokka();
 
         tallennaBt.setOnAction(e->{
             //kysy tallennetaanko muutokse
             //tallenna muutokset sqlään
+            // asiakasData.muokkaaAsiakasta(yhteysluokka,);
+
             //ilmoita että tallennettu
+            lista.setAll(FXCollections.observableArrayList(haeAsiakkaat(yhteysluokka)));
+
             muokkausStage.close();
         });
 
         poistaBt.setOnAction(e->{
-            //kysy poistetaanko mökki
-            //poista mökki sqlästä
+            //kysy poistetaanko asiakas
+            //poista asiakas sqlästä
+            // asiakasData.poistaAsiakas(yhteysluokka,);
+
             //ilmoita että poistettu
+
+            lista.setAll(FXCollections.observableArrayList(haeAsiakkaat(yhteysluokka)));
+
             muokkausStage.close();
         });
 
@@ -130,4 +182,43 @@ public class AsiakasLuokka {
         return muokkausStage;
     }
 
+    public int getAsiakasID() {
+        return asiakasID;
+    }
+
+    public void setAsiakasID(int asiakasID) {
+        this.asiakasID = asiakasID;
+    }
+
+    public String getAsiakkaanNimi() {
+        return asiakkaanNimi;
+    }
+
+    public void setAsiakkaanNimi(String asiakkaanNimi) {
+        this.asiakkaanNimi = asiakkaanNimi;
+    }
+
+    public String getAsiakkaanSposti() {
+        return asiakkaanSposti;
+    }
+
+    public void setAsiakkaanSposti(String asiakkaanSposti) {
+        this.asiakkaanSposti = asiakkaanSposti;
+    }
+
+    public String getPuhelinnumero() {
+        return puhelinnumero;
+    }
+
+    public void setPuhelinnumero(String puhelinnumero) {
+        this.puhelinnumero = puhelinnumero;
+    }
+
+    public String getKotiosoite() {
+        return kotiosoite;
+    }
+
+    public void setKotiosoite(String kotiosoite) {
+        this.kotiosoite = kotiosoite;
+    }
 }
