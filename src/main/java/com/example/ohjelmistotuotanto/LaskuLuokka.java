@@ -30,7 +30,7 @@ public class LaskuLuokka {
         //käytetään datanhaku metodia
         ObservableList<String> mokkiData = FXCollections.observableArrayList(haeLaskut(olio));
         ListView<String> laskulista= new ListView<>(mokkiData);
-        laskulista.setMaxSize(350,250);
+        laskulista.setMaxSize(450,300);
         rootPaneeli.setCenter(laskulista);
         rootPaneeli.setBackground(Taustakuvat.TaustakuvaAsettaminen.luoKolmasTausta());
 
@@ -54,7 +54,7 @@ public class LaskuLuokka {
         rootPaneeli.setPadding(new Insets(5,5,5,5));
 
 
-        Scene laskutScene = new Scene(rootPaneeli,500,500);
+        Scene laskutScene = new Scene(rootPaneeli,800,500);
         laskutStage.setScene(laskutScene);
         laskutStage.setTitle("Laskut");
         return laskutStage;

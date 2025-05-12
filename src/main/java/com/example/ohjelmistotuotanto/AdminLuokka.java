@@ -82,7 +82,7 @@ public class AdminLuokka {
         ObservableList<String> kayttajat= FXCollections.observableArrayList(kayttajaData.haeKayttajat(olio));
         ListView<String> kayttajalista =new ListView<>(kayttajat);
 
-        kayttajalista.setMaxSize(600,250);
+        kayttajalista.setMaxSize(900,250);
         rootPaneeli.setCenter(kayttajalista);
         rootPaneeli.setBackground(Taustakuvat.TaustakuvaAsettaminen.luoToinenTausta());
 
@@ -169,7 +169,7 @@ public class AdminLuokka {
         nappulaBoksi.setAlignment(Pos.CENTER);
         rootPaneeli.setPadding(new Insets(15,15,15,15));
 
-        Scene kayttajatScene = new Scene(rootPaneeli,650,500);
+        Scene kayttajatScene = new Scene(rootPaneeli,1000,500);
         kayttajatStage.setScene(kayttajatScene);
         kayttajatStage.setTitle("Käyttäjähallinta");
         return kayttajatStage;
@@ -363,6 +363,8 @@ public class AdminLuokka {
                 } else if (!hygieniaChbx.isSelected()){
                     setHygPassi(0);
                 }
+
+                //TARVITAAN kysy tallennetaanko muutokset
 
                 //tallenna muutokset sqlään
                 kayttajaData.muokkaaKayttajaa(yhteysluokka,getKayID(), getKayNimi(), getKayTun(), getSalaSana(), getKayTaso(), getAnnOikeus(), getHygPassi());

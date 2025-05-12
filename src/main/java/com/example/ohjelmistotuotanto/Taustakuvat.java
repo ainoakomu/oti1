@@ -13,7 +13,7 @@ public class Taustakuvat {
 
 
         public static Background luoKolmasTausta() {
-            Image taustakuva = new Image(TaustakuvaAsettaminen.class.getResource("/kuva2.png").toExternalForm());
+            Image taustakuva = new Image(TaustakuvaAsettaminen.class.getResource("/Kuva2.png").toExternalForm());
 
 
             BackgroundSize taustaKoko = new BackgroundSize(
@@ -35,7 +35,7 @@ public class Taustakuvat {
         }
 
         public static Background luoToinenTausta() {
-            Image taustakuva = new Image(TaustakuvaAsettaminen.class.getResource("/kuva3.png").toExternalForm());
+            Image taustakuva = new Image(TaustakuvaAsettaminen.class.getResource("/Kuva3.png").toExternalForm());
 
             BackgroundSize taustaKoko = new BackgroundSize(
                     BackgroundSize.AUTO, //Ei skaalausta leveydelle

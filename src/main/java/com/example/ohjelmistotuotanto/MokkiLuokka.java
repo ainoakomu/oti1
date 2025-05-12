@@ -46,7 +46,7 @@ public class MokkiLuokka{
         ObservableList<String> mokkitietoData = FXCollections.observableArrayList(haeMokit(olio));
         ListView<String> mokkiLista = new ListView<>(mokkitietoData);
 
-        mokkiLista.setMaxSize(450, 250);
+        mokkiLista.setMaxSize(900, 400);
         rootPaneeli.setCenter(mokkiLista);
 
 
@@ -144,7 +144,7 @@ public class MokkiLuokka{
         rootPaneeli.setPadding(new Insets(5, 5, 5, 5));
 
 
-        Scene mokkiScene = new Scene(rootPaneeli, 500, 500);
+        Scene mokkiScene = new Scene(rootPaneeli, 1000, 800);
         mokkiStage.setScene(mokkiScene);
         mokkiStage.setTitle("Mökit");
         return mokkiStage;
