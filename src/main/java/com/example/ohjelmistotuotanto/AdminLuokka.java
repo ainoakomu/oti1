@@ -364,6 +364,8 @@ public class AdminLuokka {
                     setHygPassi(0);
                 }
 
+                //TARVITAAN kysy tallennetaanko muutokset
+
                 //tallenna muutokset sqlään
                 kayttajaData.muokkaaKayttajaa(yhteysluokka,getKayID(), getKayNimi(), getKayTun(), getSalaSana(), getKayTaso(), getAnnOikeus(), getHygPassi());
 
