@@ -23,6 +23,7 @@ public class MokkiLuokka{
         Stage mokkiStage = new Stage();
         BorderPane rootPaneeli = new BorderPane();
         rootPaneeli.setPadding(new Insets(5, 5, 5, 5));
+        rootPaneeli.setBackground(Taustakuvat.TaustakuvaAsettaminen.luoKolmasTausta());
 
         //sql yhteys
         Yhteysluokka olio=new Yhteysluokka();
@@ -75,6 +76,7 @@ public class MokkiLuokka{
         rootPaneeli.setHgap(10);
 
         rootPaneeli.setPadding(new Insets(10));
+        rootPaneeli.setStyle("-fx-background-color: #bfddf2;");
 
         Label osoitelb = new Label("Osoite");
         Label hintaLb = new Label("Hinta per yö");
@@ -146,6 +148,7 @@ public class MokkiLuokka{
         rootPaneeli.setVgap(10);
         rootPaneeli.setHgap(10);
         rootPaneeli.setPadding(new Insets(10));
+        rootPaneeli.setStyle("-fx-background-color: #bfddf2;");
 
         Label osoitelb = new Label("Osoite");
         Label hintaLb = new Label("Hinta per yö");

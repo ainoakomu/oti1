@@ -34,6 +34,7 @@ public class AsiakasLuokka {
         ListView<String> asiakaslista = new ListView<>(asiakasData);
         asiakaslista.setMaxSize(350,250);
         rootPaneeli.setCenter(asiakaslista);
+        rootPaneeli.setBackground(Taustakuvat.TaustakuvaAsettaminen.luoKolmasTausta());
 
         //buttonit ja action eventit
         Button muokkaaAsiakasta =new Button("Muokkaa asiakasta");
@@ -67,6 +68,7 @@ public class AsiakasLuokka {
         rootPaneeli.setHgap(20);
 
         rootPaneeli.setPadding(new Insets(10));
+        rootPaneeli.setStyle("-fx-background-color: #bfddf2;");
 
         Label nimilb =new Label("Nimi");
         Label spostiLb =new Label("Sähköpostiosoite");

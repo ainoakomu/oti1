@@ -47,6 +47,7 @@ public class VarausLuokka {
         Yhteysluokka olio=new Yhteysluokka();
         BorderPane rootPaneeli=new BorderPane();
         rootPaneeli.setPadding(new Insets(5,5,5,5));
+        rootPaneeli.setBackground(Taustakuvat.TaustakuvaAsettaminen.luoKolmasTausta());
 
         //käytetään datanhaku metodia datan luokasta
         ObservableList<String> varausData = FXCollections.observableArrayList(haeVaraukset(olio));
@@ -91,6 +92,7 @@ public class VarausLuokka {
         rootPaneeli.setHgap(20);
 
         rootPaneeli.setPadding(new Insets(10));
+        rootPaneeli.setStyle("-fx-background-color: #bfddf2;");
 
         Label mokkilb =new Label("Mökki");
         Label asiakasLb =new Label("Asiakas");
@@ -167,6 +169,7 @@ public class VarausLuokka {
         rootPaneeli.setHgap(20);
 
         rootPaneeli.setPadding(new Insets(10));
+        rootPaneeli.setStyle("-fx-background-color: #bfddf2;");
 
         Label mokkilb =new Label("Mökki");
         Label asiakasLb =new Label("Asiakas");
@@ -440,6 +443,7 @@ public Stage luoUusiVarausIkkuna() {
     //asettelu
     rootPaneeli.setLeft(vasenpuoli);
     rootPaneeli.setRight(oikeapuoli);
+    rootPaneeli.setStyle("-fx-background-color: #bfddf2;");
 
     Scene scene = new Scene(rootPaneeli, 600, 600);
     valmisStage.setScene(scene);

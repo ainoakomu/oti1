@@ -32,6 +32,7 @@ public class LaskuLuokka {
         ListView<String> laskulista= new ListView<>(mokkiData);
         laskulista.setMaxSize(350,250);
         rootPaneeli.setCenter(laskulista);
+        rootPaneeli.setBackground(Taustakuvat.TaustakuvaAsettaminen.luoKolmasTausta());
 
         //buttonit ja action eventit
         Button laskunTila =new Button("Päivitä laskun tila");
@@ -94,6 +95,7 @@ public class LaskuLuokka {
         VBox keskikohta=new VBox(checkBox);
         keskikohta.setSpacing(20);
         rootPaneeli.add(keskikohta,1,0);
+        rootPaneeli.setStyle("-fx-background-color: #bfddf2;");
 
 
         Scene paivitysScene = new Scene(rootPaneeli,500,500);

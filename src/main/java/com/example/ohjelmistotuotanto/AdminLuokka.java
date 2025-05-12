@@ -10,6 +10,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
@@ -39,6 +40,7 @@ public class AdminLuokka {
         rootPaneeli.setHgap(50);
         rootPaneeli.setVgap(100);
         rootPaneeli.setPadding(new Insets(10,10,10,10));
+        rootPaneeli.setBackground(Taustakuvat.TaustakuvaAsettaminen.luoToinenTausta());
 
         //buttonit ja action eventit
         Button raporttibt=new Button("Raportit");
@@ -79,6 +81,7 @@ public class AdminLuokka {
 
         kayttajalista.setMaxSize(600,250);
         rootPaneeli.setCenter(kayttajalista);
+        rootPaneeli.setBackground(Taustakuvat.TaustakuvaAsettaminen.luoToinenTausta());
 
 
         // KÄYTTÄJÄN VALINTA LISTALTA
@@ -176,6 +179,7 @@ public class AdminLuokka {
         rootPaneeli.setVgap(10);
         rootPaneeli.setHgap(10);
         rootPaneeli.setPadding(new Insets(10));
+        rootPaneeli.setStyle("-fx-background-color: #eeccfc;");
 
         Label idlb =new Label("ID");
         Label nimiLb =new Label("Nimi");
@@ -282,6 +286,7 @@ public class AdminLuokka {
         rootPaneeli.setVgap(10);
         rootPaneeli.setHgap(10);
         rootPaneeli.setPadding(new Insets(10));
+        rootPaneeli.setStyle("-fx-background-color: #eeccfc;");
 
         Label idlb =new Label("ID");
         Label nimiLb =new Label("Nimi");
@@ -421,6 +426,7 @@ public class AdminLuokka {
     public Stage luoRaportitIkkuna(){
         Stage raporttiStage = new Stage();
         BorderPane rootPaneeli=new BorderPane();
+        rootPaneeli.setBackground(Taustakuvat.TaustakuvaAsettaminen.luoToinenTausta());
 
         HBox rapsaBox =new HBox();
         rapsaBox.setSpacing(10);
@@ -514,7 +520,7 @@ public class AdminLuokka {
         lista.setPadding(new Insets(10,10,10,10));
         rootPaneeli.setCenter(lista);
 
-        Scene raporttiScene = new Scene(rootPaneeli,700,700);
+        Scene raporttiScene = new Scene(rootPaneeli,700,610);
         raporttiStage.setScene(raporttiScene);
         raporttiStage.setTitle("Raportit");
         return raporttiStage;
