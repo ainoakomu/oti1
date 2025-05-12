@@ -163,4 +163,35 @@ public class AsiakasData {
             e.printStackTrace();
         }
     }
+
+    public int tarkistaAsiakasID(Yhteysluokka yhteysluokka, Integer asiakasnumero){
+
+        int kayttajanID = 0;
+
+        try{
+            Connection lokalYhteys= yhteysluokka.getYhteys();
+            if (lokalYhteys== null){
+                System.err.println("Yhdistys epäonnistui");
+            }
+            //sql script komento
+            String asiakasSql = """
+                SELECT asiakas_id FROM asiakkaat WHERE asiakas_id = ?;
+            """;
+            PreparedStatement stmt = lokalYhteys.prepareStatement(asiakasSql);
+            stmt.setInt(1, asiakasnumero);
+
+            //yhteys ja sql scripti sinne
+            ResultSet asiRs = stmt.executeQuery();
+
+            //loopilla tiedot
+            if (asiRs.next()) {
+                kayttajanID = asiRs.getInt("asiakas_id");
+            }
+            //error handling
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return kayttajanID;
+    }
 }

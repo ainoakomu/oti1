@@ -65,17 +65,11 @@ public class VarausLuokka {
         Button muokkaaVarausta =new Button("Muokkaa varausta");
         Button suljeBt=new Button("Sulje");
 
-        addLasku.setOnAction(e->{
-            luoLisaaLaskuIkkuna().show();
-        });
+        addLasku.setOnAction(e-> luoLisaaLaskuIkkuna().show());
 
-        muokkaaVarausta.setOnAction(e->{
-            luoMuokkaaVaraustaIkkuna(varausData).show();
-        });
+        muokkaaVarausta.setOnAction(e-> luoMuokkaaVaraustaIkkuna(varausData).show());
 
-        suljeBt.setOnAction(e->{
-            varausStage.close();
-        });
+        suljeBt.setOnAction(e-> varausStage.close());
 
         HBox nappulaBoksi=new HBox(addLasku, muokkaaVarausta,suljeBt);
         nappulaBoksi.setSpacing(20);
@@ -239,9 +233,7 @@ public class VarausLuokka {
         teksti.setTextAlignment(TextAlignment.CENTER);
 
         Button okBt = new Button("OK");
-        okBt.setOnAction(e->{
-            valmisStage.close();
-        });
+        okBt.setOnAction(e-> valmisStage.close());
 
         BorderPane pane = new BorderPane();
         pane.setCenter(teksti);
@@ -626,29 +618,45 @@ public Stage luoUusiVarausIkkuna() {
             e.printStackTrace();
         }
     }
+    //nelinumeroinen
     public Integer annaVarausID() {
         Random random = new Random();
+        //tarkista onko jo varausID
         int varausID = 0;
-        for (int i = 0; i < 4; i++) {
-            varausID = random.nextInt(100);
-            return varausID;
-        }
+        varausID = random.nextInt(9999);
+
         return varausID;
     }
-
+    //kolmenumeroinen
     public Integer annaAsiakasID() {
+        Yhteysluokka yhteysolio=new Yhteysluokka();
+
 
         // tää on hyvä näin, vielä lisätään, että checkataan, ettei se ID ole jo olemassa asiakastiedoissa
+        //tarkistAsiakas
+        //while true tee uusi ja tarkista, jos löytyy false
+        boolean onkosamanlaista=true;
         Random random = new Random();
-        int asiakasID = 0;
-        for (int i = 0; i < 3; i++) {
-            asiakasID = random.nextInt(100);
-            return asiakasID;
+        int asiakasnumero;
+        asiakasnumero = random.nextInt(999);
+        AsiakasData tarkistusOlio=new AsiakasData();
+        int tarkistunumero=tarkistusOlio.tarkistaAsiakasID(yhteysolio,asiakasnumero);
+        while (tarkistunumero!=asiakasnumero){
+            Random random2 = new Random();
+            int asiakasnumero2 = 0;
+            asiakasnumero = random.nextInt(999);
+            AsiakasData tarkistusOlio2=new AsiakasData();
+            int tarkistunumero=tarkistusOlio.tarkistaAsiakasID(yhteysolio,asiakasnumero);
+            return tarkistunumero;
+
         }
-        return asiakasID;
+
+            //setAsiakasID(asiakasID);
     }
 
+    //kayttaja
     public Integer annaKayttajaID() {
+        //jos aikaa, huomio että jos tulee uusia käyttäjiä
         int[] kayttajat = {3887, 4459, 7866, 2644};
         Random random = new Random();
         int annaNumero=random.nextInt(kayttajat.length);
