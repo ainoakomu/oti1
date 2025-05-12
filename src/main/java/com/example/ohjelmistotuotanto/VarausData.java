@@ -1,13 +1,8 @@
 package com.example.ohjelmistotuotanto;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.util.Duration;
-
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class VarausData {
@@ -231,34 +226,34 @@ public class VarausData {
         return raportti;
     }
 
-    public int tarkistaVarausID(Yhteysluokka yhteysluokka, Integer varausnumero){
+    public boolean tarkistaVarausID(Yhteysluokka yhteysluokka, Integer varusnumero){
 
-        int varausID = 0;
+        boolean olemassa = false;
 
-        try{
-            Connection lokalYhteys= yhteysluokka.getYhteys();
-            if (lokalYhteys== null){
+        try {
+            Connection lokalYhteys = yhteysluokka.getYhteys();
+            if (lokalYhteys == null) {
                 System.err.println("Yhdistys epäonnistui");
+                return false; // If the connection failed, return false.
             }
-            //sql script komento
-            String asiakasSql = """
-                SELECT varaus_id FROM varaukset WHERE varaus_id = ?;
-            """;
+
+            // SQL query to check if varaus_id olemassa
+            String asiakasSql = "SELECT COUNT(*) FROM varaukset WHERE varaus_id = ?";
             PreparedStatement stmt = lokalYhteys.prepareStatement(asiakasSql);
-            stmt.setInt(1, varausnumero);
+            stmt.setInt(1, varusnumero);
 
-            //yhteys ja sql scripti sinne
+            // Execute the query and check the result
             ResultSet asiRs = stmt.executeQuery();
-
-            //loopilla tiedot
             if (asiRs.next()) {
-                varausID = asiRs.getInt("varaus_id");
+                int count = asiRs.getInt(1);  // Get the count of records
+                if (count > 0) {
+                    olemassa = true; // If count > 0, varaus_id olemassa
+                }
             }
-            //error handling
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return varausID;
+        return olemassa;
     }
 }
