@@ -3,8 +3,11 @@ package com.example.ohjelmistotuotanto;
 import javafx.scene.layout.*;
 import javafx.scene.image.Image;
 
-// Luokka missä luodaan taustakuva.
-// Kutsutaan alku ikkunassa!
+// Luokka missä luodaan taustakuvat
+// Kutsutaan kuvien metodeja ikkunoissa muualla koodissa
+//kuvalähteet: https://www.flickr.com/photos/charlie_cravero/101604127/
+//https://www.flickr.com/photos/canoarias/15046278708
+//https://www.pexels.com/fi-fi/kuva/puu-vesi-kesa-rentoutuminen-8844584/
 public class Taustakuvat {
     public class TaustakuvaAsettaminen {
 
