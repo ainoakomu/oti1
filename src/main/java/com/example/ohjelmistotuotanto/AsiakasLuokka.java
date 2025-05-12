@@ -37,7 +37,7 @@ public class AsiakasLuokka {
         //käytetään datanhaku metodia
         ObservableList<String> asiakkaidenData = FXCollections.observableArrayList(haeAsiakkaat(olio));
         ListView<String> asiakaslista = new ListView<>(asiakkaidenData);
-        asiakaslista.setMaxSize(350,250);
+        asiakaslista.setMaxSize(900,350);
         rootPaneeli.setCenter(asiakaslista);
         rootPaneeli.setBackground(Taustakuvat.TaustakuvaAsettaminen.luoKolmasTausta());
 
@@ -93,7 +93,7 @@ public class AsiakasLuokka {
         nappulaBoksi.setAlignment(Pos.CENTER);
         rootPaneeli.setPadding(new Insets(5,5,5,5));
 
-        Scene asiakasScene = new Scene(rootPaneeli,500,500);
+        Scene asiakasScene = new Scene(rootPaneeli,1000,800);
         asiakasStage.setScene(asiakasScene);
         asiakasStage.setTitle("Asiakkaat");
         return asiakasStage;
