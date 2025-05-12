@@ -368,6 +368,7 @@ public class AdminLuokka {
                 muokkausStage.close();
             } else {
                 // anna warning että jottain puuttuu
+                e.consume();
             }
         });
 
