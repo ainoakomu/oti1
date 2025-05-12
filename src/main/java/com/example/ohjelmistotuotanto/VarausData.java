@@ -1,5 +1,9 @@
 package com.example.ohjelmistotuotanto;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
+
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -7,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class VarausData {
+
 
     //metodi joka hakee
     public static ArrayList<String> haeVaraukset(Yhteysluokka olio){
@@ -183,5 +188,6 @@ public class VarausData {
 
         return raportti;
     }
+
 
 }

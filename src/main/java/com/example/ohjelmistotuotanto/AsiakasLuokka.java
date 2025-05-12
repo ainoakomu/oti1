@@ -5,15 +5,14 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.util.Optional;
 
 import static com.example.ohjelmistotuotanto.AsiakasData.haeAsiakkaat;
 
@@ -36,8 +35,8 @@ public class AsiakasLuokka {
 
         //observable lista, joka lisätään list view
         //käytetään datanhaku metodia
-        ObservableList<String> asiakasData = FXCollections.observableArrayList(haeAsiakkaat(olio));
-        ListView<String> asiakaslista = new ListView<>(asiakasData);
+        ObservableList<String> asiakkaidenData = FXCollections.observableArrayList(haeAsiakkaat(olio));
+        ListView<String> asiakaslista = new ListView<>(asiakkaidenData);
         asiakaslista.setMaxSize(350,250);
         rootPaneeli.setCenter(asiakaslista);
 
@@ -80,7 +79,7 @@ public class AsiakasLuokka {
         Button suljeBt=new Button("Sulje");
 
         muokkaaAsiakasta.setOnAction(e->{
-            luoMuokkaaAsiakastaIkkuna(asiakasData).show();
+            luoMuokkaaAsiakastaIkkuna(asiakkaidenData).show();
         });
 
         suljeBt.setOnAction(e->{
@@ -113,23 +112,29 @@ public class AsiakasLuokka {
         Label puhnrolb =new Label("Puhelinnumero");
         Label katuosoitelb =new Label("Katuosoite");
 
-        TextField mokkiTxt=new TextField();
-        TextField asiakasTxt =new TextField();
-        TextField alkuTxt =new TextField();
-        TextField loppuTxt =new TextField();
-        HBox row1=new HBox(nimilb,mokkiTxt);
+        TextField nimiTxt=new TextField();
+        TextField spostiTxt =new TextField();
+        TextField puhTxt =new TextField();
+        TextField osoiteTxt =new TextField();
+        HBox row1=new HBox(nimilb,nimiTxt);
         row1.setSpacing(69);
-        HBox row2=new HBox(spostiLb, asiakasTxt);
+        HBox row2=new HBox(spostiLb, spostiTxt);
         row2.setSpacing(5);
-        HBox row3=new HBox(puhnrolb, alkuTxt);
+        HBox row3=new HBox(puhnrolb, puhTxt);
         row3.setSpacing(13);
-        HBox row4=new HBox(katuosoitelb, loppuTxt);
+        HBox row4=new HBox(katuosoitelb, osoiteTxt);
         row4.setSpacing(37);
         VBox sarake=new VBox(row1,row2,row3,row4);
         sarake.setSpacing(20);
 
         sarake.setSpacing(15);
         sarake.setAlignment(Pos.CENTER);
+
+        // setataan asiakkaan tiedot kenttiin
+        nimiTxt.setText(getAsiakkaanNimi());
+        spostiTxt.setText(getAsiakkaanSposti());
+        puhTxt.setText(getPuhelinnumero());
+        osoiteTxt.setText(getKotiosoite());
 
         //buttonit ja action eventit
         Button tallennaBt=new Button("Tallenna muutokset");
@@ -140,26 +145,51 @@ public class AsiakasLuokka {
         Yhteysluokka yhteysluokka = new Yhteysluokka();
 
         tallennaBt.setOnAction(e->{
-            //kysy tallennetaanko muutokse
-            //tallenna muutokset sqlään
-            // asiakasData.muokkaaAsiakasta(yhteysluokka,);
+            if(!nimiTxt.getText().isEmpty()){
 
-            //ilmoita että tallennettu
-            lista.setAll(FXCollections.observableArrayList(haeAsiakkaat(yhteysluokka)));
+                //TARVITAAN kysy tallennetaanko muutokset
 
-            muokkausStage.close();
+                //otetaan tiedot kentistä
+                setAsiakkaanNimi(nimiTxt.getText());
+                setAsiakkaanSposti(spostiTxt.getText());
+                setPuhelinnumero(puhTxt.getText());
+                setKotiosoite(osoiteTxt.getText());
+
+                //tallenna muutokset sqlään
+                asiakasData.muokkaaAsiakasta(yhteysluokka,getAsiakasID(),getAsiakkaanNimi(),getAsiakkaanSposti(),getPuhelinnumero(),getKotiosoite());
+
+                //TARVITAAN ilmoita että tallennettu
+
+                //päivitä lista
+                lista.setAll(FXCollections.observableArrayList(haeAsiakkaat(yhteysluokka)));
+
+                muokkausStage.close();
+            } else {
+                // anna warning että jottain puuttuu
+            }
         });
 
         poistaBt.setOnAction(e->{
-            //kysy poistetaanko asiakas
-            //poista asiakas sqlästä
-            // asiakasData.poistaAsiakas(yhteysluokka,);
+            //kysy poistetaaanko asiakas varmasti
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Käyttäjätietojen poisto");
+            alert.setHeaderText("Poistetaanko käyttäjätiedot tietokannasta?");
+            alert.setContentText("Tätä toimintoa ei voi enää peruuttaa."+
+                    "\n Käyttäjätietojen poistaminen voi aiheuttaa odottamattomia" +
+                    "\nongelmia varausten tarkasteluun ja raportointiin.");
+            Optional<ButtonType> valinta = alert.showAndWait();
 
-            //ilmoita että poistettu
+            // jos painaa ok, poistetaan, jos painaa cancel, ei poisteta
+            if (valinta.isPresent() && valinta.get() == ButtonType.OK) {
+                asiakasData.poistaAsiakas(yhteysluokka,getAsiakasID());
+                lista.setAll(FXCollections.observableArrayList(haeAsiakkaat(yhteysluokka)));
 
-            lista.setAll(FXCollections.observableArrayList(haeAsiakkaat(yhteysluokka)));
+                // TARVITAAN ilmoita että asiakastiedot poistettu
 
-            muokkausStage.close();
+                muokkausStage.close();
+            } else {
+                e.consume();
+            }
         });
 
         suljeBt.setOnAction(e->{
