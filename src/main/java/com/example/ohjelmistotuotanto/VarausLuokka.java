@@ -1,6 +1,8 @@
 package com.example.ohjelmistotuotanto;
 
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -18,6 +20,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -40,6 +43,7 @@ public class VarausLuokka {
     private int valitunMokinID;
     private int varauksenHinta;
     private int asiakasID;
+    private int sekuntti = 0;
 
     public Stage luoVarauksetIkkuna(){
         Stage varausStage = new Stage();
@@ -386,7 +390,19 @@ public Stage luoUusiVarausIkkuna() {
             } else if (tarkID==0){
 
                 lisaaUusiAsiakas(yhteys,annaAsiakasID(),nimiTextField.getText(),emailTextField.getText(),puhelinTextField.getText(),osoiteTextField.getText());
-                lisaaVaraus(yhteys,annaVarausID(), asiakasID, getValitunMokinID(),checkInDatePicker.getValue() ,checkOutDatePicker.getValue(),getVarauksenHinta(),annaKayttajaID());
+
+
+                Timeline timeline = new Timeline();
+                timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(1), eventti->{
+
+                    if(sekuntti<2){
+                        sekuntti+=1;
+                    } else {
+                        timeline.stop();
+                        sekuntti = 0;
+                        lisaaVaraus(yhteys,annaVarausID(), asiakasID, 5,checkInDatePicker.getValue() ,checkOutDatePicker.getValue(),getVarauksenHinta(),annaKayttajaID());
+                    }
+                }));
 
                 // LISÄÄ ILMOITUS, ETTÄ UUSI ASIAKAS LISÄTTY.
             }
