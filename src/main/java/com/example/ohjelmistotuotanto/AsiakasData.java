@@ -94,4 +94,106 @@ public class AsiakasData {
 
         return raportti;
     }
+
+    public int tarkistaAsiakas(Yhteysluokka yhteysluokka, String nimi){
+
+        int kayttajanID = 0;
+
+        try{
+            Connection lokalYhteys= yhteysluokka.getYhteys();
+            if (lokalYhteys== null){
+                System.err.println("Yhdistys epäonnistui");
+            }
+            //sql script komento
+            String asiakasSql = """
+                SELECT asiakas_id FROM asiakkaat WHERE asiakkaan_nimi = ?;
+            """;
+            PreparedStatement stmt = lokalYhteys.prepareStatement(asiakasSql);
+            stmt.setString(1, nimi);
+
+            //yhteys ja sql scripti sinne
+            ResultSet asiRs = stmt.executeQuery();
+
+            //loopilla tiedot
+            if (asiRs.next()) {
+                kayttajanID = asiRs.getInt("asiakas_id");
+            }
+            //error handling
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return kayttajanID;
+    }
+
+
+    public void muokkaaAsiakasta(Yhteysluokka yhteysluokka, int asid, String nimi, String sposti, String puhelin, String kotiosoite){
+
+        try {
+            Connection yhteys = yhteysluokka.getYhteys();
+            if (yhteys == null) {
+                System.err.println("Tietokantayhteys epäonnistui.");
+                return;
+            }
+            String sql = "UPDATE asiakkaat SET asiakkaan_nimi = ? , asiakkaan_sahkoposti = ?, puhelinnumero = ?, koti_osoite = ? WHERE asiakas_id = ?;";
+            PreparedStatement stmt = yhteys.prepareStatement(sql);
+            stmt.setString(1, nimi);
+            stmt.setString(2, sposti);
+            stmt.setString(3, puhelin);
+            stmt.setString(4, kotiosoite);
+            stmt.setInt(5, asid);
+            stmt.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void poistaAsiakas(Yhteysluokka yhteysluokka, int asid){
+        try {
+            Connection yhteys = yhteysluokka.getYhteys();
+            if (yhteys == null) {
+                System.err.println("Tietokantayhteys epäonnistui.");
+                return;
+            }
+            String sql = "DELETE FROM asiakkaat WHERE asiakas_id = ?";
+            PreparedStatement st = yhteys.prepareStatement(sql);
+            st.setInt(1,asid);
+            st.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public int tarkistaAsiakasID(Yhteysluokka yhteysluokka, Integer asiakasnumero){
+
+        int kayttajanID = 0;
+
+        try{
+            Connection lokalYhteys= yhteysluokka.getYhteys();
+            if (lokalYhteys== null){
+                System.err.println("Yhdistys epäonnistui");
+            }
+            //sql script komento
+            String asiakasSql = """
+                SELECT asiakas_id FROM asiakkaat WHERE asiakas_id = ?;
+            """;
+            PreparedStatement stmt = lokalYhteys.prepareStatement(asiakasSql);
+            stmt.setInt(1, asiakasnumero);
+
+            //yhteys ja sql scripti sinne
+            ResultSet asiRs = stmt.executeQuery();
+
+            //loopilla tiedot
+            if (asiRs.next()) {
+                kayttajanID = asiRs.getInt("asiakas_id");
+            }
+            //error handling
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return kayttajanID;
+    }
 }

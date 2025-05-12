@@ -1,5 +1,9 @@
 package com.example.ohjelmistotuotanto;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
+
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -7,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class VarausData {
+
 
     //metodi joka hakee
     public static ArrayList<String> haeVaraukset(Yhteysluokka olio){
@@ -120,6 +125,48 @@ public class VarausData {
         return raportti;
     }
 
+    public ArrayList<String> haeTaloustiedot(Yhteysluokka olio){
+        ArrayList<String> talouslista=new ArrayList<>();
+
+
+        //yritetään yhteysluokan olion yhteys saada
+        try{
+            Connection lokalYhteys= olio.getYhteys();
+            if (lokalYhteys== null){
+                System.err.println("Yhdistys epäonnistui");
+            }
+            //sql script komento
+            String talousSql = """
+                SELECT varaus_id, varausalku_date, varausloppu_date, hinta, kayttaja_id
+                 FROM varaukset
+            """;
+            PreparedStatement stmt = lokalYhteys.prepareStatement(talousSql);
+
+
+            ResultSet rs = stmt.executeQuery();
+
+            //loopilla tiedot
+            while (rs.next()) {
+                int varausId = rs.getInt("varaus_id");
+                int hinta = rs.getInt("hinta");
+                int kayttajaId = rs.getInt("kayttaja_id");
+
+
+                //rivit
+                String rivi = "Varaus ID: " + varausId +
+                        ", Hinta: " + hinta + " €" +
+                        ", Käyttäjä ID: " + kayttajaId;
+
+                talouslista.add(rivi);
+            }
+            //error handling
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //valmis lista
+        return talouslista;
+    }
+
     public ArrayList<String> talousRaportti(Yhteysluokka olio, LocalDate alkaen, LocalDate asti){
         ArrayList<String> raportti =new ArrayList<>();
         //yritetään yhteysluokan olion yhteys saada
@@ -184,4 +231,34 @@ public class VarausData {
         return raportti;
     }
 
+    public int tarkistaVarausID(Yhteysluokka yhteysluokka, Integer varausnumero){
+
+        int varausID = 0;
+
+        try{
+            Connection lokalYhteys= yhteysluokka.getYhteys();
+            if (lokalYhteys== null){
+                System.err.println("Yhdistys epäonnistui");
+            }
+            //sql script komento
+            String asiakasSql = """
+                SELECT varaus_id FROM varaukset WHERE varaus_id = ?;
+            """;
+            PreparedStatement stmt = lokalYhteys.prepareStatement(asiakasSql);
+            stmt.setInt(1, varausnumero);
+
+            //yhteys ja sql scripti sinne
+            ResultSet asiRs = stmt.executeQuery();
+
+            //loopilla tiedot
+            if (asiRs.next()) {
+                varausID = asiRs.getInt("varaus_id");
+            }
+            //error handling
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return varausID;
+    }
 }

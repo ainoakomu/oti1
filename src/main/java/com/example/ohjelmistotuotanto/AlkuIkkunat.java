@@ -9,9 +9,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
@@ -62,7 +64,7 @@ public class AlkuIkkunat {
         otsikko.setPreserveRatio(true);
         otsikko.setFitWidth(250);
         otsikko.setLayoutX(80);
-        otsikko.setLayoutY(110);
+        otsikko.setLayoutY(90);
 
         // Pane jossa otsikko sijaitsee
         Pane kuvaPane = new Pane();
@@ -88,26 +90,60 @@ public class AlkuIkkunat {
         salasana.setPromptText("Salasana");
         Button kirjautumisButton=new Button("Kirjaudu sisään");
 
-        //kun painaa kirjaudu, tervetuloikkuna aukeaa.
-        kirjautumisButton.setOnAction(e->{
-            // Jos käyttäjätunnus on oikein, avautuu ohjelma ikkuna
-            if (kayttajatunnus.getText().equals("admin") && salasana.getText().equals("1234")) {
-                stage.setScene(luoTervetuloIkkuna(stage));
-            } else {
-                // Jos väärin, käyttäjä saa vinkkinä oikeat tiedot
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Virhe");
-                alert.setHeaderText("Virheellinen käyttäjätunnus tai salasana");
-                alert.setContentText("Vinkki!\nKäyttäjätunnus on admin, salasana on 1234");
-                alert.showAndWait();
+        kayttajatunnus.setOnKeyPressed(e->{
+            if(e.getCode()== KeyCode.ENTER){
+                salasana.requestFocus();
             }
         });
+
+        salasana.setOnKeyPressed(e->{
+            if((e.getCode()== KeyCode.ENTER)){
+                if((kayttajatunnus.getText().isEmpty())&&salasana.getText().isEmpty()){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Virhe");
+                    alert.setHeaderText("Käyttäjätunnus ja salasana puuttuu.");
+                    alert.showAndWait();
+                } else if(kayttajatunnus.getText().isEmpty()){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Virhe");
+                    alert.setHeaderText("Käyttäjätunnus puuttuu.");
+                    alert.showAndWait();
+                } else if (salasana.getText().isEmpty()){
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Virhe");
+                    alert.setHeaderText("Salasana puuttuu.");
+                    alert.showAndWait();
+                } else {
+                    voikoKirjauatua(kayttajatunnus,salasana,stage);
+                }
+            }
+        });
+
+        //kun painaa kirjaudu, tervetuloikkuna aukeaa.
+        kirjautumisButton.setOnAction(e->{
+            voikoKirjauatua(kayttajatunnus,salasana,stage);
+        });
+
 
         //lisäys
         kirjautumisLaatikko.getChildren().addAll(login,kayttajatunnus,salasana,kirjautumisButton);
         rootPaneeli.setCenter(kirjautumisLaatikko);
         //palautetaan luotu scene
         return ruutu;
+    }
+
+    public void voikoKirjauatua(TextField kayttajatunnus, PasswordField salasana,Stage stage){
+        if (kayttajatunnus.getText().equals("admin") && salasana.getText().equals("1234")) {
+            stage.setScene(luoTervetuloIkkuna(stage));
+        } else {
+            // Jos väärin, käyttäjä saa vinkkinä oikeat tiedot
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Virhe");
+            alert.setHeaderText("Virheellinen käyttäjätunnus tai salasana");
+            alert.setContentText("Vinkki!\nKäyttäjätunnus on admin, salasana on 1234");
+            alert.showAndWait();
+        }
+
     }
 
     public static Scene luoTervetuloIkkuna(Stage stage){
@@ -118,8 +154,15 @@ public class AlkuIkkunat {
         rootPaneeli.setVgap(50);
         rootPaneeli.setPadding(new Insets(10,10,10,10));
         rootPaneeli.setBackground(Taustakuvat.TaustakuvaAsettaminen.luoTausta());
+
+        //otsikko kuva
+        Image kuva2 = new Image(AlkuIkkunat.class.getClassLoader().getResource("otsikko4.png").toExternalForm());
+        ImageView slogan = new ImageView(kuva2);
+        slogan.setPreserveRatio(true);
+        slogan.setFitWidth(270);
+
         //buttons
-        Text terveTeksti=new Text("Tervetuloa");
+        // terveTeksti=new Text("Tervetuloa");
         Button mokitBt=new Button("Mökit");
         Button laskutBt=new Button("Laskut");
         Button varauksetBT=new Button("Varaukset");
@@ -129,7 +172,7 @@ public class AlkuIkkunat {
         Button kirjauduUlosBt=new Button("Kirjaudu ulos");
 
         //lisäys
-        rootPaneeli.add(terveTeksti,1,0);
+        //rootPaneeli.add(terveTeksti,1,0);
         rootPaneeli.add(adminOikeusBt,2,0);
         rootPaneeli.add(mokitBt,0,1);
         rootPaneeli.add(varauksetBT,1,1);
@@ -137,6 +180,7 @@ public class AlkuIkkunat {
         rootPaneeli.add(laskutBt,0,2);
         rootPaneeli.add(uusiVarausBt,1,2);
         rootPaneeli.add(kirjauduUlosBt,2,2);
+        rootPaneeli.add(slogan, 0, 0, 3, 1);
 
 
         //painikkeiden action eventit.
@@ -201,7 +245,7 @@ public class AlkuIkkunat {
 
         Stage kysymysIkkuna = new Stage();
         Text kysymys = new Text("Kirjaudutaanko ulos?");
-        kysymys.setFont(Font.font(20));
+        kysymys.setFont(Font.font("Courier New", FontWeight.BOLD, 20));
         kysymys.setFill(Color.WHITE);
         kysymys.setEffect(varjostus);
 
@@ -215,7 +259,7 @@ public class AlkuIkkunat {
         hBox.setAlignment(Pos.CENTER);
 
         //kutsutaan taustakuva
-        pane.setBackground(Taustakuvat.TaustakuvaAsettaminen.luoTausta());
+        pane.setBackground(Taustakuvat.TaustakuvaAsettaminen.luoToinenTausta());
 
         kyllaBt.setOnAction(e->{
             kysymysIkkuna.close();

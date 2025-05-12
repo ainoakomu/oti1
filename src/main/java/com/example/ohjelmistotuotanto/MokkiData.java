@@ -2,6 +2,7 @@ package com.example.ohjelmistotuotanto;
 
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class MokkiData {
                 //rivien kirjoitus listviehen
                 String rivi = "ID: " + id +
                         ", Osoite: " + osoite +
-                        ", Hinta/yö: " + hinta + " €" +
+                        ", Hinta/yö: " + hinta +
                         ", Neliöt: " + neliot +
                         ", Vuodepaikat: " + vuodepaikat +
                         ", Rantasauna: " + (rantasauna ? "Kyllä" : "Ei") +
@@ -95,4 +96,94 @@ public class MokkiData {
         //palautetaan hinta data
         return hintalista;
     }
+
+
+    public void lisaaMokki(Yhteysluokka yhteysluokka, int mokkiID, double hintaPerYo,
+                           String mokinOsoite, int neliot, int vuodepaikat, boolean rantasauna, boolean omaranta,
+                           boolean wifi, boolean sisavessa, boolean palju){
+
+        MokkiLuokka mokkiLuokka = new MokkiLuokka();
+        try {
+            Connection yhteys = yhteysluokka.getYhteys();
+            if (yhteys == null) {
+                System.err.println("Tietokantayhteys epäonnistui.");
+                return;
+            }
+            String sql = "insert into mokit values (?,?,?,?,?,?,?,?,?,?);";
+            PreparedStatement stmt = yhteys.prepareStatement(sql);
+            stmt.setInt(1, mokkiID);
+            stmt.setDouble(2, hintaPerYo);
+            stmt.setString(3, mokinOsoite);
+            stmt.setInt(4, neliot);
+            stmt.setInt(5, vuodepaikat);
+            stmt.setBoolean(6, rantasauna);
+            stmt.setBoolean(7,omaranta);
+            stmt.setBoolean(8,wifi);
+            stmt.setBoolean(9,sisavessa);
+            stmt.setBoolean(10,palju);
+            stmt.executeUpdate();
+
+            mokkiLuokka.setMokkiID(0);
+            mokkiLuokka.setHintaPerYo(0);
+            mokkiLuokka.setMokinOsoite("");
+            mokkiLuokka.setNeliot(0);
+            mokkiLuokka.setVuodepaikat(0);
+            mokkiLuokka.setRantasauna(false);
+            mokkiLuokka.setOmaranta(false);
+            mokkiLuokka.setWifi(false);
+            mokkiLuokka.setSisavessa(false);
+            mokkiLuokka.setPalju(false);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void muokkaaMokkia(Yhteysluokka yhteysluokka, int mokkiID, double hintaPerYo,
+                              String mokinOsoite, int neliot, int vuodepaikat, boolean rantasauna, boolean omaranta,
+                              boolean wifi, boolean sisavessa, boolean palju){
+
+        try {
+            Connection yhteys = yhteysluokka.getYhteys();
+            if (yhteys == null) {
+                System.err.println("Tietokantayhteys epäonnistui.");
+                return;
+            }
+            String sql = "UPDATE mokit SET hinta_per_yo = ?, osoite = ?, neliot = ?, vuodepaikat = ?, onko_rantasauna = ?, onko_oma_ranta = ?, onko_wifi = ?, onko_sisa_wc = ?, onko_palju = ? WHERE mokki_id = ?;";
+            PreparedStatement stmt = yhteys.prepareStatement(sql);
+            stmt.setDouble(1, hintaPerYo);
+            stmt.setString(2, mokinOsoite);
+            stmt.setInt(3, neliot);
+            stmt.setInt(4, vuodepaikat);
+            stmt.setBoolean(5, rantasauna);
+            stmt.setBoolean(6, omaranta);
+            stmt.setBoolean(7, wifi);
+            stmt.setBoolean(8, sisavessa);
+            stmt.setBoolean(9, palju);
+            stmt.setInt(10, mokkiID);
+            stmt.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void poistaMokki(Yhteysluokka yhteysluokka, int mokkiID){
+        try {
+            Connection yhteys = yhteysluokka.getYhteys();
+            if (yhteys == null) {
+                System.err.println("Tietokantayhteys epäonnistui.");
+                return;
+            }
+            String sql = "DELETE FROM mokit WHERE mokki_id = ?";
+            PreparedStatement st = yhteys.prepareStatement(sql);
+            st.setInt(1,mokkiID);
+            st.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
