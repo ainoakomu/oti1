@@ -39,6 +39,7 @@ public class VarausLuokka {
 
     private int valitunMokinID;
     private int varauksenHinta;
+    private int asiakasID;
 
     public Stage luoVarauksetIkkuna(){
         Stage varausStage = new Stage();
@@ -383,10 +384,9 @@ public Stage luoUusiVarausIkkuna() {
             if(tarkID>0){
                 lisaaVaraus(yhteys,annaVarausID() ,tarkID, 5,checkInDatePicker.getValue() ,checkOutDatePicker.getValue(),getVarauksenHinta(),annaKayttajaID());
             } else if (tarkID==0){
-                String asiakasID= String.valueOf(annaAsiakasID());
 
-                lisaaUusiAsiakas(yhteys,asiakasID,nimiTextField.getText(),emailTextField.getText(),puhelinTextField.getText(),osoiteTextField.getText());
-                lisaaVaraus(yhteys,annaVarausID() ,annaAsiakasID(), getValitunMokinID(),checkInDatePicker.getValue() ,checkOutDatePicker.getValue(),getVarauksenHinta(),annaKayttajaID());
+                lisaaUusiAsiakas(yhteys,annaAsiakasID(),nimiTextField.getText(),emailTextField.getText(),puhelinTextField.getText(),osoiteTextField.getText());
+                lisaaVaraus(yhteys,annaVarausID(), asiakasID, getValitunMokinID(),checkInDatePicker.getValue() ,checkOutDatePicker.getValue(),getVarauksenHinta(),annaKayttajaID());
 
                 // LISÄÄ ILMOITUS, ETTÄ UUSI ASIAKAS LISÄTTY.
             }
@@ -463,6 +463,12 @@ public Stage luoUusiVarausIkkuna() {
         this.varauksenHinta = varauksenHinta;
     }
 
+    public int getAsiakasID(){
+        return asiakasID;
+    }
+    public void setAsiakasID(int idnumero){
+        this.asiakasID=idnumero;
+    }
     //sisäluokka päivämäärien ja muiden updatemiseen
     public static class PaivamaaraListener implements ChangeListener<LocalDate> {
         private DatePicker checkIn;
@@ -509,30 +515,42 @@ public Stage luoUusiVarausIkkuna() {
                 String mokkiString = valittuMokki.get();
                 //eihän oo tyhjää
                 if (mokkiString != null && !mokkiString.isEmpty()) {
-                    //laitetaan haluttu teksti, jota pattern etsii (Hinta/yö: numero €) muodossa
+                    VarausLuokka varausLuokka = new VarausLuokka();
+                    //laitetaan haluttu teksti, jota hintaPattern etsii (Hinta/yö: numero €) muodossa
                     //[] välissä hgyväksyy kaikki numerot doublena
-                    Pattern pattern = Pattern.compile("Hinta/yö: ([\\d.]+) €");
-                    //annetaan klikatun mökin string info, josta pattern etsii yllä olevaa
-                    Matcher matcher = pattern.matcher(mokkiString);
+                    Pattern hintaPattern = Pattern.compile("Hinta/yö: ([\\d.]+) €");
+                    //etsii (ID:x) muotoa stringistä
+                    Pattern idPattern=Pattern.compile("ID: ([\\d+])");
+
+                    //annetaan klikatun mökin string info, josta hintaPattern etsii yllä olevaa
+                    Matcher hintaMatcher = hintaPattern.matcher(mokkiString);
+                    //etsii myös id samaisesta stringistä
+                    Matcher idMatcher=idPattern.matcher(mokkiString);
+
                     //jos löytyy lasketaan hintta mökeille per yö
-                    if (matcher.find()) {
+                    if (hintaMatcher.find()) {
                         //eka joka löytyy parsetaan string
-                        double price = Double.parseDouble(matcher.group(1));
+                        double price = Double.parseDouble(hintaMatcher.group(1));
+                        System.out.println(price);
                         //päivät kertaa hinta on koko hinta
                         double total = valipaivat * price;
-                        VarausLuokka varausLuokka = new VarausLuokka();
                         int smallInt = 0;
                         varausLuokka.setVarauksenHinta(smallInt=(int)total);
-
                         //asetetaan hinta -labelille arvoksi
                         hinta.setText("Hinta yhteensä: " + total + " €");
+                    }
+                    //jos löytyy lisätään id valintunmokin id:ksi
+                    if(idMatcher.find()){
+                        int id= Integer.parseInt((idMatcher.group(1)));
+                        System.out.println(id);
+                        varausLuokka.setValitunMokinID(id);
                     }
                 }
             }
         }
     }
     //lisää varaus
-    public void lisaaVaraus(Yhteysluokka yhteysluokka,Integer varaus_id, Integer asiakas_id, int mokki_id, LocalDate varausalku_date, LocalDate varausloppu_date, int hinta, Integer kayttaja_id){
+    public void lisaaVaraus(Yhteysluokka yhteysluokka,Integer varaus_id, Integer asiakas_id, Integer mokki_id, LocalDate varausalku_date, LocalDate varausloppu_date, Integer hinta, Integer kayttaja_id){
 
 
         if (varausalku_date == null || varausloppu_date == null) {
@@ -545,7 +563,6 @@ public Stage luoUusiVarausIkkuna() {
         Timestamp tsSaakka = Timestamp.valueOf(saakka);
 
         try {
-
             Connection yhteys = yhteysluokka.getYhteys();
             if (yhteys == null) {
                 System.err.println("Tietokantayhteys epäonnistui.");
@@ -567,9 +584,9 @@ public Stage luoUusiVarausIkkuna() {
         }
     }
     //lisää asiakas
-    public void lisaaUusiAsiakas(Yhteysluokka yhteysluokka,String asiakas_id, String asiakkaan_nimi, String asiakkaan_sahkoposti, String puhelinnumero, String koti_osoite){
+    public void lisaaUusiAsiakas(Yhteysluokka yhteysluokka,Integer asiakas_id, String asiakkaan_nimi, String asiakkaan_sahkoposti, String puhelinnumero, String koti_osoite){
 
-        int asiakkaanID = Integer.valueOf(asiakas_id);
+
 
         try {
             Connection yhteys = yhteysluokka.getYhteys();
@@ -578,7 +595,7 @@ public Stage luoUusiVarausIkkuna() {
             }
             String sql = "insert into asiakkaat values (?,?,?,?,?);";
             PreparedStatement stmt = yhteys.prepareStatement(sql);
-            stmt.setInt(1, asiakkaanID);
+            stmt.setInt(1, asiakas_id);
             stmt.setString(2, asiakkaan_nimi);
             stmt.setString(3, asiakkaan_sahkoposti);
             stmt.setString(4, puhelinnumero);
