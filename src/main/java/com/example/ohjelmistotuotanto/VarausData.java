@@ -125,6 +125,48 @@ public class VarausData {
         return raportti;
     }
 
+    public ArrayList<String> haeTaloustiedot(Yhteysluokka olio){
+        ArrayList<String> talouslista=new ArrayList<>();
+
+
+        //yritetään yhteysluokan olion yhteys saada
+        try{
+            Connection lokalYhteys= olio.getYhteys();
+            if (lokalYhteys== null){
+                System.err.println("Yhdistys epäonnistui");
+            }
+            //sql script komento
+            String talousSql = """
+                SELECT varaus_id, varausalku_date, varausloppu_date, hinta, kayttaja_id
+                 FROM varaukset
+            """;
+            PreparedStatement stmt = lokalYhteys.prepareStatement(talousSql);
+
+
+            ResultSet rs = stmt.executeQuery();
+
+            //loopilla tiedot
+            while (rs.next()) {
+                int varausId = rs.getInt("varaus_id");
+                int hinta = rs.getInt("hinta");
+                int kayttajaId = rs.getInt("kayttaja_id");
+
+
+                //rivit
+                String rivi = "Varaus ID: " + varausId +
+                        ", Hinta: " + hinta + " €" +
+                        ", Käyttäjä ID: " + kayttajaId;
+
+                talouslista.add(rivi);
+            }
+            //error handling
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //valmis lista
+        return talouslista;
+    }
+
     public ArrayList<String> talousRaportti(Yhteysluokka olio, LocalDate alkaen, LocalDate asti){
         ArrayList<String> raportti =new ArrayList<>();
         //yritetään yhteysluokan olion yhteys saada
