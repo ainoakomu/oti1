@@ -11,8 +11,10 @@ import javafx.scene.image.Image;
 public class Taustakuvat {
     public class TaustakuvaAsettaminen {
 
+
         public static Background luoKolmasTausta() {
             Image taustakuva = new Image(TaustakuvaAsettaminen.class.getResource("/kuva2.png").toExternalForm());
+
 
             BackgroundSize taustaKoko = new BackgroundSize(
                     BackgroundSize.AUTO, //Ei skaalausta leveydelle
