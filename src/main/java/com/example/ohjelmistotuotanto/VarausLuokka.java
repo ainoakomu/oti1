@@ -20,10 +20,12 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Optional;
@@ -607,7 +609,6 @@ public Stage luoUusiVarausIkkuna() {
         int[] kayttajat = {3887, 4459, 7866, 2644};
         Random random = new Random();
         int annaNumero=random.nextInt(kayttajat.length);
-        int valitseNumero=kayttajat[annaNumero];
-        return valitseNumero;
+        return kayttajat[annaNumero];
     }
 }
