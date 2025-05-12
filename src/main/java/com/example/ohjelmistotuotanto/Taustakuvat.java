@@ -3,16 +3,19 @@ package com.example.ohjelmistotuotanto;
 import javafx.scene.layout.*;
 import javafx.scene.image.Image;
 
-// Luokka missä luodaan taustakuva.
-// Kutsutaan alku ikkunassa!
+// Luokka missä luodaan taustakuvat
+// Kutsutaan kuvien metodeja ikkunoissa muualla koodissa
+//kuvalähteet: https://www.flickr.com/photos/charlie_cravero/101604127/
+//https://www.flickr.com/photos/canoarias/15046278708
+//https://www.pexels.com/fi-fi/kuva/puu-vesi-kesa-rentoutuminen-8844584/
 public class Taustakuvat {
     public class TaustakuvaAsettaminen {
 
- 
+
         public static Background luoKolmasTausta() {
             Image taustakuva = new Image(TaustakuvaAsettaminen.class.getResource("/kuva2.png").toExternalForm());
 
-    
+
             BackgroundSize taustaKoko = new BackgroundSize(
                     BackgroundSize.AUTO, //Ei skaalausta leveydelle
                     BackgroundSize.AUTO, //Ei skaalausta korkeudelle
