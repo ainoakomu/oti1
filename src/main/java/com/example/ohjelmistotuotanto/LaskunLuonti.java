@@ -82,6 +82,11 @@ public class LaskunLuonti {
 
             // Tallennus ja dokumentin sulku
             dokumentti.save(laskuTiedosto);
+
+            Yhteysluokka yhteysluokka = new Yhteysluokka();
+            LaskutData laskutData = new LaskutData();
+            laskutData.tallennaLaskutiedot(yhteysluokka,getLaskuNro(),getVarausNro(),false,false);
+
             dokumentti.close();
 
             System.out.println("Lasku nro " + getLaskuNro() + " luotu ja tallennettu.");
