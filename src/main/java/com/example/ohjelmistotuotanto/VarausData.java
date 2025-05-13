@@ -43,7 +43,7 @@ public class VarausData {
                 String rivi = "Varaus ID: " + varausId +
                         ", Alku: " + alku +
                         ", Loppu: " + loppu +
-                        ", Hinta: " + hinta + " €" +
+                        ", Hinta: " + hinta +
                         ", Käyttäjä ID: " + kayttajaId +
                         ", Asiakas ID: " + asiakasId +
                         ", Mökki ID: " + mokkiId;
@@ -256,4 +256,50 @@ public class VarausData {
 
         return olemassa;
     }
+
+
+    public void muokkaaVarausta(Yhteysluokka yhteysluokka, int varausID, LocalDate alkupv, LocalDate loppupv){
+
+        LocalDateTime lahtien = alkupv.atStartOfDay();
+        Timestamp tsLahtien = Timestamp.valueOf(lahtien);
+        LocalDateTime saakka = loppupv.atStartOfDay();
+        Timestamp tsSaakka = Timestamp.valueOf(saakka);
+
+        try {
+            Connection yhteys = yhteysluokka.getYhteys();
+            if (yhteys == null) {
+                System.err.println("Tietokantayhteys epäonnistui.");
+                return;
+            }
+            String sql = "UPDATE varaukset SET varausalku_date = ?, varausloppu_date = ? WHERE varaus_id = ?;";
+            PreparedStatement stmt = yhteys.prepareStatement(sql);
+            stmt.setTimestamp(1, tsLahtien);
+            stmt.setTimestamp(2, tsSaakka);
+            stmt.setInt(3, varausID);
+            stmt.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public void poistaVaraus(Yhteysluokka yhteysluokka, int varID){
+        try {
+            Connection yhteys = yhteysluokka.getYhteys();
+            if (yhteys == null) {
+                System.err.println("Tietokantayhteys epäonnistui.");
+                return;
+            }
+            String sql = "DELETE FROM varaukset WHERE varaus_id = ?";
+            PreparedStatement st = yhteys.prepareStatement(sql);
+            st.setInt(1,varID);
+            st.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

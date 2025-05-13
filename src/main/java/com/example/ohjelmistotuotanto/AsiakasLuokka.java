@@ -168,6 +168,7 @@ public class AsiakasLuokka {
                 muokkausStage.close();
             } else {
                 // anna warning että jottain puuttuu
+                e.consume();
             }
         });
 
