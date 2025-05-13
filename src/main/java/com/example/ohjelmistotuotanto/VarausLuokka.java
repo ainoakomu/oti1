@@ -17,6 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
@@ -61,6 +62,9 @@ public class VarausLuokka {
         ListView<String> varauslista = new ListView<>(varausData);
         varauslista.setMaxSize(900,350);
         rootPaneeli.setCenter(varauslista);
+
+
+
 
         varauslista.getSelectionModel().selectedItemProperty().addListener((obs, vanha, uusi) -> {
 
@@ -174,7 +178,6 @@ public class VarausLuokka {
 
         VBox sarake=new VBox(row1,row2,row3,row4,row5,row6,row7);
         sarake.setSpacing(20);
-
         sarake.setSpacing(15);
         sarake.setAlignment(Pos.CENTER);
 
@@ -294,8 +297,6 @@ public class VarausLuokka {
         return muokkausStage;
     }
 
-
-
     public Stage luoLisaaLaskuIkkuna(){
         Stage lisaaLaskuStage = new Stage();
 
@@ -394,7 +395,7 @@ public class VarausLuokka {
         return valmisStage;
     }
 
-    public Stage luoUusiVarausIkkuna() {
+public Stage luoUusiVarausIkkuna() {
     Stage valmisStage = new Stage();
     BorderPane rootPaneeli = new BorderPane();
     rootPaneeli.setPadding(new Insets(10));
@@ -612,6 +613,7 @@ public class VarausLuokka {
         // If no match is found, throw an exception
         throw new RuntimeException("Ei löytynyt vapaata varausnumeroa.");
     }
+
     public void setValitunMokinID(int valitunMokinID) {
         this.valitunMokinID = valitunMokinID;
     }
@@ -654,7 +656,7 @@ public class VarausLuokka {
         this.varauksenKayttajanID = varauksenKayttajanID;
     }
 
-    //sisäluokka päivämäärien ja muiden updatemiseen
+        //sisäluokka päivämäärien ja muiden updatemiseen
         //lister-interface toiminto, jolla päivät tunnistetaan
         public static class PaivamaaraListener implements ChangeListener<LocalDate> {
             private DatePicker checkIn;
