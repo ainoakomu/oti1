@@ -122,7 +122,7 @@ public class VarausLuokka {
         nappulaBoksi.setAlignment(Pos.CENTER);
         rootPaneeli.setPadding(new Insets(5,5,5,5));
 
-        Scene varausScene = new Scene(rootPaneeli,1000,800);
+        Scene varausScene = new Scene(rootPaneeli,1000,600);
         varausStage.setScene(varausScene);
         varausStage.setTitle("Varaukset");
         return varausStage;
