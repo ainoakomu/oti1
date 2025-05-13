@@ -144,7 +144,7 @@ public class MokkiLuokka{
         rootPaneeli.setPadding(new Insets(5, 5, 5, 5));
 
 
-        Scene mokkiScene = new Scene(rootPaneeli, 1000, 800);
+        Scene mokkiScene = new Scene(rootPaneeli, 1000, 600);
         mokkiStage.setScene(mokkiScene);
         mokkiStage.setTitle("Mökit");
         return mokkiStage;

@@ -1,7 +1,5 @@
 package com.example.ohjelmistotuotanto;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -20,11 +18,13 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Optional;
@@ -39,10 +39,13 @@ import static com.example.ohjelmistotuotanto.VarausData.haeVaraukset;
 public class VarausLuokka {
 
     private int valitunMokinID;
+    private int muutosMokkiID;
     private int varauksenHinta;
     private int asiakasID;
     private int sekuntti = 0;
     private int varausID;
+    private LocalDate alkuPVM;
+    private LocalDate loppuPVM;
     private StringProperty valittuMokki=new SimpleStringProperty();
 
     public Stage luoVarauksetIkkuna(){
@@ -59,6 +62,49 @@ public class VarausLuokka {
         ListView<String> varauslista = new ListView<>(varausData);
         varauslista.setMaxSize(900,350);
         rootPaneeli.setCenter(varauslista);
+
+
+
+
+        varauslista.getSelectionModel().selectedItemProperty().addListener((obs, vanha, uusi) -> {
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+
+            if (uusi != null) {
+                String[] kentat = uusi.split(", ");
+
+                for (String kentta : kentat) {
+                    String[] avainArvo = kentta.split(": ");
+                    if (avainArvo.length < 2) continue;
+
+                    String avain = avainArvo[0].trim();
+                    String arvo = avainArvo[1].trim();
+
+                    switch (avain) {
+                        case "Varaus ID":
+                            setVarauksenID(Integer.valueOf(arvo));
+                            break;
+                        case "Asiakas ID":
+                            setAsiakasID(Integer.valueOf(arvo));
+                            break;
+                        case "Alku":
+                            LocalDateTime pelkkaAlkuPaiva = LocalDateTime.parse(arvo, formatter);
+                            setAlkuPVM(pelkkaAlkuPaiva.toLocalDate());
+                            break;
+                        case "Loppu":
+                            LocalDateTime pelkkaLoppuPaiva = LocalDateTime.parse(arvo, formatter);
+                            setLoppuPVM(pelkkaLoppuPaiva.toLocalDate());
+                            break;
+                        case "Hinta":
+                            setVarauksenHinta(Integer.valueOf(arvo));
+                            break;
+                        case "Mökki ID":
+                            muutosMokkiID = Integer.valueOf(arvo);
+                            break;
+                    }
+                }
+            }
+        });
 
         //buttonit ja action eventit
         Button addLasku=new Button("Tee lasku");
@@ -77,7 +123,7 @@ public class VarausLuokka {
         nappulaBoksi.setAlignment(Pos.CENTER);
         rootPaneeli.setPadding(new Insets(5,5,5,5));
 
-        Scene varausScene = new Scene(rootPaneeli,1000,800);
+        Scene varausScene = new Scene(rootPaneeli,1000,600);
         varausStage.setScene(varausScene);
         varausStage.setTitle("Varaukset");
         return varausStage;
@@ -99,16 +145,21 @@ public class VarausLuokka {
         Label loppulb =new Label("Varaus päättyy");
 
         TextField mokkiTxt=new TextField();
+        mokkiTxt.setEditable(false);
         TextField asiakasTxt =new TextField();
-        TextField alkuTxt =new TextField();
-        TextField loppuTxt =new TextField();
+        asiakasTxt.setEditable(false);
+
+        DatePicker checkInDatePicker = new DatePicker(LocalDate.now());
+        DatePicker checkOutDatePicker = new DatePicker();
+
+
         HBox row1=new HBox(mokkilb,mokkiTxt);
         row1.setSpacing(50);
         HBox row2=new HBox(asiakasLb, asiakasTxt);
         row2.setSpacing(43);
-        HBox row3=new HBox(alkulb, alkuTxt);
+        HBox row3=new HBox(alkulb, checkInDatePicker);
         row3.setSpacing(17);
-        HBox row4=new HBox(loppulb, loppuTxt);
+        HBox row4=new HBox(loppulb, checkOutDatePicker);
         row4.setSpacing(5);
         VBox sarake=new VBox(row1,row2,row3,row4);
         sarake.setSpacing(20);
@@ -116,31 +167,68 @@ public class VarausLuokka {
         sarake.setSpacing(15);
         sarake.setAlignment(Pos.CENTER);
 
+        // JOS ON AIKAA, KENTTIEN ALLE VOISI VIELÄ LAITTAA VARAUKSEN HINNAN
+        // JA SE PÄIVITTYISI, JOS VARAUKSEN KESTO MUUTTUU.
+
+
+
+
+        // setataan varauksen tiedot
+        mokkiTxt.setText(String.valueOf(muutosMokkiID));
+        asiakasTxt.setText(String.valueOf(getAsiakasID()));
+        checkInDatePicker.setValue(getAlkuPVM());
+        checkOutDatePicker.setValue(getLoppuPVM());
+
         //buttonit ja action eventit
-        Button tallennaBt=new Button("Tallenna");
+        Button tallennaBt=new Button("Tallenna muutokset");
         Button poistaBt=new Button("Poista varaus");
         Button suljeBt=new Button("Sulje");
 
         Yhteysluokka yhteysluokka = new Yhteysluokka();
+        VarausData varausData = new VarausData();
 
         tallennaBt.setOnAction(e->{
-            //kysy tallennetaanko muutokse
-            //tallenna muutokset sqlään
-            //ilmoita että tallennettu
-            lista.setAll(FXCollections.observableArrayList(haeVaraukset(yhteysluokka)));
-            muokkausStage.close();
+
+            if(!mokkiTxt.getText().isEmpty()){
+                //TARVITAAN kysy tallennetaanko muutokset
+
+                //tallennetaan
+                varausData.muokkaaVarausta(yhteysluokka,getVarauksenID(),checkInDatePicker.getValue(),checkOutDatePicker.getValue());
+
+                lista.setAll(FXCollections.observableArrayList(haeVaraukset(yhteysluokka)));
+                muokkausStage.close();
+            }else {
+                // anna warning että jottain puuttuu
+                e.consume();
+            }
+
         });
 
         poistaBt.setOnAction(e->{
-            //kysy poistetaanko mökki
-            //poista mökki sqlästä
-            //ilmoita että poistettu
-            lista.setAll(FXCollections.observableArrayList(haeVaraukset(yhteysluokka)));
-            muokkausStage.close();
+            //kysy poistetaaanko varaus varmasti
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Varauksen poisto");
+            alert.setHeaderText("Poistetaanko varaus tietokannasta?");
+            alert.setContentText("Tätä toimintoa ei voi enää peruuttaa.");
+            Optional<ButtonType> valinta = alert.showAndWait();
+
+            // jos painaa ok, poistetaan, jos painaa cancel, ei poisteta
+            if (valinta.isPresent() && valinta.get() == ButtonType.OK) {
+                varausData.poistaVaraus(yhteysluokka,getVarauksenID());
+                lista.setAll(FXCollections.observableArrayList(haeVaraukset(yhteysluokka)));
+
+                // TARVITAAN ilmoita että asiakastiedot poistettu
+
+                muokkausStage.close();
+            } else {
+                e.consume();
+            }
+
         });
 
         suljeBt.setOnAction(e->{
-            //kysy suljetaanko ikkuna
+            //TARVITAAN kysy suljetaanko ikkuna
+
             lista.setAll(FXCollections.observableArrayList(haeVaraukset(yhteysluokka)));
             muokkausStage.close();
         });
@@ -158,6 +246,8 @@ public class VarausLuokka {
         muokkausStage.setTitle("Muokkaa varausta");
         return muokkausStage;
     }
+
+
 
     public Stage luoLisaaLaskuIkkuna(){
         Stage lisaaLaskuStage = new Stage();
@@ -386,7 +476,7 @@ public Stage luoUusiVarausIkkuna() {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Pakollisia tietoja puuttuu");
         alert.setHeaderText("Pakollisia varaustietoja puuttuu.");
-        alert.setContentText("Täytä kaikki vaaditut kentät.");
+        alert.setContentText("Täytä kaikki kentät.");
         alert.showAndWait();
         }
         });
@@ -477,7 +567,23 @@ public Stage luoUusiVarausIkkuna() {
         this.varausID=varausnumero;
     }
 
-        //sisäluokka päivämäärien ja muiden updatemiseen
+    public LocalDate getAlkuPVM() {
+        return alkuPVM;
+    }
+
+    public void setAlkuPVM(LocalDate alkuPVM) {
+        this.alkuPVM = alkuPVM;
+    }
+
+    public LocalDate getLoppuPVM() {
+        return loppuPVM;
+    }
+
+    public void setLoppuPVM(LocalDate loppuPVM) {
+        this.loppuPVM = loppuPVM;
+    }
+
+    //sisäluokka päivämäärien ja muiden updatemiseen
         //lister-interface toiminto, jolla päivät tunnistetaan
         public static class PaivamaaraListener implements ChangeListener<LocalDate> {
             private DatePicker checkIn;

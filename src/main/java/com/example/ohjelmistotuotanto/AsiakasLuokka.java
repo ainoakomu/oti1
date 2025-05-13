@@ -93,7 +93,7 @@ public class AsiakasLuokka {
         nappulaBoksi.setAlignment(Pos.CENTER);
         rootPaneeli.setPadding(new Insets(5,5,5,5));
 
-        Scene asiakasScene = new Scene(rootPaneeli,1000,800);
+        Scene asiakasScene = new Scene(rootPaneeli,1000,600);
         asiakasStage.setScene(asiakasScene);
         asiakasStage.setTitle("Asiakkaat");
         return asiakasStage;
@@ -168,6 +168,7 @@ public class AsiakasLuokka {
                 muokkausStage.close();
             } else {
                 // anna warning että jottain puuttuu
+                e.consume();
             }
         });
 

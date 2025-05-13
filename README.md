@@ -1,28 +1,26 @@
-Projektin ajaminen edellyttää MySQL Workbenchiä 
+Kevään 2025 Ohjelmistotuotanto I- kurssin lopputyö. Projektia on työstänyt Aino Komulainen, Henna Korpelainen, Evita Romppainen ja Jenni Simonen. (UEF)
 
+Projektin aihe on erään kuvitteellisen mokkiyrityksen varausjärjestelmä. 
+Projektin teossa on käytetty JetBrains IntellJ Community-versiota sekä MySQL Community Workbench, Server and Shell- applikaatioita tietojärjestelmän ylläpitoon.
+
+**HUOMIO:**
+Tämän projektin ajaminen edellyttää MySQL Workbench, Server and Shell toimintoja. Voit ladata ne täältä [https://dev.mysql.com/downloads/installer/] Projektissa hyödynnetään 8.0 versiota.
+
+# OHJEET:
  
-1- Lataa mokkikodit.sql-tiedosto omalle koneelle GitHubin src- kansio ja sielt sql kansio ja mokkikodit.sql
-2- Luo uusi connection SQLWorkbenchissä ja ota talteen username ja password sekä hostname ja port number 
-3- Avaa nyt luotu uusi connection ja valitse ylhäältä palkista kuvake  “open a sql script file in a new query” ja avaa mokkikodit.sql jonka latasit 
-Muista “ajaa” sql jotta database rakentuu (salama-nappula) 
-(SQL-serveri pitää olla pystyssä, jotta yhteys intellj IDEAan onnistuu.) 
+1- Lataa mokkikodit.sql-tiedosto omalle koneelle GitHubin src- kansion sisällä olevasta sql-kansiosta ja valitse mokkikodit.sql ladattavaksi.
+2- Avaa MySQL Workbench, luo uusi yhteys (connection) ja ota talteen yhteydessä käytetävä käyttäjänimi, salasana, host ja port.
+3- Avaa nyt luotu uusi yhteys ja valitse ylhäältä palkista kuvake  “open a sql script file in a new query” ja avaa mokkikodit.sql jonka latasit.
+4- Kun scripti on ladannut, aja se salama-nappulasta
 
-4. Vaihda koodissa olevat lähteet sinun oman workbenchin vastaavaksi luokassa YhteysLuokka
--rootin tilalla on sun connection/workbench username 
--salasanan tilalla on sun connection/workbench salasana 
+## Kun olet kopioinut repon omaan IDE:n
 
-VAIHDA NÄMÄ TIEDOT luokassa YhteysLuokka omaksi yhteydeksi!!
+5- Vaihda koodissa olevat lähteet sinun oman yhteyden vastaavaksi luokassa *YhteysLuokka*
+Lopputuloksen tulee näyttää tältä:
 String url = "jdbc:mysql://host:port/mokkikodit"; 
 String user = "root"; 
 String password ="salasana"; 
 
- 
-
-TROUBLESHOOT: 
-Jos dependency heittää punasta
-Käy klikkaa Mavenia oikeassa laidassa ja paina Refresh ikonia, ja rebuild all maven projects. 
-Jos ei vieläkään tottele, rebuild project IntellJ ja  sen pitäisi yrittää syncata Maven kirjastot jos ei muuten toiminut. 
-
-Dependency huomio: 
-
-Pom.xml on lisätty tuki mysql-connector-java versiolla 8.0.32 
+**Dependency huomio:**
+Pom.xml on lisätty tuki mysql-connector-java versiolla 8.0.32 josta on tiedetty haavoittovuus. 
+Projektia ajetaan kuitenkin aina lokaalisti, eikä siinä ole vaaraa tässä yhteydessä.
