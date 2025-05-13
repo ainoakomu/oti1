@@ -1,5 +1,7 @@
 package com.example.ohjelmistotuotanto;
 
+import javafx.scene.control.TextField;
+
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -258,12 +260,17 @@ public class VarausData {
     }
 
 
-    public void muokkaaVarausta(Yhteysluokka yhteysluokka, int varausID, LocalDate alkupv, LocalDate loppupv){
+    public void muokkaaVarausta(Yhteysluokka yhteysluokka, int varausID, LocalDate alkupv, LocalDate loppupv, TextField hinta, TextField kayttaja_id, TextField mokki_id, TextField asiakas_id){
 
         LocalDateTime lahtien = alkupv.atStartOfDay();
         Timestamp tsLahtien = Timestamp.valueOf(lahtien);
         LocalDateTime saakka = loppupv.atStartOfDay();
         Timestamp tsSaakka = Timestamp.valueOf(saakka);
+        int uusihinta = Integer.parseInt(hinta.getText());
+        int uusikayt = Integer.parseInt(kayttaja_id.getText());
+        int uusimokki = Integer.parseInt(mokki_id.getText());
+        int uusiasiakas = Integer.parseInt(asiakas_id.getText());
+
 
         try {
             Connection yhteys = yhteysluokka.getYhteys();
@@ -271,11 +278,15 @@ public class VarausData {
                 System.err.println("Tietokantayhteys epäonnistui.");
                 return;
             }
-            String sql = "UPDATE varaukset SET varausalku_date = ?, varausloppu_date = ? WHERE varaus_id = ?;";
+            String sql = "UPDATE varaukset SET varausalku_date = ?, varausloppu_date = ?, hinta = ?, kayttaja_id = ?, asiakas_id = ?, mokki_id = ? WHERE varaus_id = ?;";
             PreparedStatement stmt = yhteys.prepareStatement(sql);
             stmt.setTimestamp(1, tsLahtien);
             stmt.setTimestamp(2, tsSaakka);
-            stmt.setInt(3, varausID);
+            stmt.setInt(3, uusihinta);
+            stmt.setInt(4, uusikayt);
+            stmt.setInt(5, uusiasiakas);
+            stmt.setInt(6, uusimokki);
+            stmt.setInt(7, varausID);
             stmt.executeUpdate();
 
         } catch (Exception e) {

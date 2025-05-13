@@ -17,8 +17,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
@@ -41,6 +39,7 @@ public class VarausLuokka {
     private int valitunMokinID;
     private int muutosMokkiID;
     private int varauksenHinta;
+    private int varauksenKayttajanID;
     private int asiakasID;
     private int sekuntti = 0;
     private int varausID;
@@ -139,20 +138,29 @@ public class VarausLuokka {
         rootPaneeli.setPadding(new Insets(10));
         rootPaneeli.setStyle("-fx-background-color: #bfddf2;");
 
-        Label mokkilb =new Label("Mökki");
         Label asiakasLb =new Label("Asiakas");
         Label alkulb=new Label("Varaus alkaa");
         Label loppulb =new Label("Varaus päättyy");
+        Label hintalb =new Label("Hinta");
+        Label kayttajalb=new Label("Käyttäjän ID");
+        Label mokkilb =new Label("Mökki");
+        Label varauslb=new Label("Varauksen ID");
 
         TextField mokkiTxt=new TextField();
         mokkiTxt.setEditable(false);
         TextField asiakasTxt =new TextField();
         asiakasTxt.setEditable(false);
+        TextField hintaTextField = new TextField();
+        hintaTextField.setEditable(false);
+        TextField kayttajaTextField = new TextField();
+        kayttajaTextField.setEditable(false);
+        TextField varausTextField = new TextField();
+        varausTextField.setEditable(false);
 
         DatePicker checkInDatePicker = new DatePicker(LocalDate.now());
         DatePicker checkOutDatePicker = new DatePicker();
 
-
+        //kuuntelija
         HBox row1=new HBox(mokkilb,mokkiTxt);
         row1.setSpacing(50);
         HBox row2=new HBox(asiakasLb, asiakasTxt);
@@ -161,44 +169,67 @@ public class VarausLuokka {
         row3.setSpacing(17);
         HBox row4=new HBox(loppulb, checkOutDatePicker);
         row4.setSpacing(5);
-        VBox sarake=new VBox(row1,row2,row3,row4);
+        HBox row5=new HBox(hintalb,hintaTextField);
+
+        HBox row6=new HBox(kayttajalb,kayttajaTextField);
+
+        HBox row7=new HBox(varauslb,varausTextField);
+
+        VBox sarake=new VBox(row1,row2,row3,row4,row5,row6,row7);
         sarake.setSpacing(20);
 
         sarake.setSpacing(15);
         sarake.setAlignment(Pos.CENTER);
 
-        // JOS ON AIKAA, KENTTIEN ALLE VOISI VIELÄ LAITTAA VARAUKSEN HINNAN
-        // JA SE PÄIVITTYISI, JOS VARAUKSEN KESTO MUUTTUU.
-
-
-
-
-        // setataan varauksen tiedot
+        //kaikille käytettävät instanssit
+        Yhteysluokka yhteysluokka = new Yhteysluokka();
+        VarausData varausData = new VarausData();
+        //kutsutaan saman yhteysluokan instanssin varauksen id
+        annaVarauksenKayttajanID(yhteysluokka);
+        //asetetaan arvot
         mokkiTxt.setText(String.valueOf(muutosMokkiID));
         asiakasTxt.setText(String.valueOf(getAsiakasID()));
         checkInDatePicker.setValue(getAlkuPVM());
         checkOutDatePicker.setValue(getLoppuPVM());
+        hintaTextField.setText(String.valueOf(getVarauksenHinta()));
+        int placeholderHinta=getVarauksenHinta();
+        asiakasTxt.setText(String.valueOf(getAsiakasID()));
+        kayttajaTextField.setText(String.valueOf(getVarauksenKayttajanID()));
+        varausTextField.setText(String.valueOf(getVarauksenID()));
+
+        checkInDatePicker.valueProperty().addListener(new muokkauksenKuuntelija(checkInDatePicker,checkOutDatePicker,mokkiTxt,hintaTextField,kayttajaTextField,asiakasTxt,varausTextField,placeholderHinta));
+        checkOutDatePicker.valueProperty().addListener(new muokkauksenKuuntelija(checkInDatePicker,checkOutDatePicker,mokkiTxt,hintaTextField,kayttajaTextField,asiakasTxt,varausTextField,placeholderHinta));
+
 
         //buttonit ja action eventit
         Button tallennaBt=new Button("Tallenna muutokset");
         Button poistaBt=new Button("Poista varaus");
         Button suljeBt=new Button("Sulje");
 
-        Yhteysluokka yhteysluokka = new Yhteysluokka();
-        VarausData varausData = new VarausData();
 
         tallennaBt.setOnAction(e->{
 
             if(!mokkiTxt.getText().isEmpty()){
                 //TARVITAAN kysy tallennetaanko muutokset
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Tallennus");
+                alert.setHeaderText("Tallennetaanko varmasti?");
+                alert.setContentText("Tallenna ja sulje?");
+                Optional<ButtonType> sulje = alert.showAndWait();
+                if (sulje.isPresent() && sulje.get() == ButtonType.OK) {
+                    //tallennetaan
+                    varausData.muokkaaVarausta(yhteysluokka,getVarauksenID(),checkInDatePicker.getValue(),checkOutDatePicker.getValue(),hintaTextField,kayttajaTextField,mokkiTxt,asiakasTxt);
 
-                //tallennetaan
-                varausData.muokkaaVarausta(yhteysluokka,getVarauksenID(),checkInDatePicker.getValue(),checkOutDatePicker.getValue());
+                    lista.setAll(FXCollections.observableArrayList(haeVaraukset(yhteysluokka)));
+                    muokkausStage.close();
+                }
 
-                lista.setAll(FXCollections.observableArrayList(haeVaraukset(yhteysluokka)));
-                muokkausStage.close();
             }else {
-                // anna warning että jottain puuttuu
+                Alert alert3 = new Alert(Alert.AlertType.WARNING);
+                alert3.setTitle("Tallennus");
+                alert3.setHeaderText("Kaikkia tietoja ei ole täytetty!");
+                alert3.setContentText("Täytä kaikki kohdat jotta voit tallentaa");
+                alert3.showAndWait();
                 e.consume();
             }
 
@@ -218,7 +249,10 @@ public class VarausLuokka {
                 lista.setAll(FXCollections.observableArrayList(haeVaraukset(yhteysluokka)));
 
                 // TARVITAAN ilmoita että asiakastiedot poistettu
-
+                Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
+                alert2.setTitle("Varauksen poisto onnistui");
+                alert2.setHeaderText("Tietojen poisto");
+                alert2.setContentText("Tiedot poistettu onnistuneesti");
                 muokkausStage.close();
             } else {
                 e.consume();
@@ -228,9 +262,18 @@ public class VarausLuokka {
 
         suljeBt.setOnAction(e->{
             //TARVITAAN kysy suljetaanko ikkuna
-
-            lista.setAll(FXCollections.observableArrayList(haeVaraukset(yhteysluokka)));
-            muokkausStage.close();
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Poistu");
+            alert.setHeaderText("Olet poistumassa");
+            alert.setContentText("Poistutaanko varmasti?");
+            Optional<ButtonType> varmistus = alert.showAndWait();
+            if(varmistus.isPresent()&&varmistus.get()==ButtonType.OK){
+                lista.setAll(FXCollections.observableArrayList(haeVaraukset(yhteysluokka)));
+                muokkausStage.close();
+            }
+            else{
+                e.consume();
+            };
         });
 
         VBox buttons=new VBox(tallennaBt,poistaBt,suljeBt);
@@ -336,7 +379,7 @@ public class VarausLuokka {
         return valmisStage;
     }
 
-public Stage luoUusiVarausIkkuna() {
+    public Stage luoUusiVarausIkkuna() {
     Stage valmisStage = new Stage();
     BorderPane rootPaneeli = new BorderPane();
     rootPaneeli.setPadding(new Insets(10));
@@ -460,6 +503,17 @@ public Stage luoUusiVarausIkkuna() {
 
             int uusiVarausID = VarausID.luoVarausID(yhteys, varausData);
             setVarauksenID(uusiVarausID);
+            System.out.println(hintaLabel.toString());
+            Pattern pricePattern = Pattern.compile("(\\d+)\\s*€\\s*'$");
+            Matcher priceMatcher = pricePattern.matcher(hintaLabel.toString());
+            if(priceMatcher.find()){
+                int hinta =  Integer.parseInt(priceMatcher.group(1));
+                System.out.println(hinta);
+                setVarauksenHinta(hinta);
+            }
+            else{
+                System.out.println("ei käsitelty mitää str4ingiä");
+            }
 
             lisaaVaraus(yhteys, getVarauksenID(), checkInDatePicker.getValue(),
                     checkOutDatePicker.getValue(), getVarauksenHinta(),
@@ -543,12 +597,10 @@ public Stage luoUusiVarausIkkuna() {
         // If no match is found, throw an exception
         throw new RuntimeException("Ei löytynyt vapaata varausnumeroa.");
     }
-
     public void setValitunMokinID(int valitunMokinID) {
         this.valitunMokinID = valitunMokinID;
     }
     public int getVarauksenHinta() {
-
         return varauksenHinta;
     }
     public void setVarauksenHinta(int varauksenHinta) {
@@ -566,21 +618,25 @@ public Stage luoUusiVarausIkkuna() {
     public void setVarauksenID(Integer varausnumero){
         this.varausID=varausnumero;
     }
-
     public LocalDate getAlkuPVM() {
         return alkuPVM;
     }
-
     public void setAlkuPVM(LocalDate alkuPVM) {
         this.alkuPVM = alkuPVM;
     }
-
     public LocalDate getLoppuPVM() {
         return loppuPVM;
     }
-
     public void setLoppuPVM(LocalDate loppuPVM) {
         this.loppuPVM = loppuPVM;
+    }
+
+    public int getVarauksenKayttajanID() {
+        return varauksenKayttajanID;
+    }
+
+    public void setVarauksenKayttajanID(int varauksenKayttajanID) {
+        this.varauksenKayttajanID = varauksenKayttajanID;
     }
 
     //sisäluokka päivämäärien ja muiden updatemiseen
@@ -640,7 +696,7 @@ public Stage luoUusiVarausIkkuna() {
                             System.out.println("Hinta per yö: " + pricePerNight);
 
                             // hinta per yö totaali
-                            double totalPrice = daysBetween * pricePerNight;
+                            int totalPrice = (int) (daysBetween * pricePerNight);
                             hinta.setText("Hinta yhteensä: " + totalPrice + " €");
                         } else {
                             // If no price is found, show an error message or do nothing
@@ -746,6 +802,21 @@ public Stage luoUusiVarausIkkuna() {
         int annaNumero=random.nextInt(kayttajat.length);
         return kayttajat[annaNumero];
     }
+    public void annaVarauksenKayttajanID(Yhteysluokka yhteysluokka){
+        String list= String.valueOf(haeVaraukset(yhteysluokka));
+        if (list!=null){
+            Pattern KayttajaIDPattern = Pattern.compile("Käyttäjä ID: (\\d{4})");
+            Matcher IDmatcher = KayttajaIDPattern.matcher(list);
+            if (IDmatcher.find()){
+                int id=Integer.parseInt(IDmatcher.group(1));
+                System.out.println("Kayttajan ID "+id);
+                setVarauksenKayttajanID(id);
+            }
+            else{
+                System.out.println("EI löytynyt kayttajan id");
+            }
+        }
+    }
 
     public static class VarausID {
 
@@ -785,4 +856,43 @@ public Stage luoUusiVarausIkkuna() {
         }
     }
 
+
+    public static class muokkauksenKuuntelija implements ChangeListener<LocalDate> {
+        private DatePicker checkIn;
+        private DatePicker checkOut;
+        private TextField mokki;
+        private TextField hinta;
+        private TextField asiakas;
+        private TextField kayttaja;
+        private TextField varaus;
+        private int placeholder;
+
+        public muokkauksenKuuntelija(DatePicker checkIn, DatePicker checkOut, TextField mokkiID, TextField hinta, TextField kayttaja, TextField asiakas,TextField varausID, Integer placeholder) {
+            this.checkIn = checkIn;
+            this.checkOut = checkOut;
+            this.mokki=mokkiID;
+            this.hinta = hinta;
+            this.asiakas=asiakas;
+            this.kayttaja=kayttaja;
+            this.varaus=varausID;
+            this.placeholder=placeholder;
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
+            LocalDate checkIn=this.checkIn.getValue();
+            LocalDate checkOut=this.checkOut.getValue();
+
+
+            if (checkIn != null && checkOut != null && !checkOut.isBefore(checkIn)) {
+                // valipaivaat
+                long valipaivat = ChronoUnit.DAYS.between(checkIn, checkOut);
+                int kokonaishinta= (int) (valipaivat*placeholder);
+                hinta.setText(String.valueOf(kokonaishinta));
+            }
+            else {
+                hinta.clear();
+            }
+        }
+    }
 }

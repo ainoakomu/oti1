@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import java.util.Optional;
 
 import static com.example.ohjelmistotuotanto.AsiakasData.haeAsiakkaat;
+import static com.example.ohjelmistotuotanto.VarausData.haeVaraukset;
 
 
 public class AsiakasLuokka {
@@ -150,24 +151,39 @@ public class AsiakasLuokka {
             if(!nimiTxt.getText().isEmpty()){
 
                 //TARVITAAN kysy tallennetaanko muutokset
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Tallennus");
+                alert.setHeaderText("Tallennetaanko varmsti?");
+                alert.setContentText("Tallenna ja sulje?");
+                Optional<ButtonType> sulje = alert.showAndWait();
 
-                //otetaan tiedot kentistä
-                setAsiakkaanNimi(nimiTxt.getText());
-                setAsiakkaanSposti(spostiTxt.getText());
-                setPuhelinnumero(puhTxt.getText());
-                setKotiosoite(osoiteTxt.getText());
+                if (sulje.isPresent() && sulje.get() == ButtonType.OK) {
+                    //otetaan tiedot kentistä
+                    setAsiakkaanNimi(nimiTxt.getText());
+                    setAsiakkaanSposti(spostiTxt.getText());
+                    setPuhelinnumero(puhTxt.getText());
+                    setKotiosoite(osoiteTxt.getText());
 
-                //tallenna muutokset sqlään
-                asiakasData.muokkaaAsiakasta(yhteysluokka,getAsiakasID(),getAsiakkaanNimi(),getAsiakkaanSposti(),getPuhelinnumero(),getKotiosoite());
+                    //tallenna muutokset sqlään
+                    asiakasData.muokkaaAsiakasta(yhteysluokka,getAsiakasID(),getAsiakkaanNimi(),getAsiakkaanSposti(),getPuhelinnumero(),getKotiosoite());
+                    //TARVITAAN ilmoita että tallennettu
+                    Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
+                    alert2.setTitle("Tallennus");
+                    alert2.setHeaderText("Tallennus tietokantaa");
+                    alert2.setContentText("Tallennus onnistui");
+                    //päivitä lista
+                    lista.setAll(FXCollections.observableArrayList(haeAsiakkaat(yhteysluokka)));
 
-                //TARVITAAN ilmoita että tallennettu
+                    muokkausStage.close();
+                }
 
-                //päivitä lista
-                lista.setAll(FXCollections.observableArrayList(haeAsiakkaat(yhteysluokka)));
 
-                muokkausStage.close();
             } else {
-                // anna warning että jottain puuttuu
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Tallennus");
+                alert.setHeaderText("Kaikkia tietoja ei ole täytetty!");
+                alert.setContentText("Täytä kaikki kohdat jotta voit tallentaa");
+                alert.showAndWait();
                 e.consume();
             }
         });
@@ -188,16 +204,36 @@ public class AsiakasLuokka {
                 lista.setAll(FXCollections.observableArrayList(haeAsiakkaat(yhteysluokka)));
 
                 // TARVITAAN ilmoita että asiakastiedot poistettu
-
+                Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
+                alert2.setTitle("Asiakkaan poisto onnistui");
+                alert2.setHeaderText("Tietojen poisto");
+                alert2.setContentText("Asiakkaan tiedot poistettu onnistuneesti");
                 muokkausStage.close();
             } else {
+                Alert alert45 = new Alert(Alert.AlertType.ERROR);
+                alert45.setTitle("Pakollisia tietoja puuttuu");
+                alert45.setHeaderText("Pakollisia vtietoja puuttuu.");
+                alert45.setContentText("Täytä kaikki kentät.");
+                alert45.showAndWait();
                 e.consume();
             }
         });
 
         suljeBt.setOnAction(e->{
             //kysy suljetaanko ikkuna
-            muokkausStage.close();
+            //kysy poistetaaanko varaus varmasti
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Poistuminen");
+            alert.setHeaderText("Poistutaanko?");
+            alert.setContentText("Tätä toimintoa ei voi enää peruuttaa.");
+            Optional<ButtonType> valinta = alert.showAndWait();
+
+            // jos painaa ok, poistetaan, jos painaa cancel, ei poisteta
+            if (valinta.isPresent() && valinta.get() == ButtonType.OK) {
+                muokkausStage.close();
+            } else {
+                e.consume();
+            }
         });
 
         VBox buttons=new VBox(tallennaBt,poistaBt,suljeBt);

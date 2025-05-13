@@ -185,5 +185,29 @@ public class MokkiData {
             e.printStackTrace();
         }
     }
+    public static boolean haeMokinID(Yhteysluokka yhteysluokka, int mokkiID) {
+        //yritetään saada yhteysluokan yhteys
+        try {
+            Connection conn = yhteysluokka.getYhteys();
+            if (conn == null) {
+                System.err.println("Tietokantayhteys epäonnistui.");
+                return true;
+            }
+            //vaan id ja hinta per yö sarakkeet
+            String sql = "SELECT COUNT(*) FROM mokit WHERE mokki_id = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, mokkiID);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                return count > 0; // true = ID on käytössä
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true; // o
+    }
 
 }
