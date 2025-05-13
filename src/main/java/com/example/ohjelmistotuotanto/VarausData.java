@@ -1,13 +1,8 @@
 package com.example.ohjelmistotuotanto;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.util.Duration;
-
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class VarausData {
@@ -48,7 +43,7 @@ public class VarausData {
                 String rivi = "Varaus ID: " + varausId +
                         ", Alku: " + alku +
                         ", Loppu: " + loppu +
-                        ", Hinta: " + hinta + " €" +
+                        ", Hinta: " + hinta +
                         ", Käyttäjä ID: " + kayttajaId +
                         ", Asiakas ID: " + asiakasId +
                         ", Mökki ID: " + mokkiId;
@@ -125,6 +120,48 @@ public class VarausData {
         return raportti;
     }
 
+    public ArrayList<String> haeTaloustiedot(Yhteysluokka olio){
+        ArrayList<String> talouslista=new ArrayList<>();
+
+
+        //yritetään yhteysluokan olion yhteys saada
+        try{
+            Connection lokalYhteys= olio.getYhteys();
+            if (lokalYhteys== null){
+                System.err.println("Yhdistys epäonnistui");
+            }
+            //sql script komento
+            String talousSql = """
+                SELECT varaus_id, varausalku_date, varausloppu_date, hinta, kayttaja_id
+                 FROM varaukset
+            """;
+            PreparedStatement stmt = lokalYhteys.prepareStatement(talousSql);
+
+
+            ResultSet rs = stmt.executeQuery();
+
+            //loopilla tiedot
+            while (rs.next()) {
+                int varausId = rs.getInt("varaus_id");
+                int hinta = rs.getInt("hinta");
+                int kayttajaId = rs.getInt("kayttaja_id");
+
+
+                //rivit
+                String rivi = "Varaus ID: " + varausId +
+                        ", Hinta: " + hinta + " €" +
+                        ", Käyttäjä ID: " + kayttajaId;
+
+                talouslista.add(rivi);
+            }
+            //error handling
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //valmis lista
+        return talouslista;
+    }
+
     public ArrayList<String> talousRaportti(Yhteysluokka olio, LocalDate alkaen, LocalDate asti){
         ArrayList<String> raportti =new ArrayList<>();
         //yritetään yhteysluokan olion yhteys saada
@@ -189,5 +226,80 @@ public class VarausData {
         return raportti;
     }
 
+    public boolean tarkistaVarausID(Yhteysluokka yhteysluokka, Integer varusnumero){
+
+        boolean olemassa = false;
+
+        try {
+            Connection lokalYhteys = yhteysluokka.getYhteys();
+            if (lokalYhteys == null) {
+                System.err.println("Yhdistys epäonnistui");
+                return false; // If the connection failed, return false.
+            }
+
+            // SQL query to check if varaus_id olemassa
+            String asiakasSql = "SELECT COUNT(*) FROM varaukset WHERE varaus_id = ?";
+            PreparedStatement stmt = lokalYhteys.prepareStatement(asiakasSql);
+            stmt.setInt(1, varusnumero);
+
+            // Execute the query and check the result
+            ResultSet asiRs = stmt.executeQuery();
+            if (asiRs.next()) {
+                int count = asiRs.getInt(1);  // Get the count of records
+                if (count > 0) {
+                    olemassa = true; // If count > 0, varaus_id olemassa
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return olemassa;
+    }
+
+
+    public void muokkaaVarausta(Yhteysluokka yhteysluokka, int varausID, LocalDate alkupv, LocalDate loppupv){
+
+        LocalDateTime lahtien = alkupv.atStartOfDay();
+        Timestamp tsLahtien = Timestamp.valueOf(lahtien);
+        LocalDateTime saakka = loppupv.atStartOfDay();
+        Timestamp tsSaakka = Timestamp.valueOf(saakka);
+
+        try {
+            Connection yhteys = yhteysluokka.getYhteys();
+            if (yhteys == null) {
+                System.err.println("Tietokantayhteys epäonnistui.");
+                return;
+            }
+            String sql = "UPDATE varaukset SET varausalku_date = ?, varausloppu_date = ? WHERE varaus_id = ?;";
+            PreparedStatement stmt = yhteys.prepareStatement(sql);
+            stmt.setTimestamp(1, tsLahtien);
+            stmt.setTimestamp(2, tsSaakka);
+            stmt.setInt(3, varausID);
+            stmt.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public void poistaVaraus(Yhteysluokka yhteysluokka, int varID){
+        try {
+            Connection yhteys = yhteysluokka.getYhteys();
+            if (yhteys == null) {
+                System.err.println("Tietokantayhteys epäonnistui.");
+                return;
+            }
+            String sql = "DELETE FROM varaukset WHERE varaus_id = ?";
+            PreparedStatement st = yhteys.prepareStatement(sql);
+            st.setInt(1,varID);
+            st.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }

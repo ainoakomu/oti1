@@ -1,8 +1,5 @@
 package com.example.ohjelmistotuotanto;
 
-
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -20,13 +17,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Optional;
@@ -41,9 +38,14 @@ import static com.example.ohjelmistotuotanto.VarausData.haeVaraukset;
 public class VarausLuokka {
 
     private int valitunMokinID;
+    private int muutosMokkiID;
     private int varauksenHinta;
     private int asiakasID;
     private int sekuntti = 0;
+    private int varausID;
+    private LocalDate alkuPVM;
+    private LocalDate loppuPVM;
+    private StringProperty valittuMokki=new SimpleStringProperty();
 
     public Stage luoVarauksetIkkuna(){
         Stage varausStage = new Stage();
@@ -57,25 +59,62 @@ public class VarausLuokka {
         //käytetään datanhaku metodia datan luokasta
         ObservableList<String> varausData = FXCollections.observableArrayList(haeVaraukset(olio));
         ListView<String> varauslista = new ListView<>(varausData);
-        varauslista.setMaxSize(350,250);
+        varauslista.setMaxSize(900,350);
         rootPaneeli.setCenter(varauslista);
+
+
+
+
+        varauslista.getSelectionModel().selectedItemProperty().addListener((obs, vanha, uusi) -> {
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+
+            if (uusi != null) {
+                String[] kentat = uusi.split(", ");
+
+                for (String kentta : kentat) {
+                    String[] avainArvo = kentta.split(": ");
+                    if (avainArvo.length < 2) continue;
+
+                    String avain = avainArvo[0].trim();
+                    String arvo = avainArvo[1].trim();
+
+                    switch (avain) {
+                        case "Varaus ID":
+                            setVarauksenID(Integer.valueOf(arvo));
+                            break;
+                        case "Asiakas ID":
+                            setAsiakasID(Integer.valueOf(arvo));
+                            break;
+                        case "Alku":
+                            LocalDateTime pelkkaAlkuPaiva = LocalDateTime.parse(arvo, formatter);
+                            setAlkuPVM(pelkkaAlkuPaiva.toLocalDate());
+                            break;
+                        case "Loppu":
+                            LocalDateTime pelkkaLoppuPaiva = LocalDateTime.parse(arvo, formatter);
+                            setLoppuPVM(pelkkaLoppuPaiva.toLocalDate());
+                            break;
+                        case "Hinta":
+                            setVarauksenHinta(Integer.valueOf(arvo));
+                            break;
+                        case "Mökki ID":
+                            muutosMokkiID = Integer.valueOf(arvo);
+                            break;
+                    }
+                }
+            }
+        });
 
         //buttonit ja action eventit
         Button addLasku=new Button("Tee lasku");
         Button muokkaaVarausta =new Button("Muokkaa varausta");
         Button suljeBt=new Button("Sulje");
 
-        addLasku.setOnAction(e->{
-            luoLisaaLaskuIkkuna().show();
-        });
+        addLasku.setOnAction(e-> luoLisaaLaskuIkkuna().show());
 
-        muokkaaVarausta.setOnAction(e->{
-            luoMuokkaaVaraustaIkkuna(varausData).show();
-        });
+        muokkaaVarausta.setOnAction(e-> luoMuokkaaVaraustaIkkuna(varausData).show());
 
-        suljeBt.setOnAction(e->{
-            varausStage.close();
-        });
+        suljeBt.setOnAction(e-> varausStage.close());
 
         HBox nappulaBoksi=new HBox(addLasku, muokkaaVarausta,suljeBt);
         nappulaBoksi.setSpacing(20);
@@ -83,7 +122,7 @@ public class VarausLuokka {
         nappulaBoksi.setAlignment(Pos.CENTER);
         rootPaneeli.setPadding(new Insets(5,5,5,5));
 
-        Scene varausScene = new Scene(rootPaneeli,500,500);
+        Scene varausScene = new Scene(rootPaneeli,1000,800);
         varausStage.setScene(varausScene);
         varausStage.setTitle("Varaukset");
         return varausStage;
@@ -105,48 +144,89 @@ public class VarausLuokka {
         Label loppulb =new Label("Varaus päättyy");
 
         TextField mokkiTxt=new TextField();
+        mokkiTxt.setEditable(false);
         TextField asiakasTxt =new TextField();
-        TextField alkuTxt =new TextField();
-        TextField loppuTxt =new TextField();
+        asiakasTxt.setEditable(false);
+
+        DatePicker checkInDatePicker = new DatePicker(LocalDate.now());
+        DatePicker checkOutDatePicker = new DatePicker();
+
+
         HBox row1=new HBox(mokkilb,mokkiTxt);
         row1.setSpacing(50);
         HBox row2=new HBox(asiakasLb, asiakasTxt);
         row2.setSpacing(43);
-        HBox row3=new HBox(alkulb, alkuTxt);
+        HBox row3=new HBox(alkulb, checkInDatePicker);
         row3.setSpacing(17);
-        HBox row4=new HBox(loppulb, loppuTxt);
+        HBox row4=new HBox(loppulb, checkOutDatePicker);
         row4.setSpacing(5);
         VBox sarake=new VBox(row1,row2,row3,row4);
         sarake.setSpacing(20);
-
         sarake.setSpacing(15);
         sarake.setAlignment(Pos.CENTER);
 
+        // JOS ON AIKAA, KENTTIEN ALLE VOISI VIELÄ LAITTAA VARAUKSEN HINNAN
+        // JA SE PÄIVITTYISI, JOS VARAUKSEN KESTO MUUTTUU.
+
+
+
+
+        // setataan varauksen tiedot
+        mokkiTxt.setText(String.valueOf(muutosMokkiID));
+        asiakasTxt.setText(String.valueOf(getAsiakasID()));
+        checkInDatePicker.setValue(getAlkuPVM());
+        checkOutDatePicker.setValue(getLoppuPVM());
+
         //buttonit ja action eventit
-        Button tallennaBt=new Button("Tallenna");
+        Button tallennaBt=new Button("Tallenna muutokset");
         Button poistaBt=new Button("Poista varaus");
         Button suljeBt=new Button("Sulje");
 
         Yhteysluokka yhteysluokka = new Yhteysluokka();
+        VarausData varausData = new VarausData();
 
         tallennaBt.setOnAction(e->{
-            //kysy tallennetaanko muutokse
-            //tallenna muutokset sqlään
-            //ilmoita että tallennettu
-            lista.setAll(FXCollections.observableArrayList(haeVaraukset(yhteysluokka)));
-            muokkausStage.close();
+
+            if(!mokkiTxt.getText().isEmpty()){
+                //TARVITAAN kysy tallennetaanko muutokset
+
+                //tallennetaan
+                varausData.muokkaaVarausta(yhteysluokka,getVarauksenID(),checkInDatePicker.getValue(),checkOutDatePicker.getValue());
+
+                lista.setAll(FXCollections.observableArrayList(haeVaraukset(yhteysluokka)));
+                muokkausStage.close();
+            }else {
+                // anna warning että jottain puuttuu
+                e.consume();
+            }
+
         });
 
         poistaBt.setOnAction(e->{
-            //kysy poistetaanko mökki
-            //poista mökki sqlästä
-            //ilmoita että poistettu
-            lista.setAll(FXCollections.observableArrayList(haeVaraukset(yhteysluokka)));
-            muokkausStage.close();
+            //kysy poistetaaanko varaus varmasti
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Varauksen poisto");
+            alert.setHeaderText("Poistetaanko varaus tietokannasta?");
+            alert.setContentText("Tätä toimintoa ei voi enää peruuttaa.");
+            Optional<ButtonType> valinta = alert.showAndWait();
+
+            // jos painaa ok, poistetaan, jos painaa cancel, ei poisteta
+            if (valinta.isPresent() && valinta.get() == ButtonType.OK) {
+                varausData.poistaVaraus(yhteysluokka,getVarauksenID());
+                lista.setAll(FXCollections.observableArrayList(haeVaraukset(yhteysluokka)));
+
+                // TARVITAAN ilmoita että asiakastiedot poistettu
+
+                muokkausStage.close();
+            } else {
+                e.consume();
+            }
+
         });
 
         suljeBt.setOnAction(e->{
-            //kysy suljetaanko ikkuna
+            //TARVITAAN kysy suljetaanko ikkuna
+
             lista.setAll(FXCollections.observableArrayList(haeVaraukset(yhteysluokka)));
             muokkausStage.close();
         });
@@ -164,6 +244,8 @@ public class VarausLuokka {
         muokkausStage.setTitle("Muokkaa varausta");
         return muokkausStage;
     }
+
+
 
     public Stage luoLisaaLaskuIkkuna(){
         Stage lisaaLaskuStage = new Stage();
@@ -239,9 +321,7 @@ public class VarausLuokka {
         teksti.setTextAlignment(TextAlignment.CENTER);
 
         Button okBt = new Button("OK");
-        okBt.setOnAction(e->{
-            valmisStage.close();
-        });
+        okBt.setOnAction(e-> valmisStage.close());
 
         BorderPane pane = new BorderPane();
         pane.setCenter(teksti);
@@ -261,6 +341,8 @@ public Stage luoUusiVarausIkkuna() {
     //yhteys sql
     Yhteysluokka yhteys = new Yhteysluokka();
 
+    VarausLuokka varausluokkaolio = new VarausLuokka();
+
     // mokkien lista
     ObservableList<String> mokkiData = FXCollections.observableArrayList(haeMokit(yhteys));
     ListView<String> mokkiLista = new ListView<>(mokkiData);
@@ -269,12 +351,13 @@ public Stage luoUusiVarausIkkuna() {
     // Vasemmalle puolelle kalenteri ja mokkilista
     VBox vasenpuoli = new VBox(10);
     vasenpuoli.setAlignment(Pos.CENTER);
-
     Label alkuLabel = new Label("Check-in päivämäärä");
     Label loppuLabel = new Label("Check-out päivämäärä");
+
     //kalenteri pickerit
     DatePicker checkInDatePicker = new DatePicker(LocalDate.now());
     DatePicker checkOutDatePicker = new DatePicker();
+
     //asettelu
     GridPane kalenteriPane = new GridPane();
     kalenteriPane.setHgap(10);
@@ -321,110 +404,80 @@ public Stage luoUusiVarausIkkuna() {
     Label varausLabel = new Label();
     Label hintaLabel = new Label();
 
-    // Arvojen sitominen hinnan laskua varten
-    StringProperty valittuMokki = new SimpleStringProperty();
-
-
     // ListView valinta -> päivittää valittuMokki & mokkiTextField
     mokkiLista.setOnMouseClicked(e -> {
         String valittu = mokkiLista.getSelectionModel().getSelectedItem();
-        //halutaan tallettaa mikä mökki oli jotta voidaan laskee hinta
-        valittuMokki.set(valittu);
-        //jotta kenttään tulee oikea valittu tieto
-        mokkiTextField.setText(valittu);
 
-        // TÄMÄ PITÄÄ KATTOO, ETTÄ MITEN MÖKIN ID OTETAAN - MUUTEN EI TOIMI.
-        mokkiLista.getSelectionModel().selectedItemProperty().addListener((obs, vanha, uusi) -> {
-            if (uusi != null) {
-                String[] kentat = uusi.split(", ");
+        if (valittu != null && !valittu.isEmpty()) {
 
-                for (String kentta : kentat) {
-                    String[] avainArvo = kentta.split(": ");
-                    if (avainArvo.length < 2) continue;
+            valittuMokki.set(valittu);
+            System.out.println(valittuMokki);
+            mokkiTextField.setText(valittu);
+        } else {
 
-                    String avain = avainArvo[0].trim();
-                    String arvo = avainArvo[1].trim();
-
-                    switch (avain) {
-                        case "ID":
-                            try {
-                                setValitunMokinID(Integer.parseInt(arvo)); // Tässä pitää käyttää arvoa, ei avainta
-                                System.out.println("Valittu mökki ID: " + arvo);
-                            } catch (NumberFormatException ev) {
-                                System.err.println("Virheellinen mökki-ID: " + arvo);
-                            }
-                            break;
-                    }
-
-                    System.out.println("Mennään lisäämään varaus mökille ID: " + getValitunMokinID());
-                }
-            }
-        });
+            mokkiTextField.setText("et valinnut mökkiä");
+        }
     });
+
     //alustetaan mökin hinnan laskua hakemalla metodilla sql id+hintaperyö
     Map<Double, Integer> hintaToMokkiId = MokkiData.haeMokinHinta(yhteys);
 
     // Kalenterin kuuntelijat ja muutettavat labelit sekä hinnan lasku ja textfieldin päivitys päivämäärän mukaan
-    ChangeListener<LocalDate> paivamaaraListener = new PaivamaaraListener(
+    ChangeListener<LocalDate> yleinenkuuntelija = new PaivamaaraListener(
             checkInDatePicker, checkOutDatePicker,
             varausLabel, hintaLabel,
             alkuVarausTextField, paattyVarausTextField,
             hintaToMokkiId, valittuMokki
     );
     //lisätään luotu kuuntelija
-    checkInDatePicker.valueProperty().addListener(paivamaaraListener);
-    checkOutDatePicker.valueProperty().addListener(paivamaaraListener);
+    checkInDatePicker.valueProperty().addListener(yleinenkuuntelija);
+    checkOutDatePicker.valueProperty().addListener(yleinenkuuntelija);
 
-    Yhteysluokka yhteysluokka = new Yhteysluokka();
     AsiakasData asiakasData = new AsiakasData();
+    VarausData varausData = new VarausData();
+
 
     // Painikkeet
     Button tallennaButton = new Button("Tallenna");
-    tallennaButton.setOnAction(e->{
+    tallennaButton.setOnAction(e -> {
 
         // jos kaikki kentät täytetty, tallennetaan ja suljetaan
-        if((!mokkiTextField.getText().isEmpty())&&(!alkuVarausTextField.getText().isEmpty())&&(!paattyVarausTextField.getText().isEmpty())&&
-                (!nimiTextField.getText().isEmpty())&&(!emailTextField.getText().isEmpty())&&(!puhelinTextField.getText().isEmpty())&&(!osoiteTextField.getText().isEmpty())){
+        if ((!mokkiTextField.getText().isEmpty()) && (!alkuVarausTextField.getText().isEmpty()) && (!paattyVarausTextField.getText().isEmpty()) &&
+                (!nimiTextField.getText().isEmpty()) && (!emailTextField.getText().isEmpty()) && (!puhelinTextField.getText().isEmpty()) && (!osoiteTextField.getText().isEmpty())) {
+            int tarkID = asiakasData.tarkistaAsiakas(yhteys, nimiTextField.getText());
 
-            int tarkID = asiakasData.tarkistaAsiakas(yhteysluokka,nimiTextField.getText());
-
-            if(tarkID>0){
-                lisaaVaraus(yhteys,annaVarausID() ,tarkID, 5,checkInDatePicker.getValue() ,checkOutDatePicker.getValue(),getVarauksenHinta(),annaKayttajaID());
-            } else if (tarkID==0){
-
-                lisaaUusiAsiakas(yhteys,annaAsiakasID(),nimiTextField.getText(),emailTextField.getText(),puhelinTextField.getText(),osoiteTextField.getText());
-
-
-                Timeline timeline = new Timeline();
-                timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(1), eventti->{
-
-                    if(sekuntti<2){
-                        sekuntti+=1;
-                    } else {
-                        timeline.stop();
-                        sekuntti = 0;
-                        lisaaVaraus(yhteys,annaVarausID(), asiakasID, 5,checkInDatePicker.getValue() ,checkOutDatePicker.getValue(),getVarauksenHinta(),annaKayttajaID());
-                    }
-                }));
-
-                // LISÄÄ ILMOITUS, ETTÄ UUSI ASIAKAS LISÄTTY.
+            if (tarkID > 0) {
+                // Asiakas löytyy
+                setAsiakasID(tarkID);
+            } else {
+                // Uusi asiakas
+                int uusiAsiakasID = luoAsiakasID.asiakasID(yhteys, asiakasData);
+                setAsiakasID(uusiAsiakasID);
+                lisaaUusiAsiakas(yhteys, getAsiakasID(), nimiTextField.getText(), emailTextField.getText(),puhelinTextField.getText(), osoiteTextField.getText());
             }
 
+            int uusiVarausID = VarausID.luoVarausID(yhteys, varausData);
+            setVarauksenID(uusiVarausID);
 
+            lisaaVaraus(yhteys, getVarauksenID(), checkInDatePicker.getValue(),
+                    checkOutDatePicker.getValue(), getVarauksenHinta(),
+                    annaKayttajaID(), getAsiakasID(), getValitunMokinID());
 
-            valmisStage.close();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Varaus lisätty");
+            alert.setHeaderText("Varaus lisättiin onnistuneesti!");
+            alert.showAndWait();
+
+        valmisStage.close();
 
         } else {
-            // Jos joku puuttuu, huomautetaan
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Pakollisia tietoja puuttuu");
-            alert.setHeaderText("Pakollisia varaustietojaa puuttuu.");
-            alert.setContentText("Vinkki!\nValitse mökki, check-in - ja check-out päivät." +
-                    "\nTäytä asiakkaan nimi, sähköpostiosoite, puhelinnumero ja kotiosoite.");
-            alert.showAndWait();
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Pakollisia tietoja puuttuu");
+        alert.setHeaderText("Pakollisia varaustietoja puuttuu.");
+        alert.setContentText("Täytä kaikki kentät.");
+        alert.showAndWait();
         }
-
-    });
+        });
 
     Button suljeButton = new Button("Sulje");
 
@@ -452,8 +505,6 @@ public Stage luoUusiVarausIkkuna() {
         }
     });
 
-
-
     //lisäys
     oikeapuoli.getChildren().addAll(rowBox, varausLabel, hintaLabel, tallennaButton, suljeButton);
     //asettelu
@@ -461,121 +512,172 @@ public Stage luoUusiVarausIkkuna() {
     rootPaneeli.setRight(oikeapuoli);
     rootPaneeli.setStyle("-fx-background-color: #bfddf2;");
 
-    Scene scene = new Scene(rootPaneeli, 600, 600);
+    Scene scene = new Scene(rootPaneeli, 700, 600);
     valmisStage.setScene(scene);
     valmisStage.setTitle("Luo uusi varaus");
     return valmisStage;
 }
 
     public int getValitunMokinID() {
-        return valitunMokinID;
+        String mokkiString = valittuMokki.get();
+
+        // onko empty
+        if (mokkiString == null || mokkiString.isEmpty()) {
+            throw new IllegalStateException("Valittu mökki on null tai tyhjä.");
+        }
+
+        //
+        Pattern idPattern = Pattern.compile("ID: (\\d)");
+        Matcher idMatcher = idPattern.matcher(mokkiString);
+
+        //
+        if (idMatcher.find()) {
+            int id = Integer.parseInt(idMatcher.group(1));
+            System.out.println(id);
+            setValitunMokinID(id);
+            return id;
+        }
+
+        // If no match is found, throw an exception
+        throw new RuntimeException("Ei löytynyt vapaata varausnumeroa.");
     }
 
     public void setValitunMokinID(int valitunMokinID) {
         this.valitunMokinID = valitunMokinID;
     }
-
     public int getVarauksenHinta() {
+
         return varauksenHinta;
     }
-
     public void setVarauksenHinta(int varauksenHinta) {
         this.varauksenHinta = varauksenHinta;
     }
-
     public int getAsiakasID(){
         return asiakasID;
     }
     public void setAsiakasID(int idnumero){
         this.asiakasID=idnumero;
     }
-    //sisäluokka päivämäärien ja muiden updatemiseen
-    public static class PaivamaaraListener implements ChangeListener<LocalDate> {
-        private DatePicker checkIn;
-        private DatePicker checkOut;
-        private Label varaus;
-        private Label hinta;
-        private TextField alku;
-        private TextField loppu;
-        private Map<Double, Integer> hintaToMokkiId;
-        private StringProperty valittuMokki;
-
-        //alustaja jossa kaikki mitä halutaan  muuttaa
-        public PaivamaaraListener(DatePicker checkIn, DatePicker checkOut, Label varaus, Label hinta,
-                                  TextField alku, TextField loppu,
-                                  Map<Double, Integer> hintaToMokkiId, StringProperty valittuMokki) {
-            this.checkIn = checkIn;
-            this.checkOut = checkOut;
-            this.varaus = varaus;
-            this.hinta = hinta;
-            this.alku = alku;
-            this.loppu = loppu;
-            this.hintaToMokkiId = hintaToMokkiId;
-            this.valittuMokki = valittuMokki;
+    public int getVarauksenID(){
+        return varausID;
         }
+    public void setVarauksenID(Integer varausnumero){
+        this.varausID=varausnumero;
+    }
 
+    public LocalDate getAlkuPVM() {
+        return alkuPVM;
+    }
+
+    public void setAlkuPVM(LocalDate alkuPVM) {
+        this.alkuPVM = alkuPVM;
+    }
+
+    public LocalDate getLoppuPVM() {
+        return loppuPVM;
+    }
+
+    public void setLoppuPVM(LocalDate loppuPVM) {
+        this.loppuPVM = loppuPVM;
+    }
+
+    //sisäluokka päivämäärien ja muiden updatemiseen
         //lister-interface toiminto, jolla päivät tunnistetaan
-        @Override
-        public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
-            //eihän oo tyhjää
-            LocalDate checkIn = this.checkIn.getValue();
-            LocalDate checkOut = this.checkOut.getValue();
+        public static class PaivamaaraListener implements ChangeListener<LocalDate> {
+            private DatePicker checkIn;
+            private DatePicker checkOut;
+            private Label varaus;
+            private Label hinta;
+            private TextField alku;
+            private TextField loppu;
+            private Map<Double, Integer> hintaToMokkiId;
+            private StringProperty valittuMokki2;
 
-            // Onko valittu ja onko start ennen end päivää
-            if (checkIn != null && checkOut != null && !checkOut.isBefore(checkIn)) {
-                // Lasketaan päivät välissä chronoUnittilla
-                long valipaivat = ChronoUnit.DAYS.between(checkIn, checkOut);
-                varaus.setText("Mökkivaraus on: " + valipaivat + " vuorokautta");
 
-                // Päivämäärät kenttiin
-                alku.setText(checkIn.toString());
-                loppu.setText(checkOut.toString());
+            public PaivamaaraListener(DatePicker checkIn, DatePicker checkOut, Label varaus, Label hinta,
+                                      TextField alku, TextField loppu, Map<Double, Integer> hintaToMokkiId,
+                                      StringProperty valittuMokki) {
+                this.checkIn = checkIn;
+                this.checkOut = checkOut;
+                this.varaus = varaus;
+                this.hinta = hinta;
+                this.alku = alku;
+                this.loppu = loppu;
+                this.hintaToMokkiId = hintaToMokkiId;
+                this.valittuMokki2 = valittuMokki;
+            }
 
-                // Hinta per yö siitä valitusta mökistä johon varaus tehdään
-                String mokkiString = valittuMokki.get();
-                //eihän oo tyhjää
-                if (mokkiString != null && !mokkiString.isEmpty()) {
-                    VarausLuokka varausLuokka = new VarausLuokka();
-                    //laitetaan haluttu teksti, jota hintaPattern etsii (Hinta/yö: numero €) muodossa
-                    //[] välissä hgyväksyy kaikki numerot doublena
-                    Pattern hintaPattern = Pattern.compile("Hinta/yö: ([\\d.]+) €");
-                    //etsii (ID:x) muotoa stringistä
-                    Pattern idPattern=Pattern.compile("ID: ([\\d+])");
+            @Override
+            public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
 
-                    //annetaan klikatun mökin string info, josta hintaPattern etsii yllä olevaa
-                    Matcher hintaMatcher = hintaPattern.matcher(mokkiString);
-                    //etsii myös id samaisesta stringistä
-                    Matcher idMatcher=idPattern.matcher(mokkiString);
+                LocalDate checkInDate = this.checkIn.getValue();
+                LocalDate checkOutDate = this.checkOut.getValue();
 
-                    //jos löytyy lasketaan hintta mökeille per yö
-                    if (hintaMatcher.find()) {
-                        //eka joka löytyy parsetaan string
-                        double price = Double.parseDouble(hintaMatcher.group(1));
-                        System.out.println(price);
-                        //päivät kertaa hinta on koko hinta
-                        double total = valipaivat * price;
-                        int smallInt = 0;
-                        varausLuokka.setVarauksenHinta(smallInt=(int)total);
-                        //asetetaan hinta -labelille arvoksi
-                        hinta.setText("Hinta yhteensä: " + total + " €");
+                // eihän oo empty
+                if (checkInDate != null && checkOutDate != null && !checkOutDate.isBefore(checkInDate)) {
+                    // valipaivaat
+                    long daysBetween = ChronoUnit.DAYS.between(checkInDate, checkOutDate);
+                    varaus.setText("Mökkivaraus on: " + daysBetween + " vuorokautta");
+
+                    //tieto textfieldiin
+                    alku.setText(checkInDate.toString());
+                    loppu.setText(checkOutDate.toString());
+
+                    // valitun mokin info
+                    String mokki = valittuMokki2.get();
+                    System.out.println(mokki);
+
+                    if (mokki != null && !mokki.isEmpty()) {
+                        //etsitään raha/yö pattern
+                        Pattern pricePattern = Pattern.compile("Hinta/yö: (\\d+(\\.\\d+)?)");
+                        Matcher priceMatcher = pricePattern.matcher(mokki);
+
+                        // lasketaan hinta
+                        if (priceMatcher.find()) {
+                            double pricePerNight = Double.parseDouble(priceMatcher.group(1));
+                            System.out.println("Hinta per yö: " + pricePerNight);
+
+                            // hinta per yö totaali
+                            double totalPrice = daysBetween * pricePerNight;
+                            hinta.setText("Hinta yhteensä: " + totalPrice + " €");
+                        } else {
+                            // If no price is found, show an error message or do nothing
+                            hinta.setText("Hinta ei löytynyt.");
+                        }
+                    } else {
+                        // If mokki information is missing, show an error or default message
+                        hinta.setText("Mökki ei ole valittu.");
                     }
-                    //jos löytyy lisätään id valintunmokin id:ksi
-                    if(idMatcher.find()){
-                        int id= Integer.parseInt((idMatcher.group(1)));
-                        System.out.println(id);
-                        varausLuokka.setValitunMokinID(id);
-                    }
+                } else {
+                    // If dates are invalid, reset the labels and text fields
+                    varaus.setText("Virheelliset päivämäärät.");
+                    hinta.setText("Hinta ei saatavilla.");
+                    alku.clear();
+                    loppu.clear();
                 }
             }
         }
-    }
+
+
+
     //lisää varaus
-    public void lisaaVaraus(Yhteysluokka yhteysluokka,Integer varaus_id, Integer asiakas_id, Integer mokki_id, LocalDate varausalku_date, LocalDate varausloppu_date, Integer hinta, Integer kayttaja_id){
+    public void lisaaVaraus(Yhteysluokka yhteysluokka,Integer varaus_id, LocalDate varausalku_date, LocalDate varausloppu_date, Integer hinta, Integer kayttaja_id,Integer asiakas_id, Integer mokki_id){
 
 
         if (varausalku_date == null || varausloppu_date == null) {
             throw new IllegalArgumentException("Päivämäärä ei saa olla null");
         }
+        VarausData tarkistaid = new VarausData();
+        boolean exists = tarkistaid.tarkistaVarausID(yhteysluokka, varaus_id);
+
+        if (exists) {
+            System.out.println("varaus_id on jo olemassa!");
+            return;
+        } else {
+
+            System.out.println("Lisätään uusi varaus"+varaus_id);
+        }
+
 
         LocalDateTime lahtien = varausalku_date.atStartOfDay();
         Timestamp tsLahtien = Timestamp.valueOf(lahtien);
@@ -587,26 +689,29 @@ public Stage luoUusiVarausIkkuna() {
             if (yhteys == null) {
                 System.err.println("Tietokantayhteys epäonnistui.");
             }
-            String sql = "INSERT INTO varaukset (varaus_id, asiakas_id, mokki_id, varausalku_date, varausloppu_date, hinta, kayttaja_id) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
+            String sql = "insert into varaukset values (?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement stmt = yhteys.prepareStatement(sql);
             stmt.setInt(1, varaus_id);
-            stmt.setInt(2, asiakas_id);
-            stmt.setInt(3, mokki_id);
-            stmt.setTimestamp(4, tsLahtien);
-            stmt.setTimestamp(5, tsSaakka);
-            stmt.setInt(6, hinta);
-            stmt.setInt(7, kayttaja_id);
+            stmt.setTimestamp(2, tsLahtien);
+            stmt.setTimestamp(3, tsSaakka);
+            stmt.setInt(4, hinta);
+            stmt.setInt(5, kayttaja_id);
+            stmt.setInt(6, asiakas_id);
+            stmt.setInt(7, mokki_id);
+
             stmt.executeUpdate();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Uusi varaus lisätty!");
+        alert.setHeaderText("Uusi varaus lisätty!");
+        alert.showAndWait();
     }
+
     //lisää asiakas
     public void lisaaUusiAsiakas(Yhteysluokka yhteysluokka,Integer asiakas_id, String asiakkaan_nimi, String asiakkaan_sahkoposti, String puhelinnumero, String koti_osoite){
-
-
 
         try {
             Connection yhteys = yhteysluokka.getYhteys();
@@ -625,34 +730,57 @@ public Stage luoUusiVarausIkkuna() {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-    public Integer annaVarausID() {
-        Random random = new Random();
-        int varausID = 0;
-        for (int i = 0; i < 4; i++) {
-            varausID = random.nextInt(100);
-            return varausID;
-        }
-        return varausID;
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Uusi asiakas lisätty!");
+        alert.setHeaderText("Uusi asiakas lisätty!");
+        alert.showAndWait();
     }
 
-    public Integer annaAsiakasID() {
-
-        // tää on hyvä näin, vielä lisätään, että checkataan, ettei se ID ole jo olemassa asiakastiedoissa
-        Random random = new Random();
-        int asiakasID = 0;
-        for (int i = 0; i < 3; i++) {
-            asiakasID = random.nextInt(100);
-            return asiakasID;
-        }
-        return asiakasID;
-    }
-
+    //kayttaja
     public Integer annaKayttajaID() {
+        //jos aikaa, huomio että jos tulee uusia käyttäjiä
         int[] kayttajat = {3887, 4459, 7866, 2644};
         Random random = new Random();
         int annaNumero=random.nextInt(kayttajat.length);
-        int valitseNumero=kayttajat[annaNumero];
-        return valitseNumero;
+        return kayttajat[annaNumero];
     }
+
+    public static class VarausID {
+
+        public static int luoVarausID(Yhteysluokka yhteysolio, VarausData varausData) {
+            Random random = new Random();
+
+            for (int i = 0; i < 1000; i++) {
+                int id = 1000 + random.nextInt(9000);
+                if (!varausData.tarkistaVarausID(yhteysolio, id)) {
+                    return id;
+                }
+            }
+
+            throw new RuntimeException("Ei löytynyt vapaata varausnumeroa.");
+        }
+    }
+
+    public static class luoAsiakasID {
+
+        public static int asiakasID(Yhteysluokka yhteysolio, AsiakasData asiakasData) {
+            Random random = new Random();
+
+            for (int i = 0; i < 100; i++) {
+                int asiakasnumero = 100 + random.nextInt(900); // 3-digit number
+
+                int exists = asiakasData.tarkistaAsiakasID(yhteysolio, asiakasnumero);
+
+                if (exists == 0) {
+                    System.out.println("Löytyi uniikki asiakas ID: " + asiakasnumero);
+                    return asiakasnumero;
+                } else {
+                    System.out.println("Asiakas ID " + asiakasnumero + " on jo olemassa.");
+                }
+            }
+
+            throw new RuntimeException("Ei löytynyt vapaata asiakasnumeroa 100 yrityksen jälkeen.");
+        }
+    }
+
 }
