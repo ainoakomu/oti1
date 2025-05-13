@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 import java.util.Optional;
 import java.util.Random;
 
+import static com.example.ohjelmistotuotanto.MokkiData.haeMokinID;
 import static com.example.ohjelmistotuotanto.MokkiData.haeMokit;
 
 public class MokkiLuokka{
@@ -129,11 +130,26 @@ public class MokkiLuokka{
 
         muokkaaMokkia.setOnAction(e->{
             //tarkistat iffillä onko mökki valittu listalta (mokki-id > 0)
-            luoMuokkausMokkiIkkuna(mokkitietoData).show();
+            if(mokkiID>0) {
+                luoMuokkausMokkiIkkuna(mokkitietoData).show();
+            }
         });
 
         suljeBt.setOnAction(e->{
-            mokkiStage.close();
+            //kysy suljetaanko ikkuna
+            //kysy poistetaaanko varaus varmasti
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Poistuminen");
+            alert.setHeaderText("Poistutaanko?");
+            alert.setContentText("Tätä toimintoa ei voi enää peruuttaa.");
+            Optional<ButtonType> valinta = alert.showAndWait();
+
+            // jos painaa ok, poistetaan, jos painaa cancel, ei poisteta
+            if (valinta.isPresent() && valinta.get() == ButtonType.OK) {
+                mokkiStage.close();
+            } else {
+                e.consume();
+            }
         });
 
 
@@ -191,21 +207,61 @@ public class MokkiLuokka{
         //buttonit ja action eventit
         Button tallennaBt = new Button("Tallenna");
         Button suljeBt = new Button("Sulje");
+        Yhteysluokka yhteysluokka = new Yhteysluokka();
+        MokkiData mokkiData = new MokkiData();
 
-        tallennaBt.setOnAction(e->{
-            //TARVITAAN: metodi jolla tarkistetaan onko kaikki tarvittavat tiedot täytetty
+        tallennaBt.setOnAction(e-> {
+
             // jos ei ole kaikkia tarvittavia tietoja, pitää tulla kehote täydentää
-
+            if ((osoiteTxt.getText().isEmpty()) || (hintaTxt.getText().isEmpty()) || (nelioTxt.getText().isEmpty()) || (vuodeTxt.getText().isEmpty())) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Pakollisia tietoja puuttuu");
+                alert.setHeaderText("Pakollisia tietoja puuttuu.");
+                alert.setContentText("Täytä kaikki kentät.");
+                alert.showAndWait();
+                e.consume();
+            }
             //luodaan uudelle mökille if, joka on välillä 6-99 (koska 1-5 on jo olemassa pohjadatassa)
-            //tähän tarviis vielä sellasen metodin, joka tarkistaa, että uusi id ei ole joku muu olemassa oleva id
-            int uusiID = new Random().nextInt(94)+6;
+            int uusiID;
+            Random random=new Random();
+            //jos onkoID on uniikki id we break, otherwise loops
+            while(true) {
+                uusiID=random.nextInt(94)+6;
+
+                if (!haeMokinID(yhteysluokka,uusiID)) {
+                    break;
+                }
+            }
             setMokkiID(uusiID);
 
+
             //setataan annetut tiedot
+            String hinta=hintaTxt.getText();
+            String neliot=nelioTxt.getText();
+            String vuode=vuodeTxt.getText();
+            int hintanum;
+            int nelionum;
+            int vuodenum;
+
+            //pass koska on string plus numero
             setMokinOsoite(osoiteTxt.getText());
-            setHintaPerYo(Double.parseDouble(hintaTxt.getText()));
-            setNeliot(Integer.valueOf(nelioTxt.getText()));
-            setVuodepaikat(Integer.valueOf(vuodeTxt.getText()));
+            //not pass ellei oo numero
+            try{
+                hintanum=Integer.parseInt(hinta);
+                nelionum=Integer.parseInt(neliot);
+                vuodenum=Integer.parseInt(vuode);
+                setHintaPerYo(hintanum);
+                setNeliot(nelionum);
+                setVuodepaikat(vuodenum);
+            } catch (NumberFormatException error){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Pakollisia tietoja puuttuu");
+                alert.setHeaderText("Täytä hinta, neliöt ja vuodepaikat numeroilla");
+                alert.setContentText("Täytä hinta, neliöt ja vuodepaikat numeroilla");
+                alert.showAndWait();
+                return;
+            }
+
 
             if(rantasaunaChbx.isSelected()){
                 setRantasauna(true);
@@ -233,9 +289,6 @@ public class MokkiLuokka{
                 setPalju(false);
             }
 
-            // tallenna tiedot tietokantaaan
-            Yhteysluokka yhteysluokka = new Yhteysluokka();
-            MokkiData mokkiData = new MokkiData();
             mokkiData.lisaaMokki(yhteysluokka,getMokkiID(),getHintaPerYo(),getMokinOsoite(),getNeliot(),getVuodepaikat(),isRantasauna(),isOmaranta(),isWifi(),isSisavessa(),isPalju());
 
             setMokkiID(0);
@@ -249,18 +302,28 @@ public class MokkiLuokka{
             setSisavessa(false);
             setPalju(false);
 
-
             //päivitä listviewin lista
             lista.setAll(FXCollections.observableArrayList(haeMokit(yhteysluokka)));
-
             // TARVITAAN ilmoitus että tiedot tallennettu
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Tallennus");
+            alert.setHeaderText("Tallennetaanko varmsti?");
+            alert.setContentText("Tallenna ja sulje?");
+            Optional<ButtonType> sulje = alert.showAndWait();
 
-            //metodi joka tallentaa tiedot sqllään
-            uusiMokkiStage.close();
+            if (sulje.isPresent() && sulje.get() == ButtonType.OK) {
+                uusiMokkiStage.close();
+            }
+
         });
 
         suljeBt.setOnAction(e->{
             //kysy suljetaanko
+            Alert alert4 = new Alert(Alert.AlertType.INFORMATION);
+            alert4.setTitle("Poistu");
+            alert4.setHeaderText("Poistu tallentamatta");
+            alert4.setContentText("Poistutko varmasti");
+            alert4.showAndWait();
             uusiMokkiStage.close();
         });
 
@@ -339,60 +402,73 @@ public class MokkiLuokka{
         MokkiData mokkiData = new MokkiData();
 
         tallennaBt.setOnAction(e->{
-            if(!osoiteTxt.getText().isEmpty()){
+            if((!osoiteTxt.getText().isEmpty())&&(!hintaTxt.getText().isEmpty())&&(!nelioTxt.getText().isEmpty())&&(!vuodeTxt.getText().isEmpty())){
 
                 //TARVITAAN kysy tallennetaanko muutokset
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Tallennus");
+                alert.setHeaderText("Tallennetaanko varmsti?");
+                alert.setContentText("Tallenna ja sulje?");
+                Optional<ButtonType> sulje = alert.showAndWait();
+                if (sulje.isPresent() && sulje.get() == ButtonType.OK) {
 
-                setMokinOsoite(osoiteTxt.getText());
-                setHintaPerYo(Double.parseDouble(hintaTxt.getText()));
-                setNeliot(Integer.valueOf(nelioTxt.getText()));
-                setVuodepaikat(Integer.valueOf(vuodeTxt.getText()));
+                    setMokinOsoite(osoiteTxt.getText());
+                    setHintaPerYo(Double.parseDouble(hintaTxt.getText()));
+                    setNeliot(Integer.valueOf(nelioTxt.getText()));
+                    setVuodepaikat(Integer.valueOf(vuodeTxt.getText()));
 
-                if(rantasaunaChbx.isSelected()){
-                    setRantasauna(true);
-                } else if (!rantasaunaChbx.isSelected()){
-                    setRantasauna(false);
+                    if (rantasaunaChbx.isSelected()) {
+                        setRantasauna(true);
+                    } else if (!rantasaunaChbx.isSelected()) {
+                        setRantasauna(false);
+                    }
+                    if (rantaChbx.isSelected()) {
+                        setOmaranta(true);
+                    } else if (!rantaChbx.isSelected()) {
+                        setOmaranta(false);
+                    }
+                    if (wifiChbx.isSelected()) {
+                        setWifi(true);
+                    } else if (!wifiChbx.isSelected()) {
+                        setWifi(false);
+                    }
+                    if (sisawcChbx.isSelected()) {
+                        setSisavessa(true);
+                    } else if (!sisawcChbx.isSelected()) {
+                        setSisavessa(false);
+                    }
+                    if (paljuChbx.isSelected()) {
+                        setPalju(true);
+                    } else if (!paljuChbx.isSelected()) {
+                        setPalju(false);
+                    }
+
+                    //tallenna muutokset sqlään
+                    mokkiData.muokkaaMokkia(yhteysluokka, getMokkiID(), getHintaPerYo(), getMokinOsoite(), getNeliot(), getVuodepaikat(), isRantasauna(), isOmaranta(), isWifi(), isSisavessa(), isPalju());
+
+                    //TARVITAAN ilmoita että tallennettu
+                    Alert alert3 = new Alert(Alert.AlertType.INFORMATION);
+                    alert3.setTitle("Lisätty");
+                    alert3.setHeaderText("Tiedot tallennettu");
+                    alert3.showAndWait();
+                    //päivitetään lista
+                    lista.setAll(FXCollections.observableArrayList(haeMokit(yhteysluokka)));
+                    //ilmoita että tallennettu
+                    muokkausStage.close();
                 }
-                if(rantaChbx.isSelected()){
-                    setOmaranta(true);
-                } else if (!rantaChbx.isSelected()){
-                    setOmaranta(false);
-                }
-                if(wifiChbx.isSelected()){
-                    setWifi(true);
-                } else if (!wifiChbx.isSelected()){
-                    setWifi(false);
-                }
-                if(sisawcChbx.isSelected()){
-                    setSisavessa(true);
-                } else if (!sisawcChbx.isSelected()){
-                    setSisavessa(false);
-                }
-                if(paljuChbx.isSelected()){
-                    setPalju(true);
-                } else if (!paljuChbx.isSelected()){
-                    setPalju(false);
-                }
-
-                //tallenna muutokset sqlään
-                mokkiData.muokkaaMokkia(yhteysluokka,getMokkiID(),getHintaPerYo(),getMokinOsoite(),getNeliot(),getVuodepaikat(),isRantasauna(),isOmaranta(),isWifi(),isSisavessa(),isPalju());
-
-                //TARVITAAN ilmoita että tallennettu
-
-                //päivitetään lista
-                lista.setAll(FXCollections.observableArrayList(haeMokit(yhteysluokka)));
-
-                //ilmoita että tallennettu
-                muokkausStage.close();
 
             }else {
                 // anna warning että jottain puuttuu
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Tallennus");
+                alert.setHeaderText("Kaikkia tietoja ei ole täytetty!");
+                alert.setContentText("Täytä kaikki kohdat jotta voit tallentaa");
+                alert.showAndWait();
                 e.consume();
             }
         });
 
         poistaBt.setOnAction(e->{
-            if(!osoiteTxt.getText().isEmpty()){
                 //kysy poistetaaanko mökki varmasti
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Mökkitiedon poisto");
@@ -407,21 +483,38 @@ public class MokkiLuokka{
                     lista.setAll(FXCollections.observableArrayList(haeMokit(yhteysluokka)));
 
                     // TARVITAAN ilmoita että käyttäjätiedot poistettu
+                    Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
+                    alert2.setTitle("Poistettu");
+                    alert2.setHeaderText("Poistettu");
+                    alert2.setContentText("Poistettu");
+                    alert2.showAndWait();
                     muokkausStage.close();
                 } else {
-                    e.consume();
-                }
-
-            } else {
                 // anna warning että jottain puuttuu
+                Alert alert45 = new Alert(Alert.AlertType.ERROR);
+                alert45.setTitle("Pakollisia tietoja puuttuu");
+                alert45.setHeaderText("Pakollisia vtietoja puuttuu.");
+                alert45.setContentText("Täytä kaikki kentät.");
+                alert45.showAndWait();
                 e.consume();
-                System.out.println("mökin id tyhjä");
+
             }
         });
 
         suljeBt.setOnAction(e->{
             //kysy suljetaanko ikkuna
-            muokkausStage.close();
+            Alert alert4 = new Alert(Alert.AlertType.CONFIRMATION);
+            alert4.setTitle("Varoitus");
+            alert4.setHeaderText("Poistutaanko");
+            alert4.setContentText("Poistu ?");
+            Optional<ButtonType> valinta = alert4.showAndWait();
+
+            // jos painaa ok, poistetaan, jos painaa cancel, ei poisteta
+            if (valinta.isPresent() && valinta.get() == ButtonType.OK) {
+                muokkausStage.close();
+            } else {
+                e.consume();
+            }
         });
 
         VBox buttons = new VBox(tallennaBt, poistaBt, suljeBt);

@@ -10,7 +10,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
@@ -349,35 +348,47 @@ public class AdminLuokka {
             if(!idTxt.getText().isEmpty()){
 
                 //TARVITAAN kysy tallennetaanko muutokset
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Tallennus");
+                alert.setHeaderText("Tallennetaanko");
+                alert.setContentText("Poistu ja tallenna");
+                Optional<ButtonType> valinta = alert.showAndWait();
+                if (valinta.isPresent() && valinta.get() == ButtonType.OK) {
+                    setKayNimi(nimiTxt.getText());
+                    setKayTun(kayttajaTxt.getText());
+                    setSalaSana(ssTxt.getText());
+                    if (anniskeluChbx.isSelected()) {
+                        setAnnOikeus(1);
+                    } else if (!anniskeluChbx.isSelected()) {
+                        setAnnOikeus(0);
+                    }
+                    if (hygieniaChbx.isSelected()) {
+                        setHygPassi(1);
+                    } else if (!hygieniaChbx.isSelected()) {
+                        setHygPassi(0);
+                    }
 
-                setKayNimi(nimiTxt.getText());
-                setKayTun(kayttajaTxt.getText());
-                setSalaSana(ssTxt.getText());
-                if(anniskeluChbx.isSelected()){
-                    setAnnOikeus(1);
-                } else if (!anniskeluChbx.isSelected()){
-                    setAnnOikeus(0);
+                    //tallenna muutokset sqlään
+                    kayttajaData.muokkaaKayttajaa(yhteysluokka, getKayID(), getKayNimi(), getKayTun(), getSalaSana(), getKayTaso(), getAnnOikeus(), getHygPassi());
+
+                    //päivitetään lista
+                    lista.setAll(FXCollections.observableArrayList(kayttajaData.haeKayttajat(yhteysluokka)));
+                    //ilmoita että tallennettu
+                    Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
+                    alert2.setTitle("Tallennettu");
+                    alert2.setHeaderText("Tallennettu");
+                    alert2.setContentText("Tallennus ok.");
+                    alert2.showAndWait();
+
+                    muokkausStage.close();
                 }
-                if(hygieniaChbx.isSelected()){
-                    setHygPassi(1);
-                } else if (!hygieniaChbx.isSelected()){
-                    setHygPassi(0);
-                }
-
-                //TARVITAAN kysy tallennetaanko muutokset
-
-                //tallenna muutokset sqlään
-                kayttajaData.muokkaaKayttajaa(yhteysluokka,getKayID(), getKayNimi(), getKayTun(), getSalaSana(), getKayTaso(), getAnnOikeus(), getHygPassi());
-
-                //TARVITAAN ilmoita että tallennettu
-
-                //päivitetään lista
-                lista.setAll(FXCollections.observableArrayList(kayttajaData.haeKayttajat(yhteysluokka)));
-
-                //ilmoita että tallennettu
-                muokkausStage.close();
             } else {
                 // anna warning että jottain puuttuu
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Varoitus");
+                alert.setHeaderText("Tietoja puuttuu");
+                alert.setContentText("Täytä kaikki tiedot ennen tallentamista");
+                alert.showAndWait();
                 e.consume();
             }
         });
@@ -397,6 +408,11 @@ public class AdminLuokka {
                     lista.setAll(FXCollections.observableArrayList(kayttajaData.haeKayttajat(yhteysluokka)));
 
                     // TARVITAAN ilmoita että käyttäjätiedot poistettu
+                    Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
+                    alert2.setTitle("Poistettu");
+                    alert2.setHeaderText("Poistettu");
+                    alert2.setContentText("Poisto ok.");
+                    alert2.showAndWait();
                     muokkausStage.close();
                 } else {
                     e.consume();
@@ -404,6 +420,11 @@ public class AdminLuokka {
 
             } else {
                 // anna warning että jottain puuttuu
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Pakollisia tietoja puuttuu");
+                alert.setHeaderText("Pakollisia tietoja puuttuu.");
+                alert.setContentText("Täytä kaikki kentät ennen tallentamista");
+                alert.showAndWait();
                 e.consume();
                 System.out.println("kayttajaid tyhjä");
             }
@@ -411,6 +432,11 @@ public class AdminLuokka {
 
         suljeBt.setOnAction(e->{
             //kysy suljetaanko ikkuna
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Poistuminen");
+            alert.setHeaderText("Poistutaanko");
+            alert.setContentText("Poistutaanko ilman muutoksia?");
+            alert.showAndWait();
             muokkausStage.close();
         });
 
@@ -516,12 +542,25 @@ public class AdminLuokka {
         Button sulje=new Button("Sulje");
 
         viePDF.setOnAction(e->{
-            RaportinLuonti raportinLuonti = new RaportinLuonti();
-            raportinLuonti.luoRaportti(valittuRaportti,alkupaiva.getValue(),loppupaiva.getValue());
-            raporttiValmis().show();
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Viedäänkö PDF");
+            alert.setHeaderText("Viedäänkö PDF tiedosto");
+            alert.setContentText("Olet luomassa PDF tiedostoa, jatketaanko");
+            Optional<ButtonType> valinta = alert.showAndWait();
+
+            if (valinta.isPresent() && valinta.get() == ButtonType.OK) {
+                RaportinLuonti raportinLuonti = new RaportinLuonti();
+                raportinLuonti.luoRaportti(valittuRaportti, alkupaiva.getValue(), loppupaiva.getValue());
+                raporttiValmis().show();
+            }
         });
 
         sulje.setOnAction(e->{
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Poistuminen");
+            alert.setHeaderText("Poistutaanko");
+            alert.setContentText("Poistutaanko ilman muutoksia?");
+            alert.showAndWait();
             raporttiStage.close();
         });
 
@@ -556,6 +595,11 @@ public class AdminLuokka {
 
         Button okBt = new Button("OK");
         okBt.setOnAction(e->{
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Raportti valmis");
+            alert.setHeaderText("Raportti valmis.");
+            alert.setContentText("Raportti on valmis.");
+            alert.showAndWait();
             valmisStage.close();
         });
 

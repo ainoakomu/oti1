@@ -8,7 +8,7 @@ public class Yhteysluokka {
     private Connection yhteys;
     final static String  url = "jdbc:mysql://localhost:3306/mokkikodit";
     final static String user = "root";
-    final static String password ="UusiT0imiva@Salasana";
+    final static String password ="ToukoKuu2025!";
 
     //alustaja, joka yrittää luoda yhteyden
     public Yhteysluokka() {
