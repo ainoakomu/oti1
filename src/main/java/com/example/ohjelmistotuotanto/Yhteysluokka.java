@@ -24,7 +24,7 @@ public class Yhteysluokka {
     /**
      * antaa yhteydelle serverin osoitteen salasanan
      */
-    final static String password ="Salasana";
+    final static String password ="ToukoKuu2025!";
 
     /**
      * luodaan parametriton alustaja, joka yrittaa saada yhteyden MySQl-workbenchiin

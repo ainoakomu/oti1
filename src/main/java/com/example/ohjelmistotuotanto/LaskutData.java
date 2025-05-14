@@ -74,4 +74,25 @@ public class LaskutData {
             e.printStackTrace();
         }
     }
+
+    public void paivitaLaskua(Yhteysluokka yhteysluokka, int laskuid, int varausid,boolean laskutettu, boolean maksettu){
+        try {
+            Connection yhteys = yhteysluokka.getYhteys();
+            if (yhteys == null) {
+                System.err.println("Tietokantayhteys epäonnistui.");
+            }
+            String sql = "UPDATE laskut SET varaus_id = ?, onko_laskutettu = ?, onko_maksettu = ? WHERE lasku_id = ?";
+            PreparedStatement stmt = yhteys.prepareStatement(sql);
+            stmt.setInt(1, varausid);
+            stmt.setBoolean(2, laskutettu);
+            stmt.setBoolean(3, maksettu);
+            stmt.setInt(4, laskuid);
+            stmt.executeUpdate();
+            System.out.println("Lasku päivitetty onnistuneesti.");
+            stmt.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

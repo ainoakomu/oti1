@@ -103,10 +103,6 @@ public class LaskunLuonti {
         laskutus.luoLasku(4466);
     }
 
-
-
-
-
     public int getVarausNro() {
         return varausNro;
     }
