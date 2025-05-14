@@ -59,7 +59,6 @@ public class AdminLuokka {
      */
     private int hygPassi = 0;
 
-
     /**
      * luodaan kayttajanhallinnan ikkuna, jossa voidaan kasitella tyontekijoita tai luoda erilaisia raportteja
      * @return palauttaa halutun stagen
@@ -395,8 +394,6 @@ public class AdminLuokka {
         }
         anniskeluChbx.setSelected(getAnnOikeus() == 1);
         hygieniaChbx.setSelected(getHygPassi() == 1);
-
-
 
         //buttonit ja action eventit
         Button tallennaBt=new Button("Tallenna muutokset");

@@ -12,15 +12,38 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+/**
+ * luodaan metodeja joilla rakennetaan erilaisia raportteja tietokannan datasta
+ *
+ */
 public class RaportinLuonti {
-
+    /**
+     * raportin uniikki nimi
+     */
     private String raportinNimi;
+    /**
+     * raportin luomispaivan
+     */
     private LocalDate date = LocalDate.now();
+    /**
+     * raportin luomispaiva stringina
+     */
     private String paivaNyt = date.format(DateTimeFormatter.BASIC_ISO_DATE);
+    /**
+     * raportin aikajanan alkupvm
+     */
     private LocalDate raporttiAlkaen;
+    /**
+     * raportin aikajana loppupvm
+     */
     private LocalDate raporttiAsti;
 
-
+    /**
+     * luodaan raportti varauksesta asiakkasta tai taloudesta
+     * @param raportti raportin nimi
+     * @param alkaen raportin aikajanan alkupvm
+     * @param asti * raportin aikajana loppupvm
+     */
     public void luoRaportti(String raportti, LocalDate alkaen, LocalDate asti) {
 
         setRaportinNimi(raportti);
@@ -101,26 +124,50 @@ public class RaportinLuonti {
         }
     }
 
+    /**
+     * haetaan raportin nimi
+     * @return nimi
+     */
     public String getRaportinNimi() {
         return raportinNimi;
     }
 
+    /**
+     * asetetaan raportille nimi
+     * @param raportinNimi haluttu nimi
+     */
     public void setRaportinNimi(String raportinNimi) {
         this.raportinNimi = raportinNimi;
     }
 
+    /**
+     * haetaan raportin alkupvm
+     * @return pvm
+     */
     public LocalDate getRaporttiAlkaen() {
         return raporttiAlkaen;
     }
 
+    /**
+     * asetetaan raportin alkupvm
+     * @param raporttiAlkaen haluttu pvm
+     */
     public void setRaporttiAlkaen(LocalDate raporttiAlkaen) {
         this.raporttiAlkaen = raporttiAlkaen;
     }
 
+    /**
+     * haetaan raportin loppupvm
+     * @return pvm
+     */
     public LocalDate getRaporttiAsti() {
         return raporttiAsti;
     }
 
+    /**
+     * asetetaan raportin loppupvm
+     * @param raporttiAsti haluttu pvm
+     */
     public void setRaporttiAsti(LocalDate raporttiAsti) {
         this.raporttiAsti = raporttiAsti;
     }
