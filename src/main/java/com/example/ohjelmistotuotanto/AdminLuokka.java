@@ -14,6 +14,9 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -59,6 +62,11 @@ public class AdminLuokka {
      */
     private int hygPassi = 0;
 
+
+    private int arvosteluID = 0;
+    private int varausID = 0;
+    private Double arvosana = 0.0;
+    private String arvostelu = "";
     /**
      * luodaan kayttajanhallinnan ikkuna, jossa voidaan kasitella tyontekijoita tai luoda erilaisia raportteja
      * @return palauttaa halutun stagen
@@ -75,6 +83,7 @@ public class AdminLuokka {
         //buttonit ja action eventit
         Button raporttibt=new Button("Raportit");
         Button kayttajanhallintabt=new Button("Käyttäjänhallinta");
+        Button arvostelutbt = new Button("Arvostelut");
         Button suljebt=new Button("Sulje");
 
         raporttibt.setOnAction(e->{
@@ -85,11 +94,16 @@ public class AdminLuokka {
             luoKayttajanhallintaIkkuna().show();
         });
 
+        arvostelutbt.setOnAction(e->{
+            luoArvostelutIkkuna().show();
+        });
+
         suljebt.setOnAction(e->{
             adminStage.close();
         });
 
         rootPaneeli.add(raporttibt,2,1);
+        rootPaneeli.add(arvostelutbt,1,1);
         rootPaneeli.add(kayttajanhallintabt,0,1);
         rootPaneeli.add(suljebt,2,2);
 
@@ -520,6 +534,247 @@ public class AdminLuokka {
      * luodaan ikkuna jossa voidaan valita aiheittan mista halutaan luoda pdf raportti
      * @return halutun stagen
      */
+    /**
+     * luodaan ikkuna jossa voidaan valita aiheittan mista halutaan luoda pdf raportti
+     * @return halutun stagen
+     */
+    public Stage luoArvostelutIkkuna(){
+        Stage arvosteluStage = new Stage();
+        BorderPane rootPaneeli=new BorderPane();
+        rootPaneeli.setBackground(Taustakuvat.TaustakuvaAsettaminen.luoToinenTausta());
+
+        Yhteysluokka yhteysluokka = new Yhteysluokka();
+        VarausData varausData = new VarausData();
+
+        ObservableList<String> arvosteluRaporttidata = FXCollections.observableArrayList(FXCollections.observableArrayList(varausData.haeArvostetlut((yhteysluokka))));
+
+        ListView<String> lista=new ListView<>(arvosteluRaporttidata);
+        lista.setMaxSize(600,350);
+        lista.setPadding(new Insets(10,10,10,10));
+        rootPaneeli.setCenter(lista);
+
+        lista.getSelectionModel().selectedItemProperty().addListener((obs, vanha, uusi) -> {
+            if (uusi != null) {
+                String[] kentat = uusi.split(", ");
+
+                for (String kentta : kentat) {
+                    String[] avainArvo = kentta.split(": ");
+                    if (avainArvo.length < 2) continue;
+
+                    String avain = avainArvo[0].trim();
+                    String arvo = avainArvo[1].trim();
+
+                    switch (avain) {
+                        case "Arvostelu ID":
+                            setArvosteluID(Integer.valueOf(arvo));
+                            break;
+                        case "Varaus ID":
+                            setVarausID(Integer.valueOf(arvo));
+                            break;
+                        case "arvosana":
+                            setArvosana(Double.parseDouble(arvo));
+                            break;
+                        case "arvostelu":
+                            setArvostelu(arvo);
+                            break;
+                    }
+                }
+            }
+        });
+
+        //buttonit ja action eventit
+        Button lisaaArvostelubt=new Button("Lisää uusi arvostelu");
+        Button poistaArvostelu=new Button("Poista arvostelu");
+        Button sulje=new Button("Sulje");
+
+        lisaaArvostelubt.setOnAction(e->{
+            luoUusiArvosteluIkkuna(arvosteluRaporttidata).show();
+        });
+
+        poistaArvostelu.setOnAction(e->{
+
+                if(getArvosteluID()>0){
+                    //kysy poistetaaanko arvostelu varmasti
+                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                    alert.setTitle("Arvostelun poisto");
+                    alert.setHeaderText("Poistetaanko arvostelu tietokannasta?");
+                    alert.setContentText("Tätä toimintoa ei voi enää peruuttaa.");
+                    Optional<ButtonType> valinta = alert.showAndWait();
+
+                    // jos painaa ok, poistetaan, jos painaa cancel, ei poisteta
+                    if (valinta.isPresent() && valinta.get() == ButtonType.OK) {
+                        varausData.poistaArvostelu(yhteysluokka,getArvosteluID());
+                        arvosteluRaporttidata.setAll(FXCollections.observableArrayList(FXCollections.observableArrayList(varausData.haeArvostetlut((yhteysluokka)))));
+
+                        // TARVITAAN ilmoita että käyttäjätiedot poistettu
+                        Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
+                        alert2.setTitle("Poistettu");
+                        alert2.setHeaderText("Arvostelu poistettu");
+                        alert2.setContentText("Poisto ok.");
+                        alert2.showAndWait();
+                    } else {
+                        e.consume();
+                    }
+
+                } else {
+                    // anna warning että jottain puuttuu
+                    Alert alert = new Alert(Alert.AlertType.WARNING);
+                    alert.setTitle("Pakollisia tietoja puuttuu");
+                    alert.setHeaderText("Ei valittua arvostelua");
+                    alert.setContentText("Valitse arvostelu listalta ja yritä uudestaan.");
+                    alert.showAndWait();
+                    e.consume();
+                }
+        });
+
+        sulje.setOnAction(e->{
+            arvosteluStage.close();
+        });
+
+        HBox alaosa=new HBox(lisaaArvostelubt,poistaArvostelu,sulje);
+        alaosa.setPadding(new Insets(10,10,10,10));
+        alaosa.setSpacing(10);
+        alaosa.setAlignment(Pos.CENTER);
+        rootPaneeli.setBottom(alaosa);
+
+        Scene arvosteluScene = new Scene(rootPaneeli,700,610);
+        arvosteluStage.setScene(arvosteluScene);
+        arvosteluStage.setTitle("Arvostelut");
+        return arvosteluStage;
+    }
+
+    public Stage luoUusiArvosteluIkkuna(ObservableList<String> lista){
+        Stage uusiArvosteluStage = new Stage();
+        GridPane rootPaneeli=new GridPane();
+        rootPaneeli.setAlignment(Pos.CENTER);
+        rootPaneeli.setVgap(10);
+        rootPaneeli.setHgap(10);
+        rootPaneeli.setPadding(new Insets(10));
+        rootPaneeli.setStyle("-fx-background-color: #eeccfc;");
+
+        Yhteysluokka yhteysluokka = new Yhteysluokka();
+        VarausData varausData = new VarausData();
+
+        //listataan varausid:t
+        ObservableList<Integer> varaustenlista = FXCollections.observableArrayList();
+        try {
+            Connection yhteys = yhteysluokka.getYhteys();
+            if (yhteys == null) {
+                System.err.println("Tietokantayhteys epäonnistui.");
+            }
+            String sql = "SELECT varaus_id FROM varaukset";
+            PreparedStatement stmt = yhteys.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery(sql);
+            while (rs.next()) {
+                varaustenlista.add(rs.getInt("varaus_id"));
+            };
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        ComboBox<Integer> varausComboBox = new ComboBox<>();
+        varausComboBox.setItems(varaustenlista);
+
+        Label varausLb =new Label("Varaus ID");
+        Label arvosanalb =new Label("Arvosana");
+        Label arvostelulb =new Label("Arvostelu");
+
+        TextField varausTxt =new TextField();
+        TextField arvosanaTxt =new TextField();
+        TextArea arvosteluTxtArea = new TextArea();
+        arvosteluTxtArea.setPrefHeight(200);
+        arvosteluTxtArea.setPrefWidth(200);
+
+        HBox row2=new HBox(varausLb, varausComboBox);
+        row2.setSpacing(57);
+        HBox row3=new HBox(arvosanalb, arvosanaTxt);
+        row3.setSpacing(5);
+        HBox row4=new HBox(arvostelulb,arvosteluTxtArea);
+        row4.setSpacing(38);
+        VBox sarake=new VBox(row2,row3,row4);
+        sarake.setSpacing(15);
+        sarake.setAlignment(Pos.CENTER);
+
+        //buttonit ja action eventit
+        Button tallennaBt=new Button("Tallenna uusi arvostelu");
+        Button suljeBt=new Button("Sulje");
+
+
+
+        tallennaBt.setOnAction(e->{
+
+            if ((varausComboBox.getValue()==null) || (arvosanaTxt.getText() == "") || (arvosteluTxtArea.getText() == "")) {
+                Alert alert3 = new Alert(Alert.AlertType.ERROR);
+                alert3.setTitle("Varoitus");
+                alert3.setHeaderText("Tietoja puuttuu");
+                alert3.setContentText("Täytä kaikki tiedot ennen tallentamista");
+                alert3.showAndWait();
+                e.consume();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle("Uusi arvostelu");
+                alert.setHeaderText("Lisätäänkö uusi arvostelu?");
+                Optional<ButtonType> valinta = alert.showAndWait();
+
+                // jos painaa ok, poistetaan, jos painaa cancel, ei poisteta
+                if (valinta.isPresent() && valinta.get() == ButtonType.OK) {
+
+                    setArvosteluID(varausData.arvostelunID(yhteysluokka));
+                    setVarausID(varausComboBox.getValue());
+                    setArvosana(Double.parseDouble(arvosanaTxt.getText()));
+                    setArvostelu(arvosteluTxtArea.getText());
+
+                    varausData.lisaaArvostelu(yhteysluokka, getArvosteluID(), getVarausID(), getArvosana(), getArvostelu());
+
+                    //päivitä listviewin lista
+                    lista.setAll(FXCollections.observableArrayList(FXCollections.observableArrayList(FXCollections.observableArrayList(varausData.haeArvostetlut((yhteysluokka))))));
+
+                    // ilmoitus että tiedot tallennettu
+                    Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
+                    alert2.setTitle("Tallennettu");
+                    alert2.setHeaderText("Uusi arvostelu lisätty.");
+                    alert2.setContentText("Tallennettu onnistuneesti tietokantaan");
+                    alert2.showAndWait();
+
+                    uusiArvosteluStage.close();
+                }
+            }
+        });
+
+        suljeBt.setOnAction(e->{
+            //kysy suljetaanko
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Poistu");
+            alert.setHeaderText("Poistutaanko uuden käyttäjän lisäyksestä?");
+            alert.setContentText("Tietoja ei tallenneta.");
+            Optional<ButtonType> valinta = alert.showAndWait();
+            if (valinta.isPresent() && valinta.get() == ButtonType.OK) {
+                uusiArvosteluStage.close();
+            }
+        });
+
+        VBox buttons=new VBox(tallennaBt,suljeBt);
+        buttons.setSpacing(15);
+        buttons.setAlignment(Pos.TOP_CENTER);
+        rootPaneeli.add(buttons,2,2);
+        VBox keskikohta=new VBox(sarake);
+        keskikohta.setSpacing(20);
+        rootPaneeli.add(keskikohta,1,0);
+
+        Scene uusiArvosteluScene = new Scene(rootPaneeli,500,500);
+        uusiArvosteluStage.setScene(uusiArvosteluScene);
+        uusiArvosteluStage.setTitle("Uusi arvostelu");
+
+        return uusiArvosteluStage;
+    }
+
+
+
+    /**
+     * luodaan ikkuna jossa voidaan valita aiheittan mista halutaan luoda pdf raportti
+     * @return halutun stagen
+     */
     public Stage luoRaportitIkkuna(){
         Stage raporttiStage = new Stage();
         BorderPane rootPaneeli=new BorderPane();
@@ -545,6 +800,7 @@ public class AdminLuokka {
         ObservableList<String> varausRaporttidata = FXCollections.observableArrayList(FXCollections.observableArrayList(haeVaraukset(yhteysluokka)));
         ObservableList<String> talousRaporttidata = FXCollections.observableArrayList(FXCollections.observableArrayList(varausData.haeTaloustiedot(yhteysluokka)));
         ObservableList<String> asiakasRaporttidata = FXCollections.observableArrayList(FXCollections.observableArrayList(haeAsiakkaat(yhteysluokka)));
+        ObservableList<String> arvosteluRaporttidata = FXCollections.observableArrayList(FXCollections.observableArrayList(varausData.haeArvostetlut((yhteysluokka))));
 
         ListView<String> lista=new ListView<>(raporttidata);
         lista.setMaxSize(600,350);
@@ -558,15 +814,17 @@ public class AdminLuokka {
         ToggleButton asiakasRaporttiBtn =new ToggleButton("Asiakasraportti");
         ToggleButton varausRaporttiBtn =new ToggleButton("Varausraportti");
         ToggleButton talousRaporttiBtn =new ToggleButton("Talousraportti");
+        ToggleButton arvosteluRaporttiBtn =new ToggleButton("Arvosteluraportti");
 
-        rapsaBox.getChildren().addAll(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn);
+
+        rapsaBox.getChildren().addAll(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn, arvosteluRaporttiBtn);
 
         ToggleGroup btnGroup = new ToggleGroup();
         btnGroup.getToggles().addAll(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn);
 
         asiakasRaporttiBtn.setOnAction(e->{
             valittuRaportti="Asiakasraportti";
-            napitReset(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn);
+            napitReset(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn,arvosteluRaporttiBtn);
             asiakasRaporttiBtn.setStyle(
                     "-fx-background-color: green;" +
                             "-fx-text-fill: white");
@@ -574,7 +832,7 @@ public class AdminLuokka {
         });
         varausRaporttiBtn.setOnAction(e->{
             valittuRaportti="Varausraportti";
-            napitReset(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn);
+            napitReset(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn,arvosteluRaporttiBtn);
             varausRaporttiBtn.setStyle(
                     "-fx-background-color: green;" +
                             "-fx-text-fill: white");
@@ -582,11 +840,19 @@ public class AdminLuokka {
         });
         talousRaporttiBtn.setOnAction(e->{
             valittuRaportti="Talousraportti";
-            napitReset(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn);
+            napitReset(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn,arvosteluRaporttiBtn);
             talousRaporttiBtn.setStyle(
                     "-fx-background-color: green;" +
                             "-fx-text-fill: white");
             raporttidata.setAll(talousRaporttidata);
+        });
+        arvosteluRaporttiBtn.setOnAction(e->{
+            valittuRaportti="Arvosteluraportti";
+            napitReset(asiakasRaporttiBtn,varausRaporttiBtn,talousRaporttiBtn,arvosteluRaporttiBtn);
+            arvosteluRaporttiBtn.setStyle(
+                    "-fx-background-color: green;" +
+                            "-fx-text-fill: white");
+            raporttidata.setAll(arvosteluRaporttidata);
         });
 
         HBox ylaosa =new HBox(rapsaBox,datebox);
@@ -687,10 +953,11 @@ public class AdminLuokka {
      * @param b tyhjennettava valinta
      * @param c tyhjennettava valinta
      */
-    public void napitReset(ToggleButton a, ToggleButton b, ToggleButton c){
+    public void napitReset(ToggleButton a, ToggleButton b, ToggleButton c,ToggleButton d){
         a.setStyle(null);
         b.setStyle(null);
         c.setStyle(null);
+        d.setStyle(null);
     }
 
     /**
@@ -801,5 +1068,37 @@ public class AdminLuokka {
      */
     public void setHygPassi(int hygPassi) {
         this.hygPassi = hygPassi;
+    }
+
+    public int getArvosteluID() {
+        return arvosteluID;
+    }
+
+    public void setArvosteluID(int arvosteluID) {
+        this.arvosteluID = arvosteluID;
+    }
+
+    public int getVarausID() {
+        return varausID;
+    }
+
+    public void setVarausID(int varausID) {
+        this.varausID = varausID;
+    }
+
+    public Double getArvosana() {
+        return arvosana;
+    }
+
+    public void setArvosana(Double arvosana) {
+        this.arvosana = arvosana;
+    }
+
+    public String getArvostelu() {
+        return arvostelu;
+    }
+
+    public void setArvostelu(String arvostelu) {
+        this.arvostelu = arvostelu;
     }
 }

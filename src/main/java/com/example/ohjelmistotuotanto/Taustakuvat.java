@@ -47,7 +47,7 @@ public class Taustakuvat {
          * @return haluttu tausta
          */
         public static Background luoToinenTausta() {
-            Image taustakuva = new Image(TaustakuvaAsettaminen.class.getResource("/kuva3.png").toExternalForm());
+            Image taustakuva = new Image(TaustakuvaAsettaminen.class.getResource("/Kuva3.png").toExternalForm());
 
             BackgroundSize taustaKoko = new BackgroundSize(
                     BackgroundSize.AUTO, //Ei skaalausta leveydelle

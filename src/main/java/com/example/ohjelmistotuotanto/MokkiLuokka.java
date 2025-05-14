@@ -550,7 +550,7 @@ public class MokkiLuokka{
         suljeBt.setOnAction(e->{
             //kysy suljetaanko ikkuna
             Alert alert4 = new Alert(Alert.AlertType.CONFIRMATION);
-            alert4.setTitle("Varoitus");
+            alert4.setTitle("Poistu");
             alert4.setHeaderText("Poistutaanko");
             alert4.setContentText("Poistu ?");
             Optional<ButtonType> valinta = alert4.showAndWait();
