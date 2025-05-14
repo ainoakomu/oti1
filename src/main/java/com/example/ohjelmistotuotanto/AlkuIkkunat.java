@@ -20,8 +20,17 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
+/**
+ * luokassa luodaan ohjelman alussa tarvittavat ikkunat, seka kasittelee niiden virhetilanteita
+ * Luokka linkittyy muihin ikkunoihin ja kasittelee niiden avaamisen
+ */
 public class AlkuIkkunat {
-
+    /**
+     * luodaan animaatiomainen avaus, josta jatketaan kirjautumisikkunaan
+     *
+     * @param stage annettu stage joka halutaan nayttaa
+     * @return palauttaa avattavan stagen
+     */
     public Scene ohjelmaAukeaa(Stage stage){
 
         //luodaan kuva
@@ -45,6 +54,13 @@ public class AlkuIkkunat {
         return new Scene(pane,400,400);
     }
 
+    /**
+     * luodaan kirjautumista kasitteleva ikkunan, ja kasitellaan niiden virhetilanteita
+     * jatketaan paaikkunaan kirjautumisen onnistuttua
+     *
+     * @param stage annettu stage joka halutaan nayttaa
+     * @return palauttaa avattavan stagen
+     */
     public Scene luoKirjatumisIkkuna(Stage stage){
         BorderPane rootPaneeli=new BorderPane();
         Scene ruutu=new Scene(rootPaneeli,400,400);
@@ -132,6 +148,14 @@ public class AlkuIkkunat {
         return ruutu;
     }
 
+    /**
+     * luodaan metodi, jolla suoritetaan kirjautumisen validointi
+     * kasitellaan virhetilanteet
+     *
+     * @param kayttajatunnus kayttajan kirjoittama kayttajatunnus
+     * @param salasana  kayttajan kirjoittama salasana
+     * @param stage annettu stage joka halutaan nayttaa
+     */
     public void voikoKirjauatua(TextField kayttajatunnus, PasswordField salasana,Stage stage){
         if (kayttajatunnus.getText().equals("admin") && salasana.getText().equals("1234")) {
             stage.setScene(luoTervetuloIkkuna(stage));
@@ -146,6 +170,12 @@ public class AlkuIkkunat {
 
     }
 
+    /**
+     * luodaan paaikkuna, josta paase kaikkiin muihin mahdollisiin ikkunoihin.
+     *
+     * @param stage annettu stage joka halutaan nayttaa
+     * @return palauttaa avattavan stagen
+     */
     public static Scene luoTervetuloIkkuna(Stage stage){
 
         GridPane rootPaneeli=new GridPane();
@@ -220,7 +250,6 @@ public class AlkuIkkunat {
             //tee tähän if, joka tarkistaa käyttäjän käyttöoikeuden.
             // jos ei admin, herjaa
             // jos on admin, suorita ao
-
             AdminLuokka adminIkkuna = new AdminLuokka();
             adminIkkuna.luoAdminToiminnotIkkuna().show();
         });
@@ -234,7 +263,11 @@ public class AlkuIkkunat {
         return new Scene(rootPaneeli,400,400);
     }
 
-    // metodilla avataan ikkuna, jolla varmistetaan uloskirjaus
+    /**
+     * luodaan uloskirjautumisen ikkuna, jossa vahvistetaan joko ohjelman lopetus tai peruutuus
+     *
+     * @param stage luodaan annettu stage
+     */
     public static void suljetaankoIkkuna(Stage stage){
         //Tekstin varjostus
         DropShadow varjostus = new DropShadow();

@@ -67,7 +67,6 @@ public class MokkiData {
         //palautetaan mokkien data
         return mokkiLista;
     }
-
     public static Map<Double, Integer> haeMokinHinta(Yhteysluokka yhteysluokka) {
         //key-value mappi, johon ID ja siihen liityvä hinta tallennetaan
         Map<Double, Integer> hintalista = new HashMap<>();
@@ -96,8 +95,6 @@ public class MokkiData {
         //palautetaan hinta data
         return hintalista;
     }
-
-
     public void lisaaMokki(Yhteysluokka yhteysluokka, int mokkiID, double hintaPerYo,
                            String mokinOsoite, int neliot, int vuodepaikat, boolean rantasauna, boolean omaranta,
                            boolean wifi, boolean sisavessa, boolean palju){
@@ -138,7 +135,6 @@ public class MokkiData {
             e.printStackTrace();
         }
     }
-
 
     public void muokkaaMokkia(Yhteysluokka yhteysluokka, int mokkiID, double hintaPerYo,
                               String mokinOsoite, int neliot, int vuodepaikat, boolean rantasauna, boolean omaranta,
@@ -209,6 +205,5 @@ public class MokkiData {
         }
         return true; // o
     }
-
 
 }

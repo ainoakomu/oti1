@@ -270,6 +270,8 @@ public class LaskunLuonti {
         return yhteystiedot;
     }
 
+
+
     public String mokinOsoite(Yhteysluokka yhteysluokka, int mokkiID) {
 
         String osoite = "";
@@ -297,6 +299,7 @@ public class LaskunLuonti {
         }
         return osoite;
     }
+
 
     public int getVarausNro() {
         return varausNro;
