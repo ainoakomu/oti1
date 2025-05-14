@@ -39,7 +39,10 @@ public class LaskuLuokka {
      */
     private boolean maksettu;
 
-    
+    /**
+     * haetaan laskun id
+     * @return laskun id
+     */
     public int getLaskuid() {
         return laskuid;
     }
@@ -51,8 +54,12 @@ public class LaskuLuokka {
     public void setLaskuid(int laskuid) {
         this.laskuid = laskuid;
     }
-  
-     public int getVarausid() {
+
+    /**
+     * haetaan varauksen id
+     * @return varauksen id
+     */
+    public int getVarausid() {
         return varausid;
     }
     /**
@@ -189,7 +196,8 @@ public class LaskuLuokka {
 
 
     /**
-     * luodaan ikkuna jolla voidaan paivittaa tietyn laskun tilaa
+     * luodaan laskun paivityksen ikkuna jossa voi vaihtaa laskun tilaa
+     * @param lista laskuista jotka valittavissa
      * @return haluttu stage
      */
     public Stage luoPaivitaLaskuIkkuna(ObservableList<String> lista){

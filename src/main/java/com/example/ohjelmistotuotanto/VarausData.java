@@ -407,6 +407,12 @@ public class VarausData {
      * @return false jos epaoonistuis, true jos uniikki, numero jos jo olemassa
      */
 
+    /**
+     * etsitaan onko varaus olemassa tietylla generoidulla numerolla
+     * @param yhteysluokka yhteys tietokantaan
+     * @param varusnumero verrattava varausnumero
+     * @return false jos epaoonistuis, true jos uniikki, numero jos jo olemassa
+     */
     public boolean tarkistaVarausID(Yhteysluokka yhteysluokka, Integer varusnumero){
 
         boolean olemassa = false;
