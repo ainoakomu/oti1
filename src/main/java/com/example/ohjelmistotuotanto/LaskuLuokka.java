@@ -17,8 +17,14 @@ import javafx.stage.Stage;
 import static com.example.ohjelmistotuotanto.LaskutData.haeLaskut;
 import static com.example.ohjelmistotuotanto.MokkiData.haeMokit;
 
+/**
+ * luodaan laskun luonnissa ja sen tilan paivittamisessa kaytettavia ikkunoita
+ */
 public class LaskuLuokka {
-
+    /**
+     * luodaan ikkuna jossa nakyvilla laskuja ja mahdollisuus paivittaa niita
+     * @return
+     */
     public Stage luoLaskuIkkuna(){
         Stage laskutStage = new Stage();
 
@@ -61,6 +67,10 @@ public class LaskuLuokka {
 
     }
 
+    /**
+     * luodaan ikkuna jolla voidaan paivittaa tietyn laskun tilaa
+     * @return haluttu stage
+     */
     public Stage luoPaivitaLaskuIkkuna(){
         Stage paivitysStage = new Stage();
         GridPane rootPaneeli=new GridPane();
@@ -78,6 +88,7 @@ public class LaskuLuokka {
 
         tallennaBt.setOnAction(e->{
             //metodi, jolla tallennetaan annetut muutokset
+
         });
 
         suljeBt.setOnAction(e->{

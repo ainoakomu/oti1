@@ -1,20 +1,22 @@
 package com.example.ohjelmistotuotanto;
 
-import javafx.collections.ObservableList;
-import javafx.scene.control.ListView;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+/**
+ * kasitellaan kayttaja-taulun dataa tietokannassa
+ * tehdaan muutoksia ja paivitetaan tietokantaa
+ */
 public class KayttajaData {
 
-    // Hakee käyttäjät tietokannasta
+    /**
+     * hakee kayttajien taulun kaikki tiedot tietokannasta ja palauttaa ne lista muodossa
+     * @param yhteysluokka yhteys tietokantaan
+     * @return tiedot kayttajista listana
+     */
     public static ArrayList<String> haeKayttajat(Yhteysluokka yhteysluokka) {
         ArrayList<String> kayttajaLista = new ArrayList<>();
         //yhteys
@@ -64,6 +66,17 @@ public class KayttajaData {
         return kayttajaLista;
     }
 
+    /**
+     * lisataan uusia kayttajia tietokantaan ja yllapidetaan tietokantaa
+     * @param yhteysluokka yhteys tietokantaan
+     * @param id uuden kayttajan id numero
+     * @param nimi uuden kayttajan nimi
+     * @param tunnus uuden kayttajan tunnus
+     * @param ss uuden kayttajan salasana
+     * @param kayttajaTaso kayttajan taso
+     * @param anniskeluOikeus kayttajan anniskelupassin olemassaolo
+     * @param hygieniaPassi kayttajan hygeniapassin olemassaolo
+     */
     public void lisaaKayttaja(Yhteysluokka yhteysluokka, int id, String nimi, String tunnus, String ss, String kayttajaTaso, int anniskeluOikeus, int hygieniaPassi){
         AdminLuokka adminLuokka = new AdminLuokka();
         try {
@@ -95,6 +108,17 @@ public class KayttajaData {
         }
     }
 
+    /**
+     * yllapidetaan tietokantaa ja sen kayttajat-taulua jos kayttajiin tulee muutoksia
+     * @param yhteysluokka yhteys tietokantaan
+     * @param id muuttunut id numero
+     * @param nimi muuttunut nimi
+     * @param tunnus muuttunut tunnus
+     * @param ss muuttunut salasana
+     * @param kayttajaTaso muuttunut kayttajan taso
+     * @param anniskeluOikeus muuttunut passin olemassaolo
+     * @param hygieniaPassi muuttunut passin olemassolo
+     */
     public void muokkaaKayttajaa(Yhteysluokka yhteysluokka, int id, String nimi, String tunnus, String ss, String kayttajaTaso, int anniskeluOikeus, int hygieniaPassi){
 
         try {
@@ -118,6 +142,11 @@ public class KayttajaData {
         }
     }
 
+    /**
+     * luodaan mahdollisuus poistaa kayttaja kokonaan tietokannasta
+     * @param yhteysluokka yhteys tietokantaan
+     * @param id poistettavan kayttajan id
+     */
     public void poistaKayttaja(Yhteysluokka yhteysluokka, int id){
         try {
             Connection yhteys = yhteysluokka.getYhteys();

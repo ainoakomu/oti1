@@ -17,15 +17,35 @@ import java.util.Optional;
 import static com.example.ohjelmistotuotanto.AsiakasData.haeAsiakkaat;
 import static com.example.ohjelmistotuotanto.VarausData.haeVaraukset;
 
-
+/**
+ * luodaan asiakkaiden yllapitoon ikkuna seka mahdollisuus muokata asiakkaita
+ */
 public class AsiakasLuokka {
-
+    /**
+     * asiakkaan identifioiva numerotunniste
+     */
     private int asiakasID;
+    /**
+     * asiakkaan nimi
+     */
     private String asiakkaanNimi;
+    /**
+     * asiakkaan sahkopostiosoite
+     */
     private String asiakkaanSposti;
+    /**
+     * asiakkaan puhelinnumero
+     */
     private String puhelinnumero;
+    /**
+     * asiakkaan kotiosoite
+     */
     private String kotiosoite;
 
+    /**
+     * luodaan ikkuna, johon tuodaan esille tietokannasta kaikkien asiakkaiden lista
+     * @return palautetaan haluttu stage
+     */
     public Stage luoAsiakkaatIkkuna(){
         Stage asiakasStage = new Stage();
         BorderPane rootPaneeli=new BorderPane();
@@ -100,6 +120,11 @@ public class AsiakasLuokka {
         return asiakasStage;
     }
 
+    /**
+     * luodaan asiakkaan muokkaamista kasitteleva ikkuna, joka paivittaa muutokset asiakkaat tauluun tietokannassa
+     * @param lista annettu lista asiakkaat taulusta
+     * @return palauttaa halutun stagen
+     */
     public Stage luoMuokkaaAsiakastaIkkuna(ObservableList<String> lista){
         Stage muokkausStage = new Stage();
         GridPane rootPaneeli=new GridPane();
@@ -251,42 +276,82 @@ public class AsiakasLuokka {
         return muokkausStage;
     }
 
+    /**
+     * haetaan asiakkaan id
+     * @return halutun asiakkan id numero
+     */
     public int getAsiakasID() {
         return asiakasID;
     }
 
+    /**
+     * asetetaan asiakkaan uusi id numero
+     * @param asiakasID uusi id numero
+     */
     public void setAsiakasID(int asiakasID) {
         this.asiakasID = asiakasID;
     }
 
+    /**
+     * haetaan asiakkaan nimi
+     * @return palautetaan loydetty nimi
+     */
     public String getAsiakkaanNimi() {
         return asiakkaanNimi;
     }
 
+    /**
+     * asetetaan asiakkaan nimi
+      * @param asiakkaanNimi haluttu nimi
+     */
     public void setAsiakkaanNimi(String asiakkaanNimi) {
         this.asiakkaanNimi = asiakkaanNimi;
     }
 
+    /**
+     * haetaan asiakkaan sahkopostiosoite
+     * @return palautetaan sahkopostiosoite
+     */
     public String getAsiakkaanSposti() {
         return asiakkaanSposti;
     }
 
+    /**
+     * asetetaan asiakkaalle sahkopostiosoite
+     * @param asiakkaanSposti haluttu sahkopostiosoite
+     */
     public void setAsiakkaanSposti(String asiakkaanSposti) {
         this.asiakkaanSposti = asiakkaanSposti;
     }
 
+    /**
+     * haetaan asiakkaan puhelinnumero
+     * @return palautetaan puhelinnumero
+     */
     public String getPuhelinnumero() {
         return puhelinnumero;
     }
 
+    /**
+     * asetetaan asiakkaalle puhelinnumero
+     * @param puhelinnumero haluttu puhelinnumero
+     */
     public void setPuhelinnumero(String puhelinnumero) {
         this.puhelinnumero = puhelinnumero;
     }
 
+    /**
+     * haetaan asiakkaan kotiosoite
+     * @return palautetaan kotiosoite
+     */
     public String getKotiosoite() {
         return kotiosoite;
     }
 
+    /**
+     * asetetaan asiakkalle kotiosoite
+     * @param kotiosoite haluttu kotiosoite
+     */
     public void setKotiosoite(String kotiosoite) {
         this.kotiosoite = kotiosoite;
     }

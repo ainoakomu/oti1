@@ -21,20 +21,49 @@ import java.util.Optional;
 import static com.example.ohjelmistotuotanto.AsiakasData.haeAsiakkaat;
 import static com.example.ohjelmistotuotanto.VarausData.haeVaraukset;
 
-
+/**
+ * luodaan kayttajahallintaan ja managerin toimintaa liittyvia ikkunoita ja yhditellaan niiden toimintoja
+ * kayttajahallinnassa kasitellaan tyontekijoiden tietoja seka raporttien tekoa
+ */
 public class AdminLuokka {
-
+    /**
+     * haluttu raportin valinnan muuttuja
+     */
     private String valittuRaportti;
+    /**
+     * kayttajan identifioiva numero
+     */
     private int kayID = 0;
+    /**
+     * kayttajan nimi
+     */
     private String kayNimi = "";
+    /**
+     * kayttajan oma tunnus jarjestelmaan
+     */
     private String kayTun= "";
+    /**
+     * kayttajan oma salasana jarjestelmaan
+     */
     private String salaSana= "";
+    /**
+     * maarittelee kayttajan admin tai perusoikeuden
+     */
     private String kayTaso= "";
+    /**
+     * kertoo onko kayttajalla anniskelupassi
+     */
     private int annOikeus = 0;
+    /**
+     * kertoo onko kayttajalla hygienipassi
+     */
     private int hygPassi = 0;
 
 
-
+    /**
+     * luodaan kayttajanhallinnan ikkuna, jossa voidaan kasitella tyontekijoita tai luoda erilaisia raportteja
+     * @return palauttaa halutun stagen
+     */
     public Stage luoAdminToiminnotIkkuna(){
         Stage adminStage = new Stage();
         GridPane rootPaneeli=new GridPane();
@@ -71,6 +100,10 @@ public class AdminLuokka {
         return adminStage;
     }
 
+    /**
+     * luodaan lista kayttajista, joita voi muokata, lisata
+     * @return palauttaa halutun stagen
+     */
     public Stage luoKayttajanhallintaIkkuna(){
         Stage kayttajatStage = new Stage();
         BorderPane rootPaneeli=new BorderPane();
@@ -174,6 +207,11 @@ public class AdminLuokka {
         return kayttajatStage;
     }
 
+    /**
+     * luodaan ikkuna jossa voi lisata kokonaan uuden kayttajan jarjestelmaan ja tietokantaan
+     * @param lista annettu kayttajat tietokanna taulun tiedot lista muodossa
+     * @return palauttaa halutun stagen
+     */
     public Stage luoUusiKayttajaIkkuna(ObservableList<String> lista){
         Stage uusiKayttajaStage = new Stage();
         GridPane rootPaneeli=new GridPane();
@@ -241,7 +279,6 @@ public class AdminLuokka {
                 setHygPassi(0);
             }
 
-            //TARVITAAN: metodi jolla tarkistetaan onko kaikki tarvittavat tiedot täytetty
             // jos ei ole kaikkia tarvittavia tietoja, pitää tulla kehote täydentää
 
             if((getKayID()==0)||(getKayNimi()=="")||(getKayTun()=="")||(getSalaSana()=="")||(getKayTaso()=="")){
@@ -301,6 +338,11 @@ public class AdminLuokka {
         return uusiKayttajaStage;
     }
 
+    /**
+     * luodaan ikkuna jossa on mahdollista muokata listalta valittua kayttajaa ja sen tietoja
+     * @param lista kayttajat taulu tietokannasta listamuotona
+     * @return palauttaa halutun stagen
+     */
     public Stage luoMuokkaaKayttajaIkkuna(ObservableList<String> lista){
         Stage muokkausStage = new Stage();
         GridPane rootPaneeli=new GridPane();
@@ -367,7 +409,7 @@ public class AdminLuokka {
         tallennaBt.setOnAction(e->{
             if((!idTxt.getText().isEmpty())&&(!nimiTxt.getText().isEmpty())&&(!kayttajaTxt.getText().isEmpty())&&(!ssTxt.getText().isEmpty())){
 
-                //TARVITAAN kysy tallennetaanko muutokset
+                // kysy tallennetaanko muutokset
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Tallennus");
                 alert.setHeaderText("Tallennetaanko muutokset?");
@@ -477,6 +519,10 @@ public class AdminLuokka {
         return muokkausStage;
     }
 
+    /**
+     * luodaan ikkuna jossa voidaan valita aiheittan mista halutaan luoda pdf raportti
+     * @return halutun stagen
+     */
     public Stage luoRaportitIkkuna(){
         Stage raporttiStage = new Stage();
         BorderPane rootPaneeli=new BorderPane();
@@ -496,8 +542,6 @@ public class AdminLuokka {
 
         Yhteysluokka yhteysluokka = new Yhteysluokka();
         VarausData varausData = new VarausData();
-
-
 
         // tähän pitää laaittaa et päivittää valittavan listaan valitun raportin perusteella
         ObservableList<String> raporttidata = FXCollections.observableArrayList("Valitse ensin tarkasteltava raportti");
@@ -547,9 +591,6 @@ public class AdminLuokka {
                             "-fx-text-fill: white");
             raporttidata.setAll(talousRaporttidata);
         });
-
-
-
 
         HBox ylaosa =new HBox(rapsaBox,datebox);
         ylaosa.setAlignment(Pos.TOP_CENTER);
@@ -605,6 +646,10 @@ public class AdminLuokka {
         return raporttiStage;
     }
 
+    /**
+     * luodaan ikkuna jossa kerrotaan kayttajalle etta haluttu raportti on luotu onnistuneesti
+     * @return
+     */
     public Stage raporttiValmis(){
         Stage valmisStage = new Stage();
         LocalDate date = LocalDate.now();
@@ -639,64 +684,124 @@ public class AdminLuokka {
         return valmisStage;
     }
 
+    /**
+     * tyhjennetaan valittujen nappien tiedot jos joku on valittu
+     * @param a tyhjennettava valinta
+     * @param b tyhjennettava valinta
+     * @param c tyhjennettava valinta
+     */
     public void napitReset(ToggleButton a, ToggleButton b, ToggleButton c){
         a.setStyle(null);
         b.setStyle(null);
         c.setStyle(null);
     }
 
+    /**
+     * haetaan kayttajan id numero
+     * @return palauttaa id numeron
+     */
     public int getKayID() {
         return kayID;
     }
-
+    /**
+     * aseteaan kayttajalle id numero
+     */
     public void setKayID(int kayID) {
         this.kayID = kayID;
     }
 
+    /**
+     * haetaan kayttajan nimi
+     * @return kayttajan nimi
+     */
     public String getKayNimi() {
         return kayNimi;
     }
 
+    /**
+     * asetetaan kayttajalle nimi
+     * @param kayNimi haluttu nimi
+     */
     public void setKayNimi(String kayNimi) {
         this.kayNimi = kayNimi;
     }
 
+    /**
+     * haetaan kayttajan tunnus
+     * @return palauttaa kayttajan tunnuksen
+     */
     public String getKayTun() {
         return kayTun;
     }
 
+    /**
+     * aseteaan kayttajan tunnus
+     * @param kayTun haluttu tunnus
+     */
     public void setKayTun(String kayTun) {
         this.kayTun = kayTun;
     }
 
+    /**
+     * haetaan kayttajan salasana
+     * @return kayttajan salasana
+     */
     public String getSalaSana() {
         return salaSana;
     }
 
+    /**
+     * asetetaan kayttajan salasana
+     * @param salaSana haluttu salasana
+     */
     public void setSalaSana(String salaSana) {
         this.salaSana = salaSana;
     }
 
+    /**
+     * haetaan kayttajan taso
+     * @return palautetaan kayttajan taso
+     */
     public String getKayTaso() {
         return kayTaso;
     }
 
+    /**
+     * asetetaan kayttajan taso
+     * @param kayTaso haluttu taso
+     */
     public void setKayTaso(String kayTaso) {
         this.kayTaso = kayTaso;
     }
 
+    /**
+     * haetaan kayttajan anniskelupassin olemassaolo
+     * @return anniskelupassioikeus
+     */
     public int getAnnOikeus() {
         return annOikeus;
     }
 
+    /**
+     * aseteaan anniskelupassin oikeus
+     * @param annOikeus annettu oikeus
+     */
     public void setAnnOikeus(int annOikeus) {
         this.annOikeus = annOikeus;
     }
 
+    /**
+     * haetaan kayttajan hygieniapassin olemassaoloa
+     * @return hygieniapassin olemassaolo
+     */
     public int getHygPassi() {
         return hygPassi;
     }
 
+    /**
+     * asetetaan kayttajalle hygienipassioikeus
+     * @param hygPassi haluttu oikeus passista
+     */
     public void setHygPassi(int hygPassi) {
         this.hygPassi = hygPassi;
     }

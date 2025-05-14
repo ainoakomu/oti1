@@ -5,19 +5,27 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+/**
+ * kasitellaan yhdistetyn tietokannan asiakas-taulua
+ * luokan metodeja hyodynnetaan tietokannan yllapidossa muissa ikkunoissa
+ */
 public class AsiakasData {
-
-    // Metodi hakee asiakkaat tietokannasta
+    /**
+     * haetaan sql-tietokannasta asiakkaat taulun tiedot kaytettavaksi muissa toiminoissa
+     *
+     * @param yhteysluokka yhteys sql-tietokantaan
+     * @return tiedot asiakkaat-taulusta arraylistin muotoisena tietueena
+     */
     public static ArrayList<String> haeAsiakkaat(Yhteysluokka yhteysluokka) {
         ArrayList<String> asiakasLista = new ArrayList<>();
-        //yhteys
+        //yhteys sql
         try {
             Connection yhteys = yhteysluokka.getYhteys();
             if (yhteys == null) {
                 System.err.println("Tietokantayhteys epäonnistui.");
                 return asiakasLista;
             }
-            //sql scripti
+            //sql scripti hakemaan data
             String sql = """
                 SELECT asiakas_id, asiakkaan_nimi, asiakkaan_sahkoposti, 
                        puhelinnumero, koti_osoite
@@ -25,7 +33,7 @@ public class AsiakasData {
             """;
             //Statementilla yhteys
             Statement statement = yhteys.createStatement();
-            //yhteys ja sql scripti
+            //yhteydelle sql scripti
             ResultSet resultSet = statement.executeQuery(sql);
             //loopilla tiedot sarakkeisiin
             while (resultSet.next()) {
@@ -51,9 +59,15 @@ public class AsiakasData {
         return asiakasLista;
     }
 
+    /**
+     * hartaan sql-tietokannasta asiakkaat-taulun tietoja kaytettavaksi raportoinnissa
+     *
+     * @param olio yhteys tietokantaan
+     * @return arraylistin muotoinen tietue taulun sisallosta
+     */
     public ArrayList<String> asiakasRaportti(Yhteysluokka olio){
         ArrayList<String> raportti =new ArrayList<>();
-
+        //yhteys
         try{
             Connection lokalYhteys= olio.getYhteys();
             if (lokalYhteys== null){
@@ -95,10 +109,18 @@ public class AsiakasData {
         return raportti;
     }
 
+    /**
+     * etsitaan onko olemassa tietylla nimella asiakas asiakkaat taulussa ennestaan
+     * palautetaan 0 jos asiakasta ei loydy, muuten palautetaan asiakkaan id
+     *
+     * @param yhteysluokka yhteys tietokantaan
+     * @param nimi asiakas joka halutaan tarkistaa tietokannasta
+     * @return palauttaa 0 tai asiakas id
+     */
     public int tarkistaAsiakas(Yhteysluokka yhteysluokka, String nimi){
 
         int kayttajanID = 0;
-
+        //yhteys
         try{
             Connection lokalYhteys= yhteysluokka.getYhteys();
             if (lokalYhteys== null){
@@ -122,21 +144,32 @@ public class AsiakasData {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        //palautetaan 0 jos ei loydy asiakas, muuten asiakas id
         return kayttajanID;
     }
 
-
+    /**
+     * Yllapidetaan sql tietokantaa, jos asiakkaat tauluun halutaan tehda muutoksia
+     *
+     * @param yhteysluokka yhteys tietokantaan
+     * @param asid paivitys asiakkaan id
+     * @param nimi paivitys asiakkaan nimeen
+     * @param sposti paivitys asiakkaan sahkopostiin
+     * @param puhelin paivitys asiakkaan puhelinnumeroon
+     * @param kotiosoite paivitys asiakkaan kotiosoitteeseen
+     */
     public void muokkaaAsiakasta(Yhteysluokka yhteysluokka, int asid, String nimi, String sposti, String puhelin, String kotiosoite){
-
+        //yhteys
         try {
             Connection yhteys = yhteysluokka.getYhteys();
             if (yhteys == null) {
                 System.err.println("Tietokantayhteys epäonnistui.");
                 return;
             }
+            //scripti
             String sql = "UPDATE asiakkaat SET asiakkaan_nimi = ? , asiakkaan_sahkoposti = ?, puhelinnumero = ?, koti_osoite = ? WHERE asiakas_id = ?;";
             PreparedStatement stmt = yhteys.prepareStatement(sql);
+            //lisays tietokantaan
             stmt.setString(1, nimi);
             stmt.setString(2, sposti);
             stmt.setString(3, puhelin);
@@ -149,6 +182,11 @@ public class AsiakasData {
         }
     }
 
+    /**
+     * poistetaan halutun asiakkaan tiedot tietokannasta pysyvast
+     * @param yhteysluokka yhteys sqltietokantaan
+     * @param asid poistettavan asiakkaan id
+     */
     public void poistaAsiakas(Yhteysluokka yhteysluokka, int asid){
         try {
             Connection yhteys = yhteysluokka.getYhteys();
@@ -166,6 +204,12 @@ public class AsiakasData {
         }
     }
 
+    /**
+     * tarkistetaan onko annetulla luodulla numerolla ennestaan asiakas, jotta valtytaan paallekkaisyyksilta
+     * @param yhteysluokka yhteys tietokantaan
+     * @param asiakasnumero generoitu tarkistettava asiakas id
+     * @return palautetaan 0 jos uniikki, asiakas id jos asiakas on olemassa
+     */
     public int tarkistaAsiakasID(Yhteysluokka yhteysluokka, Integer asiakasnumero){
 
         int kayttajanID = 0;
