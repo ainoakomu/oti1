@@ -17,7 +17,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
@@ -113,8 +112,7 @@ public class VarausLuokka {
         Button muokkaaVarausta =new Button("Muokkaa varausta");
         Button suljeBt=new Button("Sulje");
 
-        addLasku.setOnAction(e-> {luoLisaaLaskuIkkuna(olio).show();
-            System.out.println(laskulleVarID);});
+        addLasku.setOnAction(e-> luoLisaaLaskuIkkuna().show());
 
         muokkaaVarausta.setOnAction(e-> luoMuokkaaVaraustaIkkuna(varausData).show());
 
@@ -181,6 +179,7 @@ public class VarausLuokka {
 
         VBox sarake=new VBox(row1,row2,row3,row4,row5,row6,row7);
         sarake.setSpacing(20);
+
         sarake.setSpacing(15);
         sarake.setAlignment(Pos.CENTER);
 
@@ -243,7 +242,16 @@ public class VarausLuokka {
 
                     muokkausStage.close();
                 }
+
+            }else {
+                Alert alert3 = new Alert(Alert.AlertType.WARNING);
+                alert3.setTitle("Tallennus");
+                alert3.setHeaderText("Kaikkia tietoja ei ole täytetty!");
+                alert3.setContentText("Täytä kaikki kohdat jotta voit tallentaa");
+                alert3.showAndWait();
+                e.consume();
             }
+
         });
 
         poistaBt.setOnAction(e->{
@@ -268,6 +276,7 @@ public class VarausLuokka {
             } else {
                 e.consume();
             }
+
         });
 
         suljeBt.setOnAction(e->{
@@ -621,7 +630,6 @@ public Stage luoUusiVarausIkkuna() {
         // If no match is found, throw an exception
         throw new RuntimeException("Ei löytynyt vapaata varausnumeroa.");
     }
-
     public void setValitunMokinID(int valitunMokinID) {
         this.valitunMokinID = valitunMokinID;
     }
@@ -664,7 +672,7 @@ public Stage luoUusiVarausIkkuna() {
         this.varauksenKayttajanID = varauksenKayttajanID;
     }
 
-        //sisäluokka päivämäärien ja muiden updatemiseen
+    //sisäluokka päivämäärien ja muiden updatemiseen
         //lister-interface toiminto, jolla päivät tunnistetaan
         public static class PaivamaaraListener implements ChangeListener<LocalDate> {
             private DatePicker checkIn;
