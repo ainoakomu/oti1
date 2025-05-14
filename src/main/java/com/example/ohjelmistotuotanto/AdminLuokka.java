@@ -650,9 +650,6 @@ public class AdminLuokka {
         rootPaneeli.setPadding(new Insets(10));
         rootPaneeli.setStyle("-fx-background-color: #eeccfc;");
 
-
-
-
         Yhteysluokka yhteysluokka = new Yhteysluokka();
         VarausData varausData = new VarausData();
 

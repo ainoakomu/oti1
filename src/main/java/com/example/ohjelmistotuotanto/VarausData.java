@@ -279,7 +279,6 @@ public class VarausData {
      * @param arvostelu arvostelu
      */
     public void lisaaArvostelu(Yhteysluokka yhteysluokka, int arvID, int varID, Double arvosana, String arvostelu){
-
         try {
             Connection yhteys = yhteysluokka.getYhteys();
             if (yhteys == null) {
