@@ -17,7 +17,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
@@ -44,6 +43,7 @@ public class VarausLuokka {
     private int asiakasID;
     private int sekuntti = 0;
     private int varausID;
+    private int laskulleVarID = 0;
     private LocalDate alkuPVM;
     private LocalDate loppuPVM;
     private StringProperty valittuMokki=new SimpleStringProperty();
@@ -83,6 +83,7 @@ public class VarausLuokka {
                     switch (avain) {
                         case "Varaus ID":
                             setVarauksenID(Integer.valueOf(arvo));
+                            this.laskulleVarID = Integer.valueOf(arvo);
                             break;
                         case "Asiakas ID":
                             setAsiakasID(Integer.valueOf(arvo));
@@ -111,7 +112,7 @@ public class VarausLuokka {
         Button muokkaaVarausta =new Button("Muokkaa varausta");
         Button suljeBt=new Button("Sulje");
 
-        addLasku.setOnAction(e-> luoLisaaLaskuIkkuna().show());
+        addLasku.setOnAction(e-> luoLisaaLaskuIkkuna(olio).show());
 
         muokkaaVarausta.setOnAction(e-> luoMuokkaaVaraustaIkkuna(varausData).show());
 
@@ -178,6 +179,7 @@ public class VarausLuokka {
 
         VBox sarake=new VBox(row1,row2,row3,row4,row5,row6,row7);
         sarake.setSpacing(20);
+
         sarake.setSpacing(15);
         sarake.setAlignment(Pos.CENTER);
 
@@ -265,6 +267,7 @@ public class VarausLuokka {
             } else {
                 e.consume();
             }
+
         });
 
         suljeBt.setOnAction(e->{
@@ -297,7 +300,7 @@ public class VarausLuokka {
         return muokkausStage;
     }
 
-    public Stage luoLisaaLaskuIkkuna(){
+    public Stage luoLisaaLaskuIkkuna(Yhteysluokka yhteysluokka){
         Stage lisaaLaskuStage = new Stage();
 
         GridPane rootPaneeli=new GridPane();
@@ -331,13 +334,18 @@ public class VarausLuokka {
         sarake.setSpacing(15);
         sarake.setAlignment(Pos.CENTER);
 
+        mokkiTxt.setText(String.valueOf(muutosMokkiID));
+        asiakasTxt.setText(String.valueOf(getAsiakasID()));
+        alkuTxt.setText(getAlkuPVM().toString());
+        loppuTxt.setText(getLoppuPVM().toString());
+
         //buttonit ja action eventit
         Button laskutaBt=new Button("Luo lasku");
         Button suljeBt=new Button("Sulje");
 
         laskutaBt.setOnAction(e->{
             LaskunLuonti laskunLuonti =new LaskunLuonti();
-            laskunLuonti.luoLasku(getVarauksenID());
+            laskunLuonti.luoLasku(yhteysluokka,laskulleVarID);
             laskuValmis(laskunLuonti.getLaskuNro()).show();
             lisaaLaskuStage.close();
         });
@@ -655,7 +663,7 @@ public Stage luoUusiVarausIkkuna() {
         this.varauksenKayttajanID = varauksenKayttajanID;
     }
 
-        //sisäluokka päivämäärien ja muiden updatemiseen
+    //sisäluokka päivämäärien ja muiden updatemiseen
         //lister-interface toiminto, jolla päivät tunnistetaan
         public static class PaivamaaraListener implements ChangeListener<LocalDate> {
             private DatePicker checkIn;
