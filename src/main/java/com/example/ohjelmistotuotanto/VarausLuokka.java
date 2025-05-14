@@ -44,6 +44,7 @@ public class VarausLuokka {
     private int asiakasID;
     private int sekuntti = 0;
     private int varausID;
+    private int laskulleVarID = 0;
     private LocalDate alkuPVM;
     private LocalDate loppuPVM;
     private StringProperty valittuMokki=new SimpleStringProperty();
@@ -83,6 +84,7 @@ public class VarausLuokka {
                     switch (avain) {
                         case "Varaus ID":
                             setVarauksenID(Integer.valueOf(arvo));
+                            this.laskulleVarID = Integer.valueOf(arvo);
                             break;
                         case "Asiakas ID":
                             setAsiakasID(Integer.valueOf(arvo));
@@ -111,7 +113,8 @@ public class VarausLuokka {
         Button muokkaaVarausta =new Button("Muokkaa varausta");
         Button suljeBt=new Button("Sulje");
 
-        addLasku.setOnAction(e-> luoLisaaLaskuIkkuna().show());
+        addLasku.setOnAction(e-> {luoLisaaLaskuIkkuna(olio).show();
+            System.out.println(laskulleVarID);});
 
         muokkaaVarausta.setOnAction(e-> luoMuokkaaVaraustaIkkuna(varausData).show());
 
@@ -297,7 +300,7 @@ public class VarausLuokka {
         return muokkausStage;
     }
 
-    public Stage luoLisaaLaskuIkkuna(){
+    public Stage luoLisaaLaskuIkkuna(Yhteysluokka yhteysluokka){
         Stage lisaaLaskuStage = new Stage();
 
         GridPane rootPaneeli=new GridPane();
@@ -331,13 +334,18 @@ public class VarausLuokka {
         sarake.setSpacing(15);
         sarake.setAlignment(Pos.CENTER);
 
+        mokkiTxt.setText(String.valueOf(muutosMokkiID));
+        asiakasTxt.setText(String.valueOf(getAsiakasID()));
+        alkuTxt.setText(getAlkuPVM().toString());
+        loppuTxt.setText(getLoppuPVM().toString());
+
         //buttonit ja action eventit
         Button laskutaBt=new Button("Luo lasku");
         Button suljeBt=new Button("Sulje");
 
         laskutaBt.setOnAction(e->{
             LaskunLuonti laskunLuonti =new LaskunLuonti();
-            laskunLuonti.luoLasku(getVarauksenID());
+            laskunLuonti.luoLasku(yhteysluokka,laskulleVarID);
             laskuValmis(laskunLuonti.getLaskuNro()).show();
             lisaaLaskuStage.close();
         });
