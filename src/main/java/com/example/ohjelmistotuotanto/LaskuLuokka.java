@@ -21,6 +21,7 @@ import static com.example.ohjelmistotuotanto.MokkiData.haeMokit;
  * luodaan laskun luonnissa ja sen tilan paivittamisessa kaytettavia ikkunoita
  */
 public class LaskuLuokka {
+
     /**
      * laskun identifioiva numero
      */
@@ -38,10 +39,7 @@ public class LaskuLuokka {
      */
     private boolean maksettu;
 
-    /**
-     * haetaan laskun id
-     * @return laskun id
-     */
+    
     public int getLaskuid() {
         return laskuid;
     }
@@ -53,15 +51,10 @@ public class LaskuLuokka {
     public void setLaskuid(int laskuid) {
         this.laskuid = laskuid;
     }
-
-    /**
-     * haetaan varauksen id
-     * @return varauksen id
-     */
-    public int getVarausid() {
+  
+     public int getVarausid() {
         return varausid;
     }
-
     /**
      * asetetaan varauksen id
      * @param varausid haluttu id
@@ -194,9 +187,9 @@ public class LaskuLuokka {
 
     }
 
+
     /**
-     * luodaan laskun paivityksen ikkuna jossa voi vaihtaa laskun tilaa
-     * @param lista laskuista jotka valittavissa
+     * luodaan ikkuna jolla voidaan paivittaa tietyn laskun tilaa
      * @return haluttu stage
      */
     public Stage luoPaivitaLaskuIkkuna(ObservableList<String> lista){

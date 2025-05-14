@@ -76,6 +76,7 @@ public class MokkiData {
         return mokkiLista;
     }
 
+
     /**
      * haetaan mokit-taulun datasta mokin id korreloiva hinta per yo hashmap
      * @param yhteysluokka yhteys tietokantaan
@@ -109,6 +110,7 @@ public class MokkiData {
         //palautetaan hinta data
         return hintalista;
     }
+
 
     /**
      * lisataan tietokantaa uusi mokki kaikilla tiedoilla
@@ -164,6 +166,7 @@ public class MokkiData {
             e.printStackTrace();
         }
     }
+
 
     /**
      * muokataan mokin tietoja mokit-taulussa tietokannassa

@@ -338,6 +338,7 @@ public class LaskunLuonti {
     }
 
 
+
     /**
      * haetaan tietokannasta mokin id avulla mokin osoite
      *
@@ -371,6 +372,7 @@ public class LaskunLuonti {
         }
         return osoite;
     }
+
 
     /**
      * haetaan varauksen numero

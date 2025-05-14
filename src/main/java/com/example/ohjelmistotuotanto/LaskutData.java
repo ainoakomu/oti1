@@ -88,6 +88,7 @@ public class LaskutData {
         }
     }
 
+
     /**
      * paivitetaan laskun tietoja tietokannassa
      * @param yhteysluokka yhteys tietokantaan
