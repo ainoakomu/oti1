@@ -153,7 +153,7 @@ public class AsiakasLuokka {
                 //TARVITAAN kysy tallennetaanko muutokset
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Tallennus");
-                alert.setHeaderText("Tallennetaanko varmsti?");
+                alert.setHeaderText("Tallennetaanko muutokset?");
                 alert.setContentText("Tallenna ja sulje?");
                 Optional<ButtonType> sulje = alert.showAndWait();
 
@@ -169,7 +169,7 @@ public class AsiakasLuokka {
                     //TARVITAAN ilmoita että tallennettu
                     Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
                     alert2.setTitle("Tallennus");
-                    alert2.setHeaderText("Tallennus tietokantaa");
+                    alert2.setHeaderText("Tallennettu tietokantaan");
                     alert2.setContentText("Tallennus onnistui");
                     //päivitä lista
                     lista.setAll(FXCollections.observableArrayList(haeAsiakkaat(yhteysluokka)));
@@ -182,7 +182,7 @@ public class AsiakasLuokka {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Tallennus");
                 alert.setHeaderText("Kaikkia tietoja ei ole täytetty!");
-                alert.setContentText("Täytä kaikki kohdat jotta voit tallentaa");
+                alert.setContentText("Täytä kaikki kohdat, jotta voit tallentaa.");
                 alert.showAndWait();
                 e.consume();
             }
@@ -192,9 +192,9 @@ public class AsiakasLuokka {
             //kysy poistetaaanko asiakas varmasti
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Käyttäjätietojen poisto");
-            alert.setHeaderText("Poistetaanko käyttäjätiedot tietokannasta?");
+            alert.setHeaderText("Poistetaanko asiakastiedot tietokannasta?");
             alert.setContentText("Tätä toimintoa ei voi enää peruuttaa."+
-                    "\n Käyttäjätietojen poistaminen voi aiheuttaa odottamattomia" +
+                    "\n Asiakastietojen poistaminen voi aiheuttaa odottamattomia" +
                     "\nongelmia varausten tarkasteluun ja raportointiin.");
             Optional<ButtonType> valinta = alert.showAndWait();
 
@@ -212,7 +212,7 @@ public class AsiakasLuokka {
             } else {
                 Alert alert45 = new Alert(Alert.AlertType.ERROR);
                 alert45.setTitle("Pakollisia tietoja puuttuu");
-                alert45.setHeaderText("Pakollisia vtietoja puuttuu.");
+                alert45.setHeaderText("Pakollisia tietoja puuttuu.");
                 alert45.setContentText("Täytä kaikki kentät.");
                 alert45.showAndWait();
                 e.consume();
@@ -223,8 +223,8 @@ public class AsiakasLuokka {
             //kysy suljetaanko ikkuna
             //kysy poistetaaanko varaus varmasti
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Poistuminen");
-            alert.setHeaderText("Poistutaanko?");
+            alert.setTitle("Poistu");
+            alert.setHeaderText("Poistutaanko tallentamatta?");
             alert.setContentText("Tätä toimintoa ei voi enää peruuttaa.");
             Optional<ButtonType> valinta = alert.showAndWait();
 

@@ -244,22 +244,42 @@ public class AdminLuokka {
             //TARVITAAN: metodi jolla tarkistetaan onko kaikki tarvittavat tiedot täytetty
             // jos ei ole kaikkia tarvittavia tietoja, pitää tulla kehote täydentää
 
-            // tallenna tiedot tietokantaaan
-            Yhteysluokka yhteysluokka = new Yhteysluokka();
-            KayttajaData kayttajaData = new KayttajaData();
-            kayttajaData.lisaaKayttaja(yhteysluokka, getKayID(), getKayNimi(), getKayTun(), getSalaSana(), getKayTaso(), getAnnOikeus(), getHygPassi());
+            if((getKayID()==0)||(getKayNimi()=="")||(getKayTun()=="")||(getSalaSana()=="")||(getKayTaso()=="")){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Varoitus");
+                alert.setHeaderText("Tietoja puuttuu");
+                alert.setContentText("Täytä kaikki tiedot ennen tallentamista");
+                alert.showAndWait();
+                e.consume();
+            } else {
+                Yhteysluokka yhteysluokka = new Yhteysluokka();
+                KayttajaData kayttajaData = new KayttajaData();
+                kayttajaData.lisaaKayttaja(yhteysluokka, getKayID(), getKayNimi(), getKayTun(), getSalaSana(), getKayTaso(), getAnnOikeus(), getHygPassi());
 
-            //päivitä listviewin lista
-            lista.setAll(FXCollections.observableArrayList(kayttajaData.haeKayttajat(yhteysluokka)));
+                //päivitä listviewin lista
+                lista.setAll(FXCollections.observableArrayList(kayttajaData.haeKayttajat(yhteysluokka)));
 
-            // TARVITAAN ilmoitus että tiedot tallennettu
+                // ilmoitus että tiedot tallennettu
+                Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
+                alert2.setTitle("Tallennettu");
+                alert2.setHeaderText("Uusi käyttäjä luotu");
+                alert2.setContentText("Tallennettu onnistuneesti tietokantaan");
+                alert2.showAndWait();
 
-            uusiKayttajaStage.close();
+                uusiKayttajaStage.close();
+            }
         });
 
         suljeBt.setOnAction(e->{
             //kysy suljetaanko
-            uusiKayttajaStage.close();
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Poistu");
+            alert.setHeaderText("Poistutaanko uuden käyttäjän lisäyksestä?");
+            alert.setContentText("Tietoja ei tallenneta.");
+            Optional<ButtonType> valinta = alert.showAndWait();
+            if (valinta.isPresent() && valinta.get() == ButtonType.OK) {
+                uusiKayttajaStage.close();
+            }
         });
 
         VBox buttons=new VBox(tallennaBt,suljeBt);
@@ -345,12 +365,12 @@ public class AdminLuokka {
         Yhteysluokka yhteysluokka = new Yhteysluokka();
 
         tallennaBt.setOnAction(e->{
-            if(!idTxt.getText().isEmpty()){
+            if((!idTxt.getText().isEmpty())&&(!nimiTxt.getText().isEmpty())&&(!kayttajaTxt.getText().isEmpty())&&(!ssTxt.getText().isEmpty())){
 
                 //TARVITAAN kysy tallennetaanko muutokset
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Tallennus");
-                alert.setHeaderText("Tallennetaanko");
+                alert.setHeaderText("Tallennetaanko muutokset?");
                 alert.setContentText("Poistu ja tallenna");
                 Optional<ButtonType> valinta = alert.showAndWait();
                 if (valinta.isPresent() && valinta.get() == ButtonType.OK) {
@@ -376,8 +396,8 @@ public class AdminLuokka {
                     //ilmoita että tallennettu
                     Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
                     alert2.setTitle("Tallennettu");
-                    alert2.setHeaderText("Tallennettu");
-                    alert2.setContentText("Tallennus ok.");
+                    alert2.setHeaderText("Muutokset tallennettu");
+                    alert2.setContentText("Tallennettu onnistuneesti tietokantaan");
                     alert2.showAndWait();
 
                     muokkausStage.close();
@@ -410,7 +430,7 @@ public class AdminLuokka {
                     // TARVITAAN ilmoita että käyttäjätiedot poistettu
                     Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
                     alert2.setTitle("Poistettu");
-                    alert2.setHeaderText("Poistettu");
+                    alert2.setHeaderText("Käyttäjätiedot poistettu");
                     alert2.setContentText("Poisto ok.");
                     alert2.showAndWait();
                     muokkausStage.close();
@@ -423,7 +443,7 @@ public class AdminLuokka {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("Pakollisia tietoja puuttuu");
                 alert.setHeaderText("Pakollisia tietoja puuttuu.");
-                alert.setContentText("Täytä kaikki kentät ennen tallentamista");
+                alert.setContentText("Virhe käyttäjätietojen poistossa.");
                 alert.showAndWait();
                 e.consume();
                 System.out.println("kayttajaid tyhjä");
@@ -434,7 +454,7 @@ public class AdminLuokka {
             //kysy suljetaanko ikkuna
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Poistuminen");
-            alert.setHeaderText("Poistutaanko");
+            alert.setHeaderText("Poistu tallentamatta");
             alert.setContentText("Poistutaanko ilman muutoksia?");
             alert.showAndWait();
             muokkausStage.close();
@@ -542,7 +562,21 @@ public class AdminLuokka {
         Button sulje=new Button("Sulje");
 
         viePDF.setOnAction(e->{
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
+            // jos varaus- tai talousraportti ja päivämäärätiedot puuttuu tai on väärin päin (asiakasraporttiin ei tule pvm)
+            if(((valittuRaportti=="Varausraportti")||(valittuRaportti=="Talousraportti"))&&
+                    ((alkupaiva.getValue()==null)||(loppupaiva.getValue()==null)||
+                    (alkupaiva.getValue().isAfter(loppupaiva.getValue()))||
+                    (loppupaiva.getValue().isBefore(alkupaiva.getValue())))){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Varoitus");
+                alert.setHeaderText("Valitse raportin aikaväli");
+                alert.setContentText("Valitse raportointiväli.\n" +
+                        "Varmista, että alkupäivä on ennen loppupäivää.");
+                alert.showAndWait();
+                e.consume();
+            } else {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Viedäänkö PDF");
             alert.setHeaderText("Viedäänkö PDF tiedosto");
             alert.setContentText("Olet luomassa PDF tiedostoa, jatketaanko");
@@ -552,27 +586,18 @@ public class AdminLuokka {
                 RaportinLuonti raportinLuonti = new RaportinLuonti();
                 raportinLuonti.luoRaportti(valittuRaportti, alkupaiva.getValue(), loppupaiva.getValue());
                 raporttiValmis().show();
-            }
+            }}
         });
 
         sulje.setOnAction(e->{
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Poistuminen");
-            alert.setHeaderText("Poistutaanko");
-            alert.setContentText("Poistutaanko ilman muutoksia?");
-            alert.showAndWait();
             raporttiStage.close();
         });
-
 
         HBox alaosa=new HBox(viePDF,sulje);
         alaosa.setPadding(new Insets(10,10,10,10));
         alaosa.setSpacing(10);
         alaosa.setAlignment(Pos.BASELINE_RIGHT);
         rootPaneeli.setBottom(alaosa);
-
-
-
 
         Scene raporttiScene = new Scene(rootPaneeli,700,610);
         raporttiStage.setScene(raporttiScene);
