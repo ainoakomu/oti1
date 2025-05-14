@@ -9,9 +9,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * kasitellaan tietokanna mokkit-taulun dataa, jota kaytetaan muissa ikkunoissa eri toimintoihin
+ * lisaa,poista,muokka, etsi
+ */
 public class MokkiData {
 
-    //arraylist jonka saa sisälleen yhteysluokan olion
+    /**
+     * tehdaan arraylisti joka sisaltaa tiedot kaikista mokeista, jotka saadaan esille visuaalisesti listviewn avulla
+     * @param yhteysluokka yhteys tietokantaan
+     * @return haluttu tietuelista
+     */
     public static ArrayList<String> haeMokit(Yhteysluokka yhteysluokka) {
         ArrayList<String> mokkiLista = new ArrayList<>();
 
@@ -67,6 +75,13 @@ public class MokkiData {
         //palautetaan mokkien data
         return mokkiLista;
     }
+
+
+    /**
+     * haetaan mokit-taulun datasta mokin id korreloiva hinta per yo hashmap
+     * @param yhteysluokka yhteys tietokantaan
+     * @return haluttu hashmap tietueista
+     */
     public static Map<Double, Integer> haeMokinHinta(Yhteysluokka yhteysluokka) {
         //key-value mappi, johon ID ja siihen liityvä hinta tallennetaan
         Map<Double, Integer> hintalista = new HashMap<>();
@@ -95,6 +110,22 @@ public class MokkiData {
         //palautetaan hinta data
         return hintalista;
     }
+
+
+    /**
+     * lisataan tietokantaa uusi mokki kaikilla tiedoilla
+     * @param yhteysluokka yhteys tietokantaan
+     * @param mokkiID uuden mokin id
+     * @param hintaPerYo uuden mokin hinta per yo
+     * @param mokinOsoite uuden mokin osoite
+     * @param neliot uuden mokin koko nelioina
+     * @param vuodepaikat uuden mokin vuodepaikat
+     * @param rantasauna onko uudella mokilla rantasauna
+     * @param omaranta onko uudella mokilla oma ranta
+     * @param wifi onko uudella mokilla wifi
+     * @param sisavessa onko uudella mokilla sisavessa
+     * @param palju onko uudella mokilla palju
+     */
     public void lisaaMokki(Yhteysluokka yhteysluokka, int mokkiID, double hintaPerYo,
                            String mokinOsoite, int neliot, int vuodepaikat, boolean rantasauna, boolean omaranta,
                            boolean wifi, boolean sisavessa, boolean palju){
@@ -136,6 +167,21 @@ public class MokkiData {
         }
     }
 
+
+    /**
+     * muokataan mokin tietoja mokit-taulussa tietokannassa
+     * @param yhteysluokka yhteys tietokantaan
+     * @param mokkiID uusi id
+     * @param hintaPerYo uusi hinta per yo
+     * @param mokinOsoite uusi osoite
+     * @param neliot uusi koko nelioina
+     * @param vuodepaikat uusi maara vuodepaikkoja
+     * @param rantasauna onko rantasaunaa
+     * @param omaranta onko omaa rantaa
+     * @param wifi onko wifia
+     * @param sisavessa onko sisavessa
+     * @param palju onko paljua
+     */
     public void muokkaaMokkia(Yhteysluokka yhteysluokka, int mokkiID, double hintaPerYo,
                               String mokinOsoite, int neliot, int vuodepaikat, boolean rantasauna, boolean omaranta,
                               boolean wifi, boolean sisavessa, boolean palju){
@@ -165,6 +211,11 @@ public class MokkiData {
         }
     }
 
+    /**
+     * muokataan tietokantaa poistamalla valittu mokki tietokannasta
+     * @param yhteysluokka yhteys tietokantaan
+     * @param mokkiID poistettavan mokin id
+     */
     public void poistaMokki(Yhteysluokka yhteysluokka, int mokkiID){
         try {
             Connection yhteys = yhteysluokka.getYhteys();
@@ -181,6 +232,14 @@ public class MokkiData {
             e.printStackTrace();
         }
     }
+
+    /**
+     * etsitaan generoidun id avulla, onko sellainen jo tietokannassa.
+     * jos id loytyy palautetaan se, jos ei palautetaan false
+     * @param yhteysluokka yhteys tietokantaan
+     * @param mokkiID id jolla etsitaan toista samanlaista
+     * @return loydetty id tietokannasta tai true jos sita ei ole
+     */
     public static boolean haeMokinID(Yhteysluokka yhteysluokka, int mokkiID) {
         //yritetään saada yhteysluokan yhteys
         try {
@@ -203,7 +262,7 @@ public class MokkiData {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return true; // o
+        return true;
     }
 
 }

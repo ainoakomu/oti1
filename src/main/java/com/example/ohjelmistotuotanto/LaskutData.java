@@ -7,11 +7,16 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 /**
- * kasitellaan laskujen dataa tietokannasta
+ * kasitellaan laskujen dataa tietokannassa
+ * hae, tallenna ja paivita
  */
 public class LaskutData {
 
-    // Hakee laskut tietokannasta
+    /**
+     * haetaan laskujen tiedot tietokannasta
+     * @param yhteysluokka yhteys tietokantaan
+     * @return laskujen tiedot arraylistina
+     */
     public static ArrayList<String> haeLaskut(Yhteysluokka yhteysluokka) {
         ArrayList<String> laskuLista = new ArrayList<>();
 
@@ -54,6 +59,14 @@ public class LaskutData {
         return laskuLista;
     }
 
+    /**
+     * tallennetaan laskun tiedot tietokantaan
+     * @param yhteysluokka yhteys tietokantaan
+     * @param laskuID laskun numero
+     * @param varausID varauksen numero laskussa
+     * @param laskutettu varauksen laskutustilanne
+     * @param maksettu varauksen maksun tilanne
+     */
     public void tallennaLaskutiedot(Yhteysluokka yhteysluokka, int laskuID, int varausID, boolean laskutettu, boolean maksettu){
 
         try {
@@ -75,6 +88,15 @@ public class LaskutData {
         }
     }
 
+
+    /**
+     * paivitetaan laskun tietoja tietokannassa
+     * @param yhteysluokka yhteys tietokantaan
+     * @param laskuid uusi lasku id
+     * @param varausid uusi varaus id
+     * @param laskutettu uusi laskun tilanne
+     * @param maksettu uusi maksun tilanne
+     */
     public void paivitaLaskua(Yhteysluokka yhteysluokka, int laskuid, int varausid,boolean laskutettu, boolean maksettu){
         try {
             Connection yhteys = yhteysluokka.getYhteys();

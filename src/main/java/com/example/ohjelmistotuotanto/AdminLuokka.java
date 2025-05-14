@@ -62,11 +62,11 @@ public class AdminLuokka {
      */
     private int hygPassi = 0;
 
+
     private int arvosteluID = 0;
     private int varausID = 0;
     private Double arvosana = 0.0;
     private String arvostelu = "";
-
     /**
      * luodaan kayttajanhallinnan ikkuna, jossa voidaan kasitella tyontekijoita tai luoda erilaisia raportteja
      * @return palauttaa halutun stagen
@@ -408,8 +408,6 @@ public class AdminLuokka {
         }
         anniskeluChbx.setSelected(getAnnOikeus() == 1);
         hygieniaChbx.setSelected(getHygPassi() == 1);
-
-
 
         //buttonit ja action eventit
         Button tallennaBt=new Button("Tallenna muutokset");

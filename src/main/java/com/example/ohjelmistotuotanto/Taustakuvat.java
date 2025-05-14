@@ -3,15 +3,23 @@ package com.example.ohjelmistotuotanto;
 import javafx.scene.layout.*;
 import javafx.scene.image.Image;
 
-// Luokka missä luodaan taustakuvat
-// Kutsutaan kuvien metodeja ikkunoissa muualla koodissa
-//kuvalähteet: https://www.flickr.com/photos/charlie_cravero/101604127/
-//https://www.flickr.com/photos/canoarias/15046278708
-//https://www.pexels.com/fi-fi/kuva/puu-vesi-kesa-rentoutuminen-8844584/
+/**
+ * luodaan ikkunoiden ulkoasulle taustakuvia
+ * /kuvalähteet:
+ * <a href="https://www.flickr.com/photos/charlie_cravero/101604127/">...</a>
+ * //<a href="https://www.flickr.com/photos/canoarias/15046278708">...</a>
+ * //<a href="https://www.pexels.com/fi-fi/kuva/puu-vesi-kesa-rentoutuminen-8844584/">...</a>
+ */
 public class Taustakuvat {
+    /**
+     * luodaan ikkunoiden taustalle taustakuva
+     */
     public class TaustakuvaAsettaminen {
 
- 
+        /**
+         * luodaan taustakuva kuvalla kuva2.png
+         * @return haluttu tausta
+         */
         public static Background luoKolmasTausta() {
             Image taustakuva = new Image(TaustakuvaAsettaminen.class.getResource("/Kuva2.png").toExternalForm());
 
@@ -34,6 +42,10 @@ public class Taustakuvat {
             return new Background(tausta);
         }
 
+        /**
+         * luodaan taustakuva kuvalla kuva3.png
+         * @return haluttu tausta
+         */
         public static Background luoToinenTausta() {
             Image taustakuva = new Image(TaustakuvaAsettaminen.class.getResource("/Kuva3.png").toExternalForm());
 
@@ -55,6 +67,10 @@ public class Taustakuvat {
             return new Background(tausta);
         }
 
+        /**
+         * luodaan taustakuva kuvalla taustakuva1.png
+         * @return luotu tausta
+         */
         public static Background luoTausta() {
             Image taustakuva = new Image(TaustakuvaAsettaminen.class.getResource("/taustakuva1.png").toExternalForm());
 
