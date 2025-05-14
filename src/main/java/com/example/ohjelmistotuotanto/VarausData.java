@@ -1,16 +1,23 @@
 package com.example.ohjelmistotuotanto;
 
 import javafx.scene.control.TextField;
-
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+/**
+ * kasitellaan tietokanna varausdataa ja hyodynnetaan metoja hae, poista, muokkaa ja tarkista
+ * luodaan myos reporttien metodit
+ */
 public class VarausData {
 
 
-    //metodi joka hakee
+    /**
+     * haetaan kaikki varaukset tietokannasta
+     * @param olio yhteys tietokantaan
+     * @return varauksien tiedot arraylistana
+     */
     public static ArrayList<String> haeVaraukset(Yhteysluokka olio){
         ArrayList<String> varauslista=new ArrayList<>();
         //yritetään yhteysluokan olion yhteys saada
@@ -60,6 +67,13 @@ public class VarausData {
         return varauslista;
     }
 
+    /**
+     * luodaan varauksille oma raportti johon lisataan tietoja tietokannasta
+     * @param olio yhteys tietokantaan
+     * @param alkaen raportin alkamispvm
+     * @param asti raportin loppumispvm
+     * @return raportti arraylistana
+     */
     public ArrayList<String> varausRaportti(Yhteysluokka olio, LocalDate alkaen, LocalDate asti){
         ArrayList<String> raportti =new ArrayList<>();
         //yritetään yhteysluokan olion yhteys saada
@@ -122,6 +136,11 @@ public class VarausData {
         return raportti;
     }
 
+    /**
+     * haetaan taloustietoja tietokannasta
+     * @param olio yhteys tietokantaan
+     * @return taloustiedot arraylistana
+     */
     public ArrayList<String> haeTaloustiedot(Yhteysluokka olio){
         ArrayList<String> talouslista=new ArrayList<>();
 
@@ -164,6 +183,13 @@ public class VarausData {
         return talouslista;
     }
 
+    /**
+     * luodaan taloustiedoille oma raportti, johon lisataan tietoja tietokannasta
+     * @param olio yhteys tietokantaan
+     * @param alkaen raportin alkamispvm
+     * @param asti raportin loppumispvm
+     * @return raportti tieto arraylistana
+     */
     public ArrayList<String> talousRaportti(Yhteysluokka olio, LocalDate alkaen, LocalDate asti){
         ArrayList<String> raportti =new ArrayList<>();
         //yritetään yhteysluokan olion yhteys saada
@@ -228,6 +254,12 @@ public class VarausData {
         return raportti;
     }
 
+    /**
+     * etsitaan onko varaus olemassa tietylla generoidulla numerolla
+     * @param yhteysluokka yhteys tietokantaan
+     * @param varusnumero verrattava varausnumero
+     * @return false jos epaoonistuis, true jos uniikki, numero jos jo olemassa
+     */
     public boolean tarkistaVarausID(Yhteysluokka yhteysluokka, Integer varusnumero){
 
         boolean olemassa = false;
@@ -236,7 +268,7 @@ public class VarausData {
             Connection lokalYhteys = yhteysluokka.getYhteys();
             if (lokalYhteys == null) {
                 System.err.println("Yhdistys epäonnistui");
-                return false; // If the connection failed, return false.
+                return false;
             }
 
             // SQL query to check if varaus_id olemassa
@@ -247,7 +279,7 @@ public class VarausData {
             // Execute the query and check the result
             ResultSet asiRs = stmt.executeQuery();
             if (asiRs.next()) {
-                int count = asiRs.getInt(1);  // Get the count of records
+                int count = asiRs.getInt(1);
                 if (count > 0) {
                     olemassa = true; // If count > 0, varaus_id olemassa
                 }
@@ -259,7 +291,17 @@ public class VarausData {
         return olemassa;
     }
 
-
+    /**
+     * muokataan varauksen tietoja tietokannassa
+     * @param yhteysluokka yhteys tietokantaan
+     * @param varausID muokattava varaus id
+     * @param alkupv muokattava varauksen alkupvm
+     * @param loppupv muokattava varauksen loppupvm
+     * @param hinta muokattava varauksen hinta
+     * @param kayttaja_id muokattavan varausen kayttajan id
+     * @param mokki_id muokattavan varauksen mokin id
+     * @param asiakas_id muokattavan varausen asiakkaan id
+     */
     public void muokkaaVarausta(Yhteysluokka yhteysluokka, int varausID, LocalDate alkupv, LocalDate loppupv, TextField hinta, TextField kayttaja_id, TextField mokki_id, TextField asiakas_id){
 
         LocalDateTime lahtien = alkupv.atStartOfDay();
@@ -296,6 +338,11 @@ public class VarausData {
 
     }
 
+    /**
+     * poistetaan varaus id mukaan tietokannasta pysyvasti
+     * @param yhteysluokka yhteys tietokantaan
+     * @param varID varaus joka poistetaan
+     */
     public void poistaVaraus(Yhteysluokka yhteysluokka, int varID){
         try {
             Connection yhteys = yhteysluokka.getYhteys();

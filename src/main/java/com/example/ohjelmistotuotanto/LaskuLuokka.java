@@ -21,46 +21,91 @@ import static com.example.ohjelmistotuotanto.MokkiData.haeMokit;
  * luodaan laskun luonnissa ja sen tilan paivittamisessa kaytettavia ikkunoita
  */
 public class LaskuLuokka {
-    private int laskuid;
-    private int varausid;
-    private boolean laskutettu;
-    private boolean maksettu;
     /**
-     * luodaan ikkuna jossa nakyvilla laskuja ja mahdollisuus paivittaa niita
-     * @return
+     * laskun identifioiva numero
+     */
+    private int laskuid;
+    /**
+     * varauksen id numero
+     */
+    private int varausid;
+    /**
+     * sisaltaa arvon onko lasku laskutettu asiakkaalta
+     */
+    private boolean laskutettu;
+    /**
+     * sisaltaa arvon onko asiakas maksanut laskun
+     */
+    private boolean maksettu;
+
+    /**
+     * haetaan laskun id
+     * @return laskun id
      */
     public int getLaskuid() {
         return laskuid;
     }
 
+    /**
+     * asetetaan laskulle id
+     * @param laskuid haluttu id
+     */
     public void setLaskuid(int laskuid) {
         this.laskuid = laskuid;
     }
 
+    /**
+     * haetaan varauksen id
+     * @return varauksen id
+     */
     public int getVarausid() {
         return varausid;
     }
 
+    /**
+     * asetetaan varauksen id
+     * @param varausid haluttu id
+     */
     public void setVarausid(int varausid) {
         this.varausid = varausid;
     }
 
+    /**
+     * haetaan onko lasku laskutettu asiakkaalta
+     * @return true jos on false jos ei
+     */
     public boolean isLaskutettu() {
         return laskutettu;
     }
 
+    /**
+     * asetetaan arvo onko lasku laskutettu asiakkaalta
+     * @param laskutettu haluttu arvo true tai false
+     */
     public void setLaskutettu(boolean laskutettu) {
         this.laskutettu = laskutettu;
     }
 
+    /**
+     * haetaan onko asiakas maksanut laskun
+     * @return true jos on false jos ei
+     */
     public boolean isMaksettu() {
         return maksettu;
     }
 
+    /**
+     * asetetaan onko lasku maksettu
+     * @param maksettu true jos on false jos ei
+     */
     public void setMaksettu(boolean maksettu) {
         this.maksettu = maksettu;
     }
 
+    /**
+     * luodaan ikkuna josta voidaan tarkastella laskuja listassa ja valita sielta jokin mita paivittaa
+     * @return haluttu stage
+     */
     public Stage luoLaskuIkkuna(){
         Stage laskutStage = new Stage();
 
@@ -149,9 +194,9 @@ public class LaskuLuokka {
 
     }
 
-
     /**
-     * luodaan ikkuna jolla voidaan paivittaa tietyn laskun tilaa
+     * luodaan laskun paivityksen ikkuna jossa voi vaihtaa laskun tilaa
+     * @param lista laskuista jotka valittavissa
      * @return haluttu stage
      */
     public Stage luoPaivitaLaskuIkkuna(ObservableList<String> lista){

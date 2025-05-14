@@ -19,20 +19,56 @@ import java.util.Random;
 import static com.example.ohjelmistotuotanto.MokkiData.haeMokinID;
 import static com.example.ohjelmistotuotanto.MokkiData.haeMokit;
 
+/**
+ * luodaan mokkien esittamiseen ikkunoita, joissa voi tehda muutoksia mokkeihin tietokannassa
+ */
 public class MokkiLuokka{
-
+    /**
+     * mokin identifioiva numero
+     */
     private int mokkiID;
+    /**
+     * mokin hinta per yo
+     */
     private double hintaPerYo;
+    /**
+     * mokin osoite
+     */
     private String mokinOsoite;
+    /**
+     * mokin koko nelioina
+     */
     private int neliot;
+    /**
+     * mokin sisalla olevat vuodepaikat numeroina
+     */
     private int vuodepaikat;
+    /**
+     * onko mokilla rantasauna vai ei
+     */
     private boolean rantasauna;
+    /**
+     * onko mokilla oma ranta vai ei
+     */
     private boolean omaranta;
+    /**
+     * onko mokissa wifi tai ei
+     */
     private boolean wifi;
+    /**
+     * onko mokissa sisavessa vai ei
+     */
     private boolean sisavessa;
+    /**
+     * onko mokissa palju vai ei
+     */
     private boolean palju;
 
-
+    /**
+     * luodaan ikkuna jossa nahdaan kaikki mokit kaytettavissa
+     * voidaan muokata mokkia
+     * @return
+     */
     public Stage luoMokitIkkuna() {
         Stage mokkiStage = new Stage();
         BorderPane rootPaneeli = new BorderPane();
@@ -166,6 +202,11 @@ public class MokkiLuokka{
         return mokkiStage;
     }
 
+    /**
+     * luodaan ikkuna, jossa voidaan tehda kokonaan uusi mokki
+     * @param lista lista mokeista joka paivitetaan muutoksen jalkeen
+     * @return haluttu stage
+     */
     public Stage luoUusiMokkiIkkuna(ObservableList<String> lista) {
         Stage uusiMokkiStage = new Stage();
         GridPane rootPaneeli = new GridPane();
@@ -345,6 +386,11 @@ public class MokkiLuokka{
         return uusiMokkiStage;
     }
 
+    /**
+     * luodaan ikkuna jossa mokkia voidaan muokata ja tallentaa muutokset
+     * @param lista lista mokeista joka paivitetaan muutoksien jalkeen
+     * @return haluttu stage
+     */
     public Stage luoMuokkausMokkiIkkuna(ObservableList<String> lista) {
         Stage muokkausStage = new Stage();
         GridPane rootPaneeli = new GridPane();
@@ -534,83 +580,162 @@ public class MokkiLuokka{
         return muokkausStage;
     }
 
-
+    /**
+     * haetaan mokin id
+     * @return mokin numero
+     */
     public int getMokkiID() {
         return mokkiID;
     }
 
+    /**
+     * asetetaan mokin id
+     * @param mokkiID haluttu id
+     */
     public void setMokkiID(int mokkiID) {
         this.mokkiID = mokkiID;
     }
 
+    /**
+     * haetaan mokin hinta per yo
+     * @return hinta
+     */
     public double getHintaPerYo() {
         return hintaPerYo;
     }
 
+    /**
+     * asetetaan hinta per yo
+     * @param hintaPerYo hinta per yo
+     */
     public void setHintaPerYo(double hintaPerYo) {
         this.hintaPerYo = hintaPerYo;
     }
 
+    /**
+     * haetaan mokin osoite
+     * @return osoite
+     */
     public String getMokinOsoite() {
         return mokinOsoite;
     }
 
+    /**
+     * asetetaan mokin osoite
+     * @param mokinOsoite haluttu osoite
+     */
     public void setMokinOsoite(String mokinOsoite) {
         this.mokinOsoite = mokinOsoite;
     }
 
+    /**
+     * haetaan mokin koko nelioina
+     * @return koko nelioina
+     */
     public int getNeliot() {
         return neliot;
     }
 
+    /**
+     * asetetaan mokin koko nelioina
+     * @param neliot mokin koko
+     */
     public void setNeliot(int neliot) {
         this.neliot = neliot;
     }
 
+    /**
+     * haetaan mokin vuodepaikat
+     * @return vuodepaikat numeroina
+     */
     public int getVuodepaikat() {
         return vuodepaikat;
     }
 
+    /**
+     * asetetaan vuodepaikat numeroina
+     * @param vuodepaikat paikkojen maara
+     */
     public void setVuodepaikat(int vuodepaikat) {
         this.vuodepaikat = vuodepaikat;
     }
 
+    /**
+     * haetaan mokin rantasaunan olemassaolo
+     * @return kylla tai ei
+     */
     public boolean isRantasauna() {
         return rantasauna;
     }
 
+    /**
+     * asetetaan mokin rantasaunan olemassaolo
+     * @param rantasauna true tai false
+     */
     public void setRantasauna(boolean rantasauna) {
         this.rantasauna = rantasauna;
     }
 
+    /**
+     * haetaan mokin oman rannan olemassaolo
+     * @return true tai false
+     */
     public boolean isOmaranta() {
         return omaranta;
     }
 
+    /**
+     * asetetaan mokin oman rannan olemassaolo
+     * @param omaranta true tai false
+     */
     public void setOmaranta(boolean omaranta) {
         this.omaranta = omaranta;
     }
 
+    /**
+     * haetaan mokin wifin olemassaolo
+     * @return true tai false
+     */
     public boolean isWifi() {
         return wifi;
     }
 
+    /**
+     * asetetaan mokin wifin olemassaolo
+     * @param wifi true tai false
+     */
     public void setWifi(boolean wifi) {
         this.wifi = wifi;
     }
 
+    /**
+     * haetaan mokin sisavessan olemassaolo
+     * @return true tai false
+     */
     public boolean isSisavessa() {
         return sisavessa;
     }
 
+    /**
+     * asetetaan sisavessan olemassaolo
+     * @param sisavessa true tai false
+     */
     public void setSisavessa(boolean sisavessa) {
         this.sisavessa = sisavessa;
     }
 
+    /**
+     * haetaan mokin paljun olemassaolo
+     * @return true tai false
+     */
     public boolean isPalju() {
         return palju;
     }
 
+    /**
+     * asetetaan mokin paljun olemassaolo
+     * @param palju true tai false
+     */
     public void setPalju(boolean palju) {
         this.palju = palju;
     }

@@ -33,21 +33,57 @@ import java.util.regex.Pattern;
 import static com.example.ohjelmistotuotanto.MokkiData.haeMokit;
 import static com.example.ohjelmistotuotanto.VarausData.haeVaraukset;
 
-
+/**
+ * luodaan ikkunoita varauksille
+ * kasitellaan varauksia ja muokataan niita
+ */
 public class VarausLuokka {
-
+    /**
+     * listasta valintun mokin id
+     */
     private int valitunMokinID;
+    /**
+     * muokatun mokin id
+     */
     private int muutosMokkiID;
+    /**
+     * varauksen hinta
+     */
     private int varauksenHinta;
+    /**
+     * varauksessa olevan kayttajan id
+     */
     private int varauksenKayttajanID;
+    /**
+     * asiakkaan id
+     */
     private int asiakasID;
-    private int sekuntti = 0;
+    /**
+     * varauksen id
+     */
     private int varausID;
+    /**
+     * laskulla olevan varauksen id
+     */
     private int laskulleVarID = 0;
+    /**
+     * laskulla oleva alkupvm
+     */
     private LocalDate alkuPVM;
+    /**
+     * laskulla oleva loppupvm
+     */
     private LocalDate loppuPVM;
+    /**
+     * listalta valitun mokin kaikki tiedot
+     */
     private StringProperty valittuMokki=new SimpleStringProperty();
 
+    /**
+     * luodaan ikkuna, jossa nakyy varaukset
+     * varauksia voi muokata ja lisata
+     * @return
+     */
     public Stage luoVarauksetIkkuna(){
         Stage varausStage = new Stage();
 
@@ -62,9 +98,6 @@ public class VarausLuokka {
         ListView<String> varauslista = new ListView<>(varausData);
         varauslista.setMaxSize(900,350);
         rootPaneeli.setCenter(varauslista);
-
-
-
 
         varauslista.getSelectionModel().selectedItemProperty().addListener((obs, vanha, uusi) -> {
 
@@ -130,6 +163,11 @@ public class VarausLuokka {
         return varausStage;
     }
 
+    /**
+     * luodaan varauksen muokkaus-ikkuna, jossa varauksen tietoja voi muuttaa
+     * @param lista varauksien lista
+     * @return luotu stage
+     */
     public Stage luoMuokkaaVaraustaIkkuna(ObservableList<String> lista){
         Stage muokkausStage = new Stage();
         GridPane rootPaneeli=new GridPane();
@@ -202,12 +240,10 @@ public class VarausLuokka {
         checkInDatePicker.valueProperty().addListener(new muokkauksenKuuntelija(checkInDatePicker,checkOutDatePicker,mokkiTxt,hintaTextField,kayttajaTextField,asiakasTxt,varausTextField,placeholderHinta));
         checkOutDatePicker.valueProperty().addListener(new muokkauksenKuuntelija(checkInDatePicker,checkOutDatePicker,mokkiTxt,hintaTextField,kayttajaTextField,asiakasTxt,varausTextField,placeholderHinta));
 
-
         //buttonit ja action eventit
         Button tallennaBt=new Button("Tallenna muutokset");
         Button poistaBt=new Button("Poista varaus");
         Button suljeBt=new Button("Sulje");
-
 
         tallennaBt.setOnAction(e->{
 
@@ -300,6 +336,11 @@ public class VarausLuokka {
         return muokkausStage;
     }
 
+    /**
+     * luodaan ikkuna milla voidaan tehda lasku valitun mokin perusteella
+     * @param yhteysluokka yhteys tietokantaan
+     * @return luotu stage
+     */
     public Stage luoLisaaLaskuIkkuna(Yhteysluokka yhteysluokka){
         Stage lisaaLaskuStage = new Stage();
 
@@ -379,6 +420,11 @@ public class VarausLuokka {
         return lisaaLaskuStage;
     }
 
+    /**
+     * kun lasku on luotu, naytetaan tassa rakennettu ikkuna
+     * @param laskunro tehdyn laskun numero
+     * @return luotu stage
+     */
     public Stage laskuValmis(int laskunro){
         Stage valmisStage = new Stage();
 
@@ -403,7 +449,11 @@ public class VarausLuokka {
         return valmisStage;
     }
 
-public Stage luoUusiVarausIkkuna() {
+    /**
+     * luodaan uuden varauksen tekemiseen ikkuna, jossa listassa valitulle mokille luodaan uusi varaus
+     * @return luotu stage
+     */
+    public Stage luoUusiVarausIkkuna() {
     Stage valmisStage = new Stage();
     BorderPane rootPaneeli = new BorderPane();
     rootPaneeli.setPadding(new Insets(10));
@@ -598,6 +648,10 @@ public Stage luoUusiVarausIkkuna() {
     return valmisStage;
 }
 
+    /**
+     * haetaan listalta valitun mokin id
+     * @return id numero
+     */
     public int getValitunMokinID() {
         String mokkiString = valittuMokki.get();
 
@@ -621,51 +675,116 @@ public Stage luoUusiVarausIkkuna() {
         // If no match is found, throw an exception
         throw new RuntimeException("Ei löytynyt vapaata varausnumeroa.");
     }
+
+    /**
+     * asetetaan listasta valitulle mokille id
+     * @param valitunMokinID haluttu id numero
+     */
     public void setValitunMokinID(int valitunMokinID) {
         this.valitunMokinID = valitunMokinID;
     }
+
+    /**
+     * haetaan varauksen id
+     * @return id numero
+     */
     public int getVarauksenHinta() {
         return varauksenHinta;
     }
+
+    /**
+     * asetetaan varaukselle hinta
+     * @param varauksenHinta hinta numeroina
+     */
     public void setVarauksenHinta(int varauksenHinta) {
         this.varauksenHinta = varauksenHinta;
     }
+
+    /**
+     * haetaan asiakkan id numero
+     * @return id numero
+     */
     public int getAsiakasID(){
         return asiakasID;
     }
+
+    /**
+     * asetetaan asiakkan id
+     * @param idnumero haluttu id
+     */
     public void setAsiakasID(int idnumero){
         this.asiakasID=idnumero;
     }
+
+    /**
+     * haetaan varauksen id
+     * @return id numero
+     */
     public int getVarauksenID(){
         return varausID;
         }
+
+    /**
+     * asetetaan varaukselle id
+     * @param varausnumero haluttu id
+     */
     public void setVarauksenID(Integer varausnumero){
         this.varausID=varausnumero;
     }
+
+    /**
+     * haetaan varauksen alkupvm
+     * @return paivamaara
+     */
     public LocalDate getAlkuPVM() {
         return alkuPVM;
     }
+
+    /**
+     * asetetaan varauksen alkupvm
+     * @param alkuPVM haluttu paivamaara
+     */
     public void setAlkuPVM(LocalDate alkuPVM) {
         this.alkuPVM = alkuPVM;
     }
+
+    /**
+     * haetaan varauksen loppupvm
+     * @return paivamaara
+     */
     public LocalDate getLoppuPVM() {
         return loppuPVM;
     }
+
+    /**
+     * asetetaan varauksen loppupvm
+     * @param loppuPVM paivamaara
+     */
     public void setLoppuPVM(LocalDate loppuPVM) {
         this.loppuPVM = loppuPVM;
     }
 
+    /**
+     *haetaan varauksella olevan kayttajan id
+     * @return id numero
+     */
     public int getVarauksenKayttajanID() {
         return varauksenKayttajanID;
     }
 
+    /**
+     * asetetaan varauksella olevan kayttajan id
+     * @param varauksenKayttajanID haluttu id
+     */
     public void setVarauksenKayttajanID(int varauksenKayttajanID) {
         this.varauksenKayttajanID = varauksenKayttajanID;
     }
 
-    //sisäluokka päivämäärien ja muiden updatemiseen
-        //lister-interface toiminto, jolla päivät tunnistetaan
-        public static class PaivamaaraListener implements ChangeListener<LocalDate> {
+    /**
+     * luodaan sisaluokka, jossa kuuntelijat, jotka huomioivat uuden varauksen kaikkien kohtien muuttumista
+     * lasketaan koknaishinta seka varauksen kokonaiskesto
+     */
+    public static class PaivamaaraListener implements ChangeListener<LocalDate> {
             private DatePicker checkIn;
             private DatePicker checkOut;
             private Label varaus;
@@ -675,7 +794,17 @@ public Stage luoUusiVarausIkkuna() {
             private Map<Double, Integer> hintaToMokkiId;
             private StringProperty valittuMokki2;
 
-
+        /**
+         * alustaja kuuntelijalle paivamaarissa
+         * @param checkIn datepicker alkuvpm
+         * @param checkOut datepicker loppupvm
+         * @param varaus varauksen id
+         * @param hinta kokonaishinta
+         * @param alku varauksen alku tekstikenttaan
+         * @param loppu varauksen loppu tekstikenttaan
+         * @param hintaToMokkiId varauksen hinta per yo
+         * @param valittuMokki listasta valitun mokin tiedot
+         */
             public PaivamaaraListener(DatePicker checkIn, DatePicker checkOut, Label varaus, Label hinta,
                                       TextField alku, TextField loppu, Map<Double, Integer> hintaToMokkiId,
                                       StringProperty valittuMokki) {
@@ -689,6 +818,13 @@ public Stage luoUusiVarausIkkuna() {
                 this.valittuMokki2 = valittuMokki;
             }
 
+        /**
+         * paivamaarien muutoksilla lasketaan varauksen kesto seka kokonaishinta
+         * laskut ovat riippuvaisia mokista, silla jokaisen mokin hinta per yon on eri
+         * @param observable datepickers
+         * @param oldValue alkupaivaaman valitsija
+         * @param newValue loppupaivamaaran valitsija
+         */
             @Override
             public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
 
@@ -741,8 +877,17 @@ public Stage luoUusiVarausIkkuna() {
         }
 
 
-
-    //lisää varaus
+    /**
+     * lisataan tietokantaan kokonaan uusi varaus
+     * @param yhteysluokka yhteys tietokantaan
+     * @param varaus_id varauksen id
+     * @param varausalku_date varauksen alku pvm
+     * @param varausloppu_date varauksen loppu pvm
+     * @param hinta varauksen hinta
+     * @param kayttaja_id kayttajan id
+     * @param asiakas_id asiakkaan id
+     * @param mokki_id mokin id
+     */
     public void lisaaVaraus(Yhteysluokka yhteysluokka,Integer varaus_id, LocalDate varausalku_date, LocalDate varausloppu_date, Integer hinta, Integer kayttaja_id,Integer asiakas_id, Integer mokki_id){
 
 
@@ -792,7 +937,15 @@ public Stage luoUusiVarausIkkuna() {
         alert.showAndWait();
     }
 
-    //lisää asiakas
+    /**
+     * lisataan tietokantaan kokonaan uusi asiakas
+     * @param yhteysluokka yhteys tietokantaan
+     * @param asiakas_id asiakkaan id
+     * @param asiakkaan_nimi asiakkan nimi
+     * @param asiakkaan_sahkoposti asiakkan sahkopostiosoite
+     * @param puhelinnumero asiakkan puhelinnumero
+     * @param koti_osoite asiakkaan kotiosoite
+     */
     public void lisaaUusiAsiakas(Yhteysluokka yhteysluokka,Integer asiakas_id, String asiakkaan_nimi, String asiakkaan_sahkoposti, String puhelinnumero, String koti_osoite){
 
         try {
@@ -818,7 +971,10 @@ public Stage luoUusiVarausIkkuna() {
         alert.showAndWait();
     }
 
-    //kayttaja
+    /**
+     * generoi kayttajan id numeron
+     * @return id numero
+     */
     public Integer annaKayttajaID() {
         //jos aikaa, huomio että jos tulee uusia käyttäjiä
         int[] kayttajat = {3887, 4459, 7866, 2644};
@@ -826,6 +982,11 @@ public Stage luoUusiVarausIkkuna() {
         int annaNumero=random.nextInt(kayttajat.length);
         return kayttajat[annaNumero];
     }
+
+    /**
+     * tietyn varauksen kayttajan olemassaoleva id numero
+     * @param yhteysluokka yhteys tietokantaan
+     */
     public void annaVarauksenKayttajanID(Yhteysluokka yhteysluokka){
         String list= String.valueOf(haeVaraukset(yhteysluokka));
         if (list!=null){
@@ -842,8 +1003,16 @@ public Stage luoUusiVarausIkkuna() {
         }
     }
 
+    /**
+     * luokalla luodaan metodi uuden varauksen id numeron luomiseen
+     */
     public static class VarausID {
-
+        /**
+         * luodaan kokonaan uusi varauksen id ja tarkistetaan sen olemassa olo tietokannassa
+         * @param yhteysolio yhteys tietokantaan
+         * @param varausData varauksen tiedot toisesta luokasta
+         * @return id
+         */
         public static int luoVarausID(Yhteysluokka yhteysolio, VarausData varausData) {
             Random random = new Random();
 
@@ -858,8 +1027,16 @@ public Stage luoUusiVarausIkkuna() {
         }
     }
 
+    /**
+     * luodaan asiakkaalle id numero
+     */
     public static class luoAsiakasID {
-
+        /**
+         * luodaan kokonaan uusi asiakas id jos sita ei loydy tietokannasta
+         * @param yhteysolio yhteys tietokantaan
+         * @param asiakasData asiakkaan tiedot toisesta luokasta
+         * @return id
+         */
         public static int asiakasID(Yhteysluokka yhteysolio, AsiakasData asiakasData) {
             Random random = new Random();
 
@@ -880,15 +1057,41 @@ public Stage luoUusiVarausIkkuna() {
         }
     }
 
-
+    /**
+     * kuuntelija joka kuuntelee muokkauksessa tieutekenttien muutoksia ja laskee hinnan
+     */
     public static class muokkauksenKuuntelija implements ChangeListener<LocalDate> {
+        /**
+         * varauksen alkupvm
+         */
         private DatePicker checkIn;
+        /**
+         * varauksen loppupvm
+         */
         private DatePicker checkOut;
+        /**
+         * mokin tiedot tekstikentassa
+         */
         private TextField mokki;
+        /**
+         * hinnan tiedot tekstikentassa
+         */
         private TextField hinta;
+        /**
+         * asiakkan tiedot tekstikentassa
+         */
         private TextField asiakas;
+        /**
+         * asiakkan tiedot tekstikentassa
+         */
         private TextField kayttaja;
+        /**
+         * varauksen tiedot tekstikentassa
+         */
         private TextField varaus;
+        /**
+         * luetaan hinta mokin tiedoista jotta voidaan laskea kokonaishinta
+         */
         private int placeholder;
 
         public muokkauksenKuuntelija(DatePicker checkIn, DatePicker checkOut, TextField mokkiID, TextField hinta, TextField kayttaja, TextField asiakas,TextField varausID, Integer placeholder) {
@@ -902,6 +1105,12 @@ public Stage luoUusiVarausIkkuna() {
             this.placeholder=placeholder;
         }
 
+        /**
+         * lasketaan muutettujen paivien perusteella uusi hinta
+         * @param observable datepickers
+         * @param oldValue varauksen alkupvm
+         * @param newValue varauksen loppupvm
+         */
         @Override
         public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue, LocalDate newValue) {
             LocalDate checkIn=this.checkIn.getValue();
