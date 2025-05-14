@@ -1,6 +1,7 @@
 package com.example.ohjelmistotuotanto;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -48,5 +49,26 @@ public class LaskutData {
         }
         //valmis lista
         return laskuLista;
+    }
+
+    public void tallennaLaskutiedot(Yhteysluokka yhteysluokka, int laskuID, int varausID, boolean laskutettu, boolean maksettu){
+
+        try {
+            Connection yhteys = yhteysluokka.getYhteys();
+            if (yhteys == null) {
+                System.err.println("Tietokantayhteys epäonnistui.");
+                return;
+            }
+            String sql = "insert into laskut values (?,?,?,?);";
+            PreparedStatement stmt = yhteys.prepareStatement(sql);
+            stmt.setInt(1, laskuID);
+            stmt.setInt(2, varausID);
+            stmt.setBoolean(3, laskutettu);
+            stmt.setBoolean(4, maksettu);
+            stmt.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

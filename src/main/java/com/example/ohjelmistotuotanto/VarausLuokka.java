@@ -17,6 +17,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
@@ -177,7 +178,6 @@ public class VarausLuokka {
 
         VBox sarake=new VBox(row1,row2,row3,row4,row5,row6,row7);
         sarake.setSpacing(20);
-
         sarake.setSpacing(15);
         sarake.setAlignment(Pos.CENTER);
 
@@ -209,30 +209,38 @@ public class VarausLuokka {
 
         tallennaBt.setOnAction(e->{
 
-            if(!mokkiTxt.getText().isEmpty()){
-                //TARVITAAN kysy tallennetaanko muutokset
-                Alert alert = new Alert(Alert.AlertType.WARNING);
+            if ((mokkiTxt.getText().isEmpty())||
+                    (checkInDatePicker.getValue()==null)||(checkOutDatePicker.getValue()==null)||
+                    (checkInDatePicker.getValue().isAfter(checkOutDatePicker.getValue()))||
+                    (checkOutDatePicker.getValue().isBefore(checkInDatePicker.getValue()))){
+                Alert alert3 = new Alert(Alert.AlertType.WARNING);
+                alert3.setTitle("Varoitus");
+                alert3.setHeaderText("Kaikkia tietoja ei ole täytetty!");
+                alert3.setContentText("Täytä kaikki kohdat, jotta voit tallentaa.\n" +
+                        "Varmista, että varauksen loppupäivä on alkupäivän jälkeen.");
+                alert3.showAndWait();
+                e.consume();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
                 alert.setTitle("Tallennus");
-                alert.setHeaderText("Tallennetaanko varmasti?");
-                alert.setContentText("Tallenna ja sulje?");
-                Optional<ButtonType> sulje = alert.showAndWait();
-                if (sulje.isPresent() && sulje.get() == ButtonType.OK) {
+                alert.setHeaderText("Tallennus");
+                alert.setContentText("Tallennetaanko muutokset tietokantaan?");
+                Optional<ButtonType> valinta = alert.showAndWait();
+                if (valinta.isPresent() && valinta.get() == ButtonType.OK) {
                     //tallennetaan
                     varausData.muokkaaVarausta(yhteysluokka,getVarauksenID(),checkInDatePicker.getValue(),checkOutDatePicker.getValue(),hintaTextField,kayttajaTextField,mokkiTxt,asiakasTxt);
 
                     lista.setAll(FXCollections.observableArrayList(haeVaraukset(yhteysluokka)));
+
+                    Alert alert2 = new Alert(Alert.AlertType.INFORMATION);
+                    alert2.setTitle("Tallennettu");
+                    alert2.setHeaderText("Muutokset tallennettu");
+                    alert2.setContentText("Tallennus onnistuneesti tietokantaan");
+                    alert2.showAndWait();
+
                     muokkausStage.close();
                 }
-
-            }else {
-                Alert alert3 = new Alert(Alert.AlertType.WARNING);
-                alert3.setTitle("Tallennus");
-                alert3.setHeaderText("Kaikkia tietoja ei ole täytetty!");
-                alert3.setContentText("Täytä kaikki kohdat jotta voit tallentaa");
-                alert3.showAndWait();
-                e.consume();
             }
-
         });
 
         poistaBt.setOnAction(e->{
@@ -257,12 +265,11 @@ public class VarausLuokka {
             } else {
                 e.consume();
             }
-
         });
 
         suljeBt.setOnAction(e->{
             //TARVITAAN kysy suljetaanko ikkuna
-            Alert alert = new Alert(Alert.AlertType.WARNING);
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Poistu");
             alert.setHeaderText("Olet poistumassa");
             alert.setContentText("Poistutaanko varmasti?");
@@ -289,8 +296,6 @@ public class VarausLuokka {
         muokkausStage.setTitle("Muokkaa varausta");
         return muokkausStage;
     }
-
-
 
     public Stage luoLisaaLaskuIkkuna(){
         Stage lisaaLaskuStage = new Stage();
@@ -332,14 +337,24 @@ public class VarausLuokka {
 
         laskutaBt.setOnAction(e->{
             LaskunLuonti laskunLuonti =new LaskunLuonti();
-            laskunLuonti.luoLasku(1);
+            laskunLuonti.luoLasku(getVarauksenID());
             laskuValmis(laskunLuonti.getLaskuNro()).show();
             lisaaLaskuStage.close();
         });
 
         suljeBt.setOnAction(e->{
             //kysy suljetaanko ikkuna luomatta uutta laskua
-            lisaaLaskuStage.close();
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Poistu");
+            alert.setHeaderText("Olet poistumassa.");
+            alert.setContentText("Poistu luomatta uutta laskua?");
+            Optional<ButtonType> varmistus = alert.showAndWait();
+            if(varmistus.isPresent()&&varmistus.get()==ButtonType.OK){
+                lisaaLaskuStage.close();
+            }
+            else{
+                e.consume();
+            };
         });
 
         VBox buttons=new VBox(laskutaBt,suljeBt);
@@ -369,6 +384,7 @@ public class VarausLuokka {
         okBt.setOnAction(e-> valmisStage.close());
 
         BorderPane pane = new BorderPane();
+        pane.setStyle("-fx-background-color: #bfddf2;");
         pane.setCenter(teksti);
         pane.setBottom(okBt);
 
@@ -379,7 +395,7 @@ public class VarausLuokka {
         return valmisStage;
     }
 
-    public Stage luoUusiVarausIkkuna() {
+public Stage luoUusiVarausIkkuna() {
     Stage valmisStage = new Stage();
     BorderPane rootPaneeli = new BorderPane();
     rootPaneeli.setPadding(new Insets(10));
@@ -512,7 +528,7 @@ public class VarausLuokka {
                 setVarauksenHinta(hinta);
             }
             else{
-                System.out.println("ei käsitelty mitää str4ingiä");
+                System.out.println("ei käsitelty mitää stringiä");
             }
 
             lisaaVaraus(yhteys, getVarauksenID(), checkInDatePicker.getValue(),
@@ -639,7 +655,7 @@ public class VarausLuokka {
         this.varauksenKayttajanID = varauksenKayttajanID;
     }
 
-    //sisäluokka päivämäärien ja muiden updatemiseen
+        //sisäluokka päivämäärien ja muiden updatemiseen
         //lister-interface toiminto, jolla päivät tunnistetaan
         public static class PaivamaaraListener implements ChangeListener<LocalDate> {
             private DatePicker checkIn;

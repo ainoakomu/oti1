@@ -407,7 +407,7 @@ public class MokkiLuokka{
                 //TARVITAAN kysy tallennetaanko muutokset
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Tallennus");
-                alert.setHeaderText("Tallennetaanko varmsti?");
+                alert.setHeaderText("Tallenna muutokset");
                 alert.setContentText("Tallenna ja sulje?");
                 Optional<ButtonType> sulje = alert.showAndWait();
                 if (sulje.isPresent() && sulje.get() == ButtonType.OK) {
