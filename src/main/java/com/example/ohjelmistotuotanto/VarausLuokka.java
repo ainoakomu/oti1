@@ -112,7 +112,7 @@ public class VarausLuokka {
         Button muokkaaVarausta =new Button("Muokkaa varausta");
         Button suljeBt=new Button("Sulje");
 
-        addLasku.setOnAction(e-> luoLisaaLaskuIkkuna().show());
+        addLasku.setOnAction(e-> luoLisaaLaskuIkkuna(olio).show());
 
         muokkaaVarausta.setOnAction(e-> luoMuokkaaVaraustaIkkuna(varausData).show());
 
@@ -242,16 +242,7 @@ public class VarausLuokka {
 
                     muokkausStage.close();
                 }
-
-            }else {
-                Alert alert3 = new Alert(Alert.AlertType.WARNING);
-                alert3.setTitle("Tallennus");
-                alert3.setHeaderText("Kaikkia tietoja ei ole täytetty!");
-                alert3.setContentText("Täytä kaikki kohdat jotta voit tallentaa");
-                alert3.showAndWait();
-                e.consume();
             }
-
         });
 
         poistaBt.setOnAction(e->{
