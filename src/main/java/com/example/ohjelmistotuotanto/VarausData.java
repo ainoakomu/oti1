@@ -5,6 +5,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * kasitellaan tietokanna varausdataa ja hyodynnetaan metoja hae, poista, muokkaa ja tarkista
@@ -254,12 +255,158 @@ public class VarausData {
         return raportti;
     }
 
+
+    public ArrayList<String> haeArvostetlut(Yhteysluokka olio){
+        ArrayList<String> arvostelulista=new ArrayList<>();
+
+        //yritetään yhteysluokan olion yhteys saada
+        try{
+            Connection lokalYhteys= olio.getYhteys();
+            if (lokalYhteys== null){
+                System.err.println("Yhdistys epäonnistui");
+            }
+            //sql script komento
+            String arvosteluSql = """
+                SELECT arvostelu_id, varaus_id, arvosana, arvostelu
+                 FROM arvostelut
+            """;
+            PreparedStatement stmt = lokalYhteys.prepareStatement(arvosteluSql);
+
+            ResultSet rs = stmt.executeQuery();
+
+            //loopilla tiedot
+            while (rs.next()) {
+                int arvosteluID = rs.getInt("arvostelu_id");
+                int varausID = rs.getInt("varaus_id");
+                Double arvosana = rs.getDouble("arvosana");
+                String arvostelu = rs.getString("arvostelu");
+
+                //rivit
+                String rivi = "Arvostelu ID: "+ arvosteluID +
+                        ", Varaus ID: " + varausID +
+                        ", arvosana: " + arvosana +
+                        ", arvostelu: " + arvostelu;
+
+                arvostelulista.add(rivi);
+            }
+            //error handling
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //valmis lista
+        return arvostelulista;
+    }
+
+    /**
+     * lisataan uusia kayttajia tietokantaan ja yllapidetaan tietokantaa
+     * @param yhteysluokka yhteys tietokantaan
+     * @param arvID uuden arvostelun id
+     * @param varID varauksen id
+     * @param arvosana arvostelun arvosana
+     * @param arvostelu arvostelu
+     */
+    public void lisaaArvostelu(Yhteysluokka yhteysluokka, int arvID, int varID, Double arvosana, String arvostelu){
+        try {
+            Connection yhteys = yhteysluokka.getYhteys();
+            if (yhteys == null) {
+                System.err.println("Tietokantayhteys epäonnistui.");
+            }
+            String sql = "insert into arvostelut values (?,?,?,?);";
+            PreparedStatement stmt = yhteys.prepareStatement(sql);
+            stmt.setInt(1, arvID);
+            stmt.setInt(2, varID);
+            stmt.setDouble(3, arvosana);
+            stmt.setString(4, arvostelu);
+            stmt.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * luodaan mahdollisuus poistaa arvostelu kokonaan tietokannasta
+     * @param yhteysluokka yhteys tietokantaan
+     * @param id poistettavan arvostelun id
+     */
+    public void poistaArvostelu(Yhteysluokka yhteysluokka, int id){
+        try {
+            Connection yhteys = yhteysluokka.getYhteys();
+            if (yhteys == null) {
+                System.err.println("Tietokantayhteys epäonnistui.");
+            }
+            String sql = "DELETE FROM arvostelut WHERE arvostelu_id = ?";
+            PreparedStatement st = yhteys.prepareStatement(sql);
+            st.setInt(1,id);
+            st.executeUpdate();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public int arvostelunID(Yhteysluokka yhteysolio) {
+        Random random = new Random();
+
+        for (int i = 0; i < 100; i++) {
+            int arvostelunro = 100 + random.nextInt(900); // 3-digit number
+
+            int exists = tarkistaArvostelunID(yhteysolio, arvostelunro);
+
+            if (exists == 0) {
+                System.out.println("Löytyi uniikki arvostelun ID: " + arvostelunro);
+                return arvostelunro;
+            } else {
+                System.out.println("Arvostelun ID " + arvostelunro + " on jo olemassa.");
+            }
+        }
+
+        throw new RuntimeException("Ei löytynyt vapaata arvostelunroa 100 yrityksen jälkeen.");
+    }
+
+
+    public int tarkistaArvostelunID(Yhteysluokka yhteysluokka, Integer arvostelunro){
+
+        int arvosteluID = 0;
+
+        try{
+            Connection lokalYhteys= yhteysluokka.getYhteys();
+            if (lokalYhteys== null){
+                System.err.println("Yhdistys epäonnistui");
+            }
+            //sql script komento
+            String sql = """
+                SELECT arvostelu_id FROM arvostelut WHERE arvostelu_id = ?;
+            """;
+            PreparedStatement stmt = lokalYhteys.prepareStatement(sql);
+            stmt.setInt(1, arvostelunro);
+
+            //yhteys ja sql scripti sinne
+            ResultSet rs = stmt.executeQuery();
+
+            //loopilla tiedot
+            if (rs.next()) {
+                arvosteluID = rs.getInt("arvostelu_id");
+            }
+            //error handling
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return arvosteluID;
+    }
+
+
+
+
+
     /**
      * etsitaan onko varaus olemassa tietylla generoidulla numerolla
      * @param yhteysluokka yhteys tietokantaan
      * @param varusnumero verrattava varausnumero
      * @return false jos epaoonistuis, true jos uniikki, numero jos jo olemassa
      */
+
     public boolean tarkistaVarausID(Yhteysluokka yhteysluokka, Integer varusnumero){
 
         boolean olemassa = false;

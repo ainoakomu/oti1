@@ -82,6 +82,10 @@ public class RaportinLuonti {
             else if (raportti == "Talousraportti"){
                 rapsa = varausData.talousRaportti(olio, getRaporttiAlkaen(), getRaporttiAsti()).toArray();
             }
+            else if (raportti == "Arvosteluraportti"){
+                //tähä raporttimetodi?
+
+            }
 
 
 
