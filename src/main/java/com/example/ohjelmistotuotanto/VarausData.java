@@ -255,7 +255,11 @@ public class VarausData {
         return raportti;
     }
 
-
+    /**
+     * haetaan arvostelut tietokannasta
+     * @param olio yhteys tietokantaan
+     * @return lista tiedoista
+     */
     public ArrayList<String> haeArvostetlut(Yhteysluokka olio){
         ArrayList<String> arvostelulista=new ArrayList<>();
 
@@ -345,6 +349,11 @@ public class VarausData {
         }
     }
 
+    /**
+     * verrataan arvostelun id tietokantaan, jos loytyy palautetaan se tai generoidaan uusi
+     * @param yhteysolio yhteys tietokantaan
+     * @return arvostelun id
+     */
     public int arvostelunID(Yhteysluokka yhteysolio) {
         Random random = new Random();
 
@@ -364,7 +373,12 @@ public class VarausData {
         throw new RuntimeException("Ei löytynyt vapaata arvostelunroa 100 yrityksen jälkeen.");
     }
 
-
+    /**
+     * katsotaan loytyyko tietokannasta tiettya id numeroa, jos ei palautetaan 0
+     * @param yhteysluokka yhteys tietokantaan
+     * @param arvostelunro etsittava numero
+     * @return 0 tai id
+     */
     public int tarkistaArvostelunID(Yhteysluokka yhteysluokka, Integer arvostelunro){
 
         int arvosteluID = 0;
