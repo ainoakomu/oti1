@@ -397,7 +397,54 @@ public class VarausData {
     }
 
 
+    /**
+     * luodaan varauksille oma raportti johon lisataan tietoja tietokannasta
+     * @param olio yhteys tietokantaan
+     * @return raportti arraylistana
+     */
+    public ArrayList<String> arvosteluRaportti(Yhteysluokka olio){
+        ArrayList<String> raportti =new ArrayList<>();
+        //yritetään yhteysluokan olion yhteys saada
 
+        //yritetään yhteysluokan olion yhteys saada
+        try{
+            Connection lokalYhteys= olio.getYhteys();
+            if (lokalYhteys== null){
+                System.err.println("Yhdistys epäonnistui");
+            }
+            //sql script komento
+            String arvosteluSql = """
+                SELECT arvostelu_id, varaus_id, arvosana, arvostelu
+                 FROM arvostelut
+            """;
+            PreparedStatement stmt = lokalYhteys.prepareStatement(arvosteluSql);
+
+            ResultSet rs = stmt.executeQuery();
+
+            //loopilla tiedot
+            while (rs.next()) {
+                int arvosteluID = rs.getInt("arvostelu_id");
+                int varausID = rs.getInt("varaus_id");
+                Double arvosana = rs.getDouble("arvosana");
+                String arvostelu = rs.getString("arvostelu");
+
+                //rivit
+                String rivi1 = "Arvostelu ID: "+ arvosteluID +
+                        " | Varaus ID: " + varausID +
+                        " | Arvosana: " + arvosana + " | Arvostelu:";
+                String rivi2 = arvostelu;
+
+                raportti.add(rivi1);
+                raportti.add(rivi2);
+                raportti.add("");
+            }
+            //error handling
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return raportti;
+    }
 
 
     /**
