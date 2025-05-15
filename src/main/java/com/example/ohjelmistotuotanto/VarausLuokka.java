@@ -82,7 +82,7 @@ public class VarausLuokka {
     /**
      * luodaan ikkuna, jossa nakyy varaukset
      * varauksia voi muokata ja lisata
-     * @return
+     * @return luotu stage
      */
     public Stage luoVarauksetIkkuna(){
         Stage varausStage = new Stage();
@@ -116,10 +116,10 @@ public class VarausLuokka {
                     switch (avain) {
                         case "Varaus ID":
                             setVarauksenID(Integer.valueOf(arvo));
-                            this.laskulleVarID = Integer.valueOf(arvo);
+                            this.laskulleVarID = Integer.parseInt(arvo);
                             break;
                         case "Asiakas ID":
-                            setAsiakasID(Integer.valueOf(arvo));
+                            setAsiakasID(Integer.parseInt(arvo));
                             break;
                         case "Alku":
                             LocalDateTime pelkkaAlkuPaiva = LocalDateTime.parse(arvo, formatter);
@@ -130,10 +130,10 @@ public class VarausLuokka {
                             setLoppuPVM(pelkkaLoppuPaiva.toLocalDate());
                             break;
                         case "Hinta":
-                            setVarauksenHinta(Integer.valueOf(arvo));
+                            setVarauksenHinta(Integer.parseInt(arvo));
                             break;
                         case "Mökki ID":
-                            muutosMokkiID = Integer.valueOf(arvo);
+                            muutosMokkiID = Integer.parseInt(arvo);
                             break;
                     }
                 }
@@ -319,7 +319,7 @@ public class VarausLuokka {
             }
             else{
                 e.consume();
-            };
+            }
         });
 
         VBox buttons=new VBox(tallennaBt,poistaBt,suljeBt);
@@ -403,7 +403,7 @@ public class VarausLuokka {
             }
             else{
                 e.consume();
-            };
+            }
         });
 
         VBox buttons=new VBox(laskutaBt,suljeBt);
@@ -460,7 +460,7 @@ public class VarausLuokka {
     //yhteys sql
     Yhteysluokka yhteys = new Yhteysluokka();
 
-    VarausLuokka varausluokkaolio = new VarausLuokka();
+
 
     // mokkien lista
     ObservableList<String> mokkiData = FXCollections.observableArrayList(haeMokit(yhteys));
@@ -577,7 +577,7 @@ public class VarausLuokka {
 
             int uusiVarausID = VarausID.luoVarausID(yhteys, varausData);
             setVarauksenID(uusiVarausID);
-            System.out.println(hintaLabel.toString());
+            System.out.println(hintaLabel);
             Pattern pricePattern = Pattern.compile("(\\d+)\\s*€\\s*'$");
             Matcher priceMatcher = pricePattern.matcher(hintaLabel.toString());
             if(priceMatcher.find()){

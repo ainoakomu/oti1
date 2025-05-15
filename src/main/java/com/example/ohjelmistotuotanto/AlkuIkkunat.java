@@ -46,9 +46,7 @@ public class AlkuIkkunat {
         FadeTransition feidi = new FadeTransition(Duration.millis(2500), kuva);
         feidi.setFromValue(0);
         feidi.setToValue(1);
-        feidi.setOnFinished(e->{
-            stage.setScene(luoKirjatumisIkkuna(stage));
-        });
+        feidi.setOnFinished(e-> stage.setScene(luoKirjatumisIkkuna(stage)));
         feidi.play();
 
         return new Scene(pane,400,400);
@@ -136,9 +134,7 @@ public class AlkuIkkunat {
         });
 
         //kun painaa kirjaudu, tervetuloikkuna aukeaa.
-        kirjautumisButton.setOnAction(e->{
-            voikoKirjauatua(kayttajatunnus,salasana,stage);
-        });
+        kirjautumisButton.setOnAction(e-> voikoKirjauatua(kayttajatunnus,salasana,stage));
 
 
         //lisäys
@@ -192,7 +188,7 @@ public class AlkuIkkunat {
         slogan.setFitWidth(270);
 
         //buttons
-        // terveTeksti=new Text("Tervetuloa");
+
         Button mokitBt=new Button("Mökit");
         Button laskutBt=new Button("Laskut");
         Button varauksetBT=new Button("Varaukset");
@@ -202,7 +198,6 @@ public class AlkuIkkunat {
         Button kirjauduUlosBt=new Button("Kirjaudu ulos");
 
         //lisäys
-        //rootPaneeli.add(terveTeksti,1,0);
         rootPaneeli.add(adminOikeusBt,2,0);
         rootPaneeli.add(mokitBt,0,1);
         rootPaneeli.add(varauksetBT,1,1);
@@ -255,9 +250,7 @@ public class AlkuIkkunat {
         });
 
         //kirjaa ulos
-        kirjauduUlosBt.setOnAction(e->{
-            suljetaankoIkkuna(stage);
-        });
+        kirjauduUlosBt.setOnAction(e-> suljetaankoIkkuna(stage));
 
         //palautetaan luotu scene
         return new Scene(rootPaneeli,400,400);
@@ -298,9 +291,7 @@ public class AlkuIkkunat {
             kysymysIkkuna.close();
             stage.close();
         });
-        eiBt.setOnAction(e->{
-            kysymysIkkuna.close();
-        });
+        eiBt.setOnAction(e-> kysymysIkkuna.close());
 
         Scene scene = new Scene(pane, 300,300);
         kysymysIkkuna.setScene(scene);

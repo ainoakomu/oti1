@@ -86,21 +86,13 @@ public class AdminLuokka {
         Button arvostelutbt = new Button("Arvostelut");
         Button suljebt=new Button("Sulje");
 
-        raporttibt.setOnAction(e->{
-            luoRaportitIkkuna().show();
-        });
+        raporttibt.setOnAction(e-> luoRaportitIkkuna().show());
 
-        kayttajanhallintabt.setOnAction(e->{
-            luoKayttajanhallintaIkkuna().show();
-        });
+        kayttajanhallintabt.setOnAction(e-> luoKayttajanhallintaIkkuna().show());
 
-        arvostelutbt.setOnAction(e->{
-            luoArvostelutIkkuna().show();
-        });
+        arvostelutbt.setOnAction(e-> luoArvostelutIkkuna().show());
 
-        suljebt.setOnAction(e->{
-            adminStage.close();
-        });
+        suljebt.setOnAction(e-> adminStage.close());
 
         rootPaneeli.add(raporttibt,2,1);
         rootPaneeli.add(arvostelutbt,1,1);
@@ -147,7 +139,7 @@ public class AdminLuokka {
 
                     switch (avain) {
                         case "ID":
-                            setKayID(Integer.valueOf(arvo));
+                            setKayID(Integer.parseInt(arvo));
                             break;
                         case "Nimi":
                             setKayNimi(arvo);
@@ -204,9 +196,7 @@ public class AdminLuokka {
             luoUusiKayttajaIkkuna(kayttajat).show();
         });
 
-        suljeBt.setOnAction(e->{
-            kayttajatStage.close();
-        });
+        suljeBt.setOnAction(e-> kayttajatStage.close());
 
         HBox nappulaBoksi=new HBox(lisaaKayttaja,muokkaaKayttajaa,suljeBt);
         nappulaBoksi.setSpacing(50);
@@ -265,12 +255,8 @@ public class AdminLuokka {
         oikeusGrp.getToggles().addAll(peruskayttajaRbtn,adminRbtn);
 
         //käyttäjän tiedot
-        peruskayttajaRbtn.setOnAction(e->{
-            setKayTaso("perus");
-        });
-        adminRbtn.setOnAction(e->{
-            setKayTaso("admin");
-        });
+        peruskayttajaRbtn.setOnAction(e-> setKayTaso("perus"));
+        adminRbtn.setOnAction(e-> setKayTaso("admin"));
 
         //buttonit ja action eventit
         Button tallennaBt=new Button("Tallenna uusi käyttäjä");
@@ -294,7 +280,7 @@ public class AdminLuokka {
 
             // jos ei ole kaikkia tarvittavia tietoja, pitää tulla kehote täydentää
 
-            if((getKayID()==0)||(getKayNimi()=="")||(getKayTun()=="")||(getSalaSana()=="")||(getKayTaso()=="")){
+            if((getKayID()==0)||(getKayNimi().isEmpty())||(getKayTun().isEmpty())||(getSalaSana().isEmpty())||(getKayTaso().isEmpty())){
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setTitle("Varoitus");
                 alert.setHeaderText("Tietoja puuttuu");
@@ -562,10 +548,10 @@ public class AdminLuokka {
 
                     switch (avain) {
                         case "Arvostelu ID":
-                            setArvosteluID(Integer.valueOf(arvo));
+                            setArvosteluID(Integer.parseInt(arvo));
                             break;
                         case "Varaus ID":
-                            setVarausID(Integer.valueOf(arvo));
+                            setVarausID(Integer.parseInt(arvo));
                             break;
                         case "arvosana":
                             setArvosana(Double.parseDouble(arvo));
@@ -583,9 +569,7 @@ public class AdminLuokka {
         Button poistaArvostelu=new Button("Poista arvostelu");
         Button sulje=new Button("Sulje");
 
-        lisaaArvostelubt.setOnAction(e->{
-            luoUusiArvosteluIkkuna(arvosteluRaporttidata).show();
-        });
+        lisaaArvostelubt.setOnAction(e-> luoUusiArvosteluIkkuna(arvosteluRaporttidata).show());
 
         poistaArvostelu.setOnAction(e->{
 
@@ -623,9 +607,7 @@ public class AdminLuokka {
                 }
         });
 
-        sulje.setOnAction(e->{
-            arvosteluStage.close();
-        });
+        sulje.setOnAction(e-> arvosteluStage.close());
 
         HBox alaosa=new HBox(lisaaArvostelubt,poistaArvostelu,sulje);
         alaosa.setPadding(new Insets(10,10,10,10));
@@ -668,7 +650,7 @@ public class AdminLuokka {
             ResultSet rs = stmt.executeQuery(sql);
             while (rs.next()) {
                 varaustenlista.add(rs.getInt("varaus_id"));
-            };
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -681,7 +663,7 @@ public class AdminLuokka {
         Label arvosanalb =new Label("Arvosana");
         Label arvostelulb =new Label("Arvostelu");
 
-        TextField varausTxt =new TextField();
+
         TextField arvosanaTxt =new TextField();
         TextArea arvosteluTxtArea = new TextArea();
         arvosteluTxtArea.setPrefHeight(200);
@@ -705,7 +687,7 @@ public class AdminLuokka {
 
         tallennaBt.setOnAction(e->{
 
-            if ((varausComboBox.getValue()==null) || (arvosanaTxt.getText() == "") || (arvosteluTxtArea.getText() == "")) {
+            if ((varausComboBox.getValue()==null) || (arvosanaTxt.getText().isEmpty()) || (arvosteluTxtArea.getText().isEmpty())) {
                 Alert alert3 = new Alert(Alert.AlertType.ERROR);
                 alert3.setTitle("Varoitus");
                 alert3.setHeaderText("Tietoja puuttuu");
@@ -717,7 +699,6 @@ public class AdminLuokka {
                 alert.setTitle("Uusi arvostelu");
                 alert.setHeaderText("Lisätäänkö uusi arvostelu?");
                 Optional<ButtonType> valinta = alert.showAndWait();
-
                 // jos painaa ok, poistetaan, jos painaa cancel, ei poisteta
                 if (valinta.isPresent() && valinta.get() == ButtonType.OK) {
 
@@ -739,6 +720,7 @@ public class AdminLuokka {
                     alert2.showAndWait();
 
                     uusiArvosteluStage.close();
+                    e.consume();
                 }
             }
         });
@@ -747,7 +729,7 @@ public class AdminLuokka {
             //kysy suljetaanko
             Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
             alert.setTitle("Poistu");
-            alert.setHeaderText("Poistutaanko uuden käyttäjän lisäyksestä?");
+            alert.setHeaderText("Poistutaanko?");
             alert.setContentText("Tietoja ei tallenneta.");
             Optional<ButtonType> valinta = alert.showAndWait();
             if (valinta.isPresent() && valinta.get() == ButtonType.OK) {
@@ -869,7 +851,7 @@ public class AdminLuokka {
         viePDF.setOnAction(e->{
 
             // jos varaus- tai talousraportti ja päivämäärätiedot puuttuu tai on väärin päin (asiakasraporttiin ei tule pvm)
-            if(((valittuRaportti=="Varausraportti")||(valittuRaportti=="Talousraportti"))&&
+            if(((valittuRaportti.equals("Varausraportti"))||(valittuRaportti.equals("Talousraportti")))&&
                     ((alkupaiva.getValue()==null)||(loppupaiva.getValue()==null)||
                     (alkupaiva.getValue().isAfter(loppupaiva.getValue()))||
                     (loppupaiva.getValue().isBefore(alkupaiva.getValue())))){
@@ -894,9 +876,7 @@ public class AdminLuokka {
             }}
         });
 
-        sulje.setOnAction(e->{
-            raporttiStage.close();
-        });
+        sulje.setOnAction(e-> raporttiStage.close());
 
         HBox alaosa=new HBox(viePDF,sulje);
         alaosa.setPadding(new Insets(10,10,10,10));
@@ -912,7 +892,7 @@ public class AdminLuokka {
 
     /**
      * luodaan ikkuna jossa kerrotaan kayttajalle etta haluttu raportti on luotu onnistuneesti
-     * @return
+     * @return luotu stage
      */
     public Stage raporttiValmis(){
         Stage valmisStage = new Stage();

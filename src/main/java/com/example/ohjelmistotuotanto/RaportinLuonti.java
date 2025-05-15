@@ -6,8 +6,6 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -75,16 +73,16 @@ public class RaportinLuonti {
             String[] rivit = {rivi1, rivi2, rivi3};
             Object[] rapsa = {};
 
-            if (raportti == "Varausraportti"){
+            if (raportti.equals("Varausraportti")){
                 rapsa = varausData.varausRaportti(olio,getRaporttiAlkaen(),getRaporttiAsti()).toArray();
             }
-            else if (raportti == "Asiakasraportti"){
+            else if (raportti.equals("Asiakasraportti")){
                 rapsa = asiakasData.asiakasRaportti(olio).toArray();
             }
-            else if (raportti == "Talousraportti"){
+            else if (raportti.equals("Talousraportti")){
                 rapsa = varausData.talousRaportti(olio, getRaporttiAlkaen(), getRaporttiAsti()).toArray();
             }
-            else if (raportti == "Arvosteluraportti") {
+            else if (raportti.equals("Arvosteluraportti")) {
                 rapsa = varausData.arvosteluRaportti(olio).toArray();
             }
 
@@ -185,7 +183,7 @@ public class RaportinLuonti {
 
         // jos rivin leveys on enemmän kuin maksimileveys, jatketaan asiaa uudella rivillä välilyönnistä
         for (String sana : teksti.split(" ")) {
-            String testirivi = rivi.length() == 0 ? sana : rivi + " " + sana;
+            String testirivi = rivi.isEmpty() ? sana : rivi + " " + sana;
             float leveys = fontti.getStringWidth(testirivi) / 1000 * fonttikoko;
             if (leveys > maxLeveys) {
                 rivit.add(rivi.toString());

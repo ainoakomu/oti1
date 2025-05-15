@@ -15,7 +15,6 @@ import javafx.stage.Stage;
 import java.util.Optional;
 
 import static com.example.ohjelmistotuotanto.AsiakasData.haeAsiakkaat;
-import static com.example.ohjelmistotuotanto.VarausData.haeVaraukset;
 
 /**
  * luodaan asiakkaiden yllapitoon ikkuna seka mahdollisuus muokata asiakkaita
@@ -76,7 +75,7 @@ public class AsiakasLuokka {
 
                     switch (avain) {
                         case "ID":
-                            setAsiakasID(Integer.valueOf(arvo));
+                            setAsiakasID(Integer.parseInt(arvo));
                             break;
                         case "Nimi":
                             setAsiakkaanNimi(arvo);
@@ -100,13 +99,9 @@ public class AsiakasLuokka {
         Button muokkaaAsiakasta =new Button("Muokkaa asiakasta");
         Button suljeBt=new Button("Sulje");
 
-        muokkaaAsiakasta.setOnAction(e->{
-            luoMuokkaaAsiakastaIkkuna(asiakkaidenData).show();
-        });
+        muokkaaAsiakasta.setOnAction(e-> luoMuokkaaAsiakastaIkkuna(asiakkaidenData).show());
 
-        suljeBt.setOnAction(e->{
-            asiakasStage.close();
-        });
+        suljeBt.setOnAction(e-> asiakasStage.close());
 
         HBox nappulaBoksi=new HBox(muokkaaAsiakasta,suljeBt);
         nappulaBoksi.setSpacing(20);

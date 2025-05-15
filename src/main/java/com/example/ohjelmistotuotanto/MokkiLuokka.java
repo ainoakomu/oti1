@@ -100,7 +100,7 @@ public class MokkiLuokka{
 
                     switch (avain) {
                         case "ID":
-                            setMokkiID(Integer.valueOf(arvo));
+                            setMokkiID(Integer.parseInt(arvo));
                             break;
                         case "Osoite":
                             setMokinOsoite(arvo);
@@ -109,10 +109,10 @@ public class MokkiLuokka{
                             setHintaPerYo(Double.parseDouble(arvo));
                             break;
                         case "Neliöt":
-                            setNeliot(Integer.valueOf(arvo));
+                            setNeliot(Integer.parseInt(arvo));
                             break;
                         case "Vuodepaikat":
-                            setVuodepaikat(Integer.valueOf(arvo));
+                            setVuodepaikat(Integer.parseInt(arvo));
                             break;
                         case "Rantasauna":
                             if (arvo.equals("Kyllä")) {
@@ -160,9 +160,7 @@ public class MokkiLuokka{
         Button muokkaaMokkia = new Button("Muokkaa mökkiä");
         Button suljeBt = new Button("Sulje");
 
-        addUusiMokki.setOnAction(e->{
-            luoUusiMokkiIkkuna(mokkitietoData).show();
-        });
+        addUusiMokki.setOnAction(e-> luoUusiMokkiIkkuna(mokkitietoData).show());
 
         muokkaaMokkia.setOnAction(e->{
             //tarkistat iffillä onko mökki valittu listalta (mokki-id > 0)
@@ -460,8 +458,8 @@ public class MokkiLuokka{
 
                     setMokinOsoite(osoiteTxt.getText());
                     setHintaPerYo(Double.parseDouble(hintaTxt.getText()));
-                    setNeliot(Integer.valueOf(nelioTxt.getText()));
-                    setVuodepaikat(Integer.valueOf(vuodeTxt.getText()));
+                    setNeliot(Integer.parseInt(nelioTxt.getText()));
+                    setVuodepaikat(Integer.parseInt(vuodeTxt.getText()));
 
                     if (rantasaunaChbx.isSelected()) {
                         setRantasauna(true);
