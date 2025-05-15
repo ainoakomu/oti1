@@ -41,7 +41,7 @@ public class RaportinLuonti {
     private LocalDate raporttiAsti;
 
     /**
-     * luodaan raportti varauksesta asiakkasta tai taloudesta
+     * luodaan raportti varauksesta, asiakkasta, taloudesta tai arvosteluista
      * @param raportti raportin nimi
      * @param alkaen raportin aikajanan alkupvm
      * @param asti * raportin aikajana loppupvm

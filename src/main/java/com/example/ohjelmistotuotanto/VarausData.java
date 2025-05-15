@@ -392,13 +392,12 @@ public class VarausData {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return arvosteluID;
     }
 
 
     /**
-     * luodaan varauksille oma raportti johon lisataan tietoja tietokannasta
+     * Metodilla luodaan varauksille oma raportti johon lisataan tietoja tietokannasta
      * @param olio yhteys tietokantaan
      * @return raportti arraylistana
      */
