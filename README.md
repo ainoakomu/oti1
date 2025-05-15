@@ -11,7 +11,7 @@ Projektin aihe on erään kuvitteellisen mökkiyrityksen varausjärjestelmä. Pr
 **Projektin SQL-funktion toiminnallisuus ja asennus**
 
 1. Koska projekti tarvitsee tietokantaa, on ominaisuus rakennettu MySQL:n tarjoamilla applikaatioilla. 
-2. Lataa MySQL täältä. Valitse oman tietokoneesi käyttöjärjestelmän mukaan, mieluiten 8.0 ja alempi kohta jossa näkyy (x86, 32-bit), MSI Installer) jossa lukee (mysql-installer-community-8.0.42.0.msi) vielä alempana. Tässä esimerkissä OS on Windows 11. 
+2. Lataa MySQL [täältä.](https://dev.mysql.com/downloads/installer/) Valitse oman tietokoneesi käyttöjärjestelmän mukaan, mieluiten 8.0 ja alempi kohta jossa näkyy (x86, 32-bit), MSI Installer) jossa lukee (mysql-installer-community-8.0.42.0.msi) vielä alempana. Tässä esimerkissä OS on Windows 11. 
 3. Seuraa Installerin ohjeita. Aseta itsellesi salasana, kun ohjelma pyytää ja kirjoita se ylös.  
 4. Avaa MySQL Workbench. Paina plus-ikonista “MySQL Connections” otsikon vieressä 
 5. Aseta yhteydelle nimi sekä käyttäjänimi. Jos käytät latauksessa luomasi “root” käyttäjää, käytä sitä salasanaa jonka loit ladatessasi sovellusta. Sovellus kysyy 
@@ -19,7 +19,7 @@ Projektin aihe on erään kuvitteellisen mökkiyrityksen varausjärjestelmä. Pr
 6. Haluttu scripti löytyy GitHubin src-kansion sisältä sql-kansiosta nimeltään “mokkikodit.sql” Tallenna se haluaamasi paikkaan tietokoneella 
 7. Avaa nyt luotu yhteys ja klikkaa vasemmalla ylhäällä olevista kuvakkeista “Open a SQL script file in a new query tab” ja valitse ladattu mokkikodit.sql 
 8. Kun scripti on latautunut näkymään, paina vasemman puoleista salama-kuvakketta ajaaksesi scriptin ja luomaan tietokannan. 
-9. Älä sammuta luodun yhteyden serveriä, sillä sen pitää olla päällä projektia ajettasi. Jos kohtaat ongelmia, voit löytää apua täältä. 
+9. Älä sammuta luodun yhteyden serveriä, sillä sen pitää olla päällä projektia ajettasi. Jos kohtaat ongelmia, voit löytää apua [täältä.](https://dev.mysql.com/doc/refman/8.4/en/tutorial.html)
 
 ### Projektin lataaminen IDE ympäristöön ja käynnistys 
 
