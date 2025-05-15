@@ -14,6 +14,9 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -640,6 +643,11 @@ public class AdminLuokka {
         return arvosteluStage;
     }
 
+    /**
+     * luodaan arvosteluille ikkuna, joista niita voi taskastella ja lisata ja poistaa
+     * @param lista lista arvosteluista
+     * @return luotu stage
+     */
     public Stage luoUusiArvosteluIkkuna(ObservableList<String> lista){
         Stage uusiArvosteluStage = new Stage();
         GridPane rootPaneeli=new GridPane();
@@ -1067,34 +1075,66 @@ public class AdminLuokka {
         this.hygPassi = hygPassi;
     }
 
+    /**
+     * haetaan arvostelun id
+     * @return id numero
+     */
     public int getArvosteluID() {
         return arvosteluID;
     }
 
+    /**
+     * asetetaan arvosten id
+     * @param arvosteluID haluttu id
+     */
     public void setArvosteluID(int arvosteluID) {
         this.arvosteluID = arvosteluID;
     }
 
+    /**
+     * haetaan varauksen id
+     * @return id
+     */
     public int getVarausID() {
         return varausID;
     }
 
+    /**
+     * asetetaan varauksen id
+     * @param varausID haluttu id
+     */
     public void setVarausID(int varausID) {
         this.varausID = varausID;
     }
 
+    /**
+     * haetaan arvostelun arvosana
+     * @return arvosana
+     */
     public Double getArvosana() {
         return arvosana;
     }
 
+    /**
+     * asetetaan arvosanan numero
+     * @param arvosana numero
+     */
     public void setArvosana(Double arvosana) {
         this.arvosana = arvosana;
     }
 
+    /**
+     * haetaan arvostelun numero
+     * @return numero
+     */
     public String getArvostelu() {
         return arvostelu;
     }
 
+    /**
+     * asetetaan arvostelun teksti
+     * @param arvostelu teksti
+     */
     public void setArvostelu(String arvostelu) {
         this.arvostelu = arvostelu;
     }

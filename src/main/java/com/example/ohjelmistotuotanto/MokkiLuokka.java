@@ -67,7 +67,7 @@ public class MokkiLuokka{
     /**
      * luodaan ikkuna jossa nahdaan kaikki mokit kaytettavissa
      * voidaan muokata mokkia
-     * @return
+     * @return luotu stage
      */
     public Stage luoMokitIkkuna() {
         Stage mokkiStage = new Stage();
