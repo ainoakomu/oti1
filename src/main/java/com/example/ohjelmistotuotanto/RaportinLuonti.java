@@ -4,13 +4,15 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * luodaan metodeja joilla rakennetaan erilaisia raportteja tietokannan datasta
@@ -39,7 +41,7 @@ public class RaportinLuonti {
     private LocalDate raporttiAsti;
 
     /**
-     * luodaan raportti varauksesta asiakkasta tai taloudesta
+     * luodaan raportti varauksesta, asiakkasta, taloudesta tai arvosteluista
      * @param raportti raportin nimi
      * @param alkaen raportin aikajanan alkupvm
      * @param asti * raportin aikajana loppupvm
@@ -82,12 +84,9 @@ public class RaportinLuonti {
             else if (raportti == "Talousraportti"){
                 rapsa = varausData.talousRaportti(olio, getRaporttiAlkaen(), getRaporttiAsti()).toArray();
             }
-            else if (raportti == "Arvosteluraportti"){
-                //tähä raporttimetodi?
-
+            else if (raportti == "Arvosteluraportti") {
+                rapsa = varausData.arvosteluRaportti(olio).toArray();
             }
-
-
 
             // stream
             PDPageContentStream contentStream = new PDPageContentStream(dokumentti, sivu);
@@ -105,10 +104,52 @@ public class RaportinLuonti {
             }
             contentStream.setLeading(14.5f);
 
-            for (Object rap : rapsa){
-                contentStream.showText(rap.toString());
-                contentStream.newLineAtOffset(0, -14.5f);
-                contentStream.newLine();
+            //pidetään kirjaa sivun korkeudesta ja milloin sivu loppuu
+            float y = 800 - (rivit.length + 1) * 14.5f;
+            float bottomMargin = 50;
+
+            for (Object rap : rapsa) {
+
+                //jos sivu loppuu, vaihdetaan uudelle sivulle
+                if (y <= bottomMargin) {
+                    //lopetetaan edellisen sivun teksti ja stream
+                    contentStream.endText();
+                    contentStream.close();
+
+                    // avataan uusi sivu ja stream
+                    sivu = new PDPage(PDRectangle.A4);
+                    dokumentti.addPage(sivu);
+                    contentStream = new PDPageContentStream(dokumentti, sivu);
+                    contentStream.beginText();
+                    contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+                    contentStream.setLeading(14.5f);
+                    contentStream.newLineAtOffset(80, 800);
+                    y = 800;
+                }
+
+                // koska arvostelut voi olla pitkiä, rivin leveys max 450, ja sitten vaihdetaan riviä.
+                List<String> jaetutRivit = jaaTekstiRiveihin(rap.toString(), PDType1Font.HELVETICA_BOLD, 12, 450);
+
+                for (String r : jaetutRivit) {
+                    if (y <= bottomMargin) {
+                        contentStream.endText();
+                        contentStream.close();
+
+                        sivu = new PDPage(PDRectangle.A4);
+                        dokumentti.addPage(sivu);
+                        contentStream = new PDPageContentStream(dokumentti, sivu);
+                        contentStream.beginText();
+                        contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12);
+                        contentStream.setLeading(14.5f);
+                        contentStream.newLineAtOffset(80, 800);
+                        y = 800;
+                    }
+
+                    contentStream.showText(r);
+                    contentStream.newLineAtOffset(0, -14.5f);
+                    contentStream.newLine();
+                    y -= 14.5f;
+                }
             }
             contentStream.endText();
 
@@ -126,6 +167,37 @@ public class RaportinLuonti {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * jakaa (arvostelu)tekstin useammalle riville, jos rivin leveys ylittää annetun leveyden.
+     * Tällä tavoin pitkäkin teksti mahtuu useammalle riville ja näkyy kokonaan sivulla.
+     * @param teksti jaettava teksti
+     * @param fontti käytettävä fontti
+     * @param fonttikoko fontin koko
+     * @param maxLeveys rivin enimmäisleveys
+     * @return palauttaa jaetut rivit
+     * @throws IOException poikkeuksenkäsittely
+     */
+    private List<String> jaaTekstiRiveihin(String teksti, PDFont fontti, float fonttikoko, float maxLeveys) throws IOException {
+        List<String> rivit = new ArrayList<>();
+        StringBuilder rivi = new StringBuilder();
+
+        // jos rivin leveys on enemmän kuin maksimileveys, jatketaan asiaa uudella rivillä välilyönnistä
+        for (String sana : teksti.split(" ")) {
+            String testirivi = rivi.length() == 0 ? sana : rivi + " " + sana;
+            float leveys = fontti.getStringWidth(testirivi) / 1000 * fonttikoko;
+            if (leveys > maxLeveys) {
+                rivit.add(rivi.toString());
+                rivi = new StringBuilder(sana);
+            } else {
+                rivi = new StringBuilder(testirivi);
+            }
+        }
+        if (!rivi.toString().isEmpty()) {
+            rivit.add(rivi.toString());
+        }
+        return rivit;
     }
 
     /**
