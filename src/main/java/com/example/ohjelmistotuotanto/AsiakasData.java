@@ -111,7 +111,7 @@ public class AsiakasData {
 
     /**
      * etsitaan onko olemassa tietylla nimella asiakas asiakkaat taulussa ennestaan
-     * palautetaan 0 jos asiakasta ei loydy, muuten palautetaan asiakkaan id
+     * palautetaan 0 jos asiakasta ei loydy, muuten palautetaan asiakkaan id.
      *
      * @param yhteysluokka yhteys tietokantaan
      * @param nimi asiakas joka halutaan tarkistaa tietokannasta
