@@ -1,8 +1,6 @@
 package com.example.ohjelmistotuotanto;
 
 import java.sql.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 /**
@@ -27,7 +25,7 @@ public class AsiakasData {
             }
             //sql scripti hakemaan data
             String sql = """
-                SELECT asiakas_id, asiakkaan_nimi, asiakkaan_sahkoposti, 
+                SELECT asiakas_id, asiakkaan_nimi, asiakkaan_sahkoposti,
                        puhelinnumero, koti_osoite
                 FROM asiakkaat
             """;
@@ -76,7 +74,7 @@ public class AsiakasData {
             }
             //sql script komento
             String asiakasSql = """
-                SELECT asiakas_id, asiakkaan_nimi, asiakkaan_sahkoposti, 
+                SELECT asiakas_id, asiakkaan_nimi, asiakkaan_sahkoposti,
                        puhelinnumero, koti_osoite
                 FROM asiakkaat
             """;

@@ -15,7 +15,6 @@ import javafx.stage.Stage;
 import java.util.Optional;
 
 import static com.example.ohjelmistotuotanto.LaskutData.haeLaskut;
-import static com.example.ohjelmistotuotanto.MokkiData.haeMokit;
 
 /**
  * luodaan laskun luonnissa ja sen tilan paivittamisessa kaytettavia ikkunoita
@@ -111,7 +110,6 @@ public class LaskuLuokka {
 
         //sql yhteys
         Yhteysluokka yhteysolio=new Yhteysluokka();
-        LaskutData laskutData=new LaskutData();
         BorderPane rootPaneeli=new BorderPane();
         rootPaneeli.setPadding(new Insets(5,5,5,5));
         //observable lista, joka lisätään list view

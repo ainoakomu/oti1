@@ -30,7 +30,7 @@ public class VarausData {
             }
             //sql script komento
             String sql = """
-                SELECT varaus_id, varausalku_date, varausloppu_date, hinta, 
+                SELECT varaus_id, varausalku_date, varausloppu_date, hinta,
                        kayttaja_id, asiakas_id, mokki_id
                  FROM varaukset
             """;
@@ -92,7 +92,7 @@ public class VarausData {
             }
             //sql script komento
             String varausSql = """
-                SELECT varaus_id, varausalku_date, varausloppu_date, hinta, 
+                SELECT varaus_id, varausalku_date, varausloppu_date, hinta,
                        kayttaja_id, asiakas_id, mokki_id
                  FROM varaukset
                  WHERE varausalku_date >= ? AND varausloppu_date <= ?
@@ -245,7 +245,7 @@ public class VarausData {
                 tuotto += hinta;
             }
 
-            raportti.add("Tuotto yhteensä: " + String.valueOf(tuotto)+ " €");
+            raportti.add("Tuotto yhteensä: " + tuotto + " €");
 
             //error handling
         } catch (Exception e) {
@@ -282,7 +282,7 @@ public class VarausData {
             while (rs.next()) {
                 int arvosteluID = rs.getInt("arvostelu_id");
                 int varausID = rs.getInt("varaus_id");
-                Double arvosana = rs.getDouble("arvosana");
+                double arvosana = rs.getDouble("arvosana");
                 String arvostelu = rs.getString("arvostelu");
 
                 //rivit
@@ -438,7 +438,7 @@ public class VarausData {
             while (rs.next()) {
                 int arvosteluID = rs.getInt("arvostelu_id");
                 int varausID = rs.getInt("varaus_id");
-                Double arvosana = rs.getDouble("arvosana");
+                double arvosana = rs.getDouble("arvosana");
                 String arvostelu = rs.getString("arvostelu");
 
                 //rivit
@@ -459,13 +459,6 @@ public class VarausData {
         return raportti;
     }
 
-
-    /**
-     * etsitaan onko varaus olemassa tietylla generoidulla numerolla
-     * @param yhteysluokka yhteys tietokantaan
-     * @param varusnumero verrattava varausnumero
-     * @return false jos epaoonistuis, true jos uniikki, numero jos jo olemassa
-     */
 
     /**
      * etsitaan onko varaus olemassa tietylla generoidulla numerolla

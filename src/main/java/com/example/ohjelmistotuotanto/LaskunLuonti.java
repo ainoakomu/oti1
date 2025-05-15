@@ -80,7 +80,7 @@ public class LaskunLuonti {
                 }
                 //sql script komento
                 String sql = """
-                        SELECT varausalku_date, varausloppu_date, hinta, 
+                        SELECT varausalku_date, varausloppu_date, hinta,
                                kayttaja_id, asiakas_id, mokki_id FROM varaukset WHERE varaus_id = ?
                         """;
                 //statement saa yhteyden
@@ -126,7 +126,7 @@ public class LaskunLuonti {
 
             //laskulle tulostuvat rivit
             String rivi1 = "Majoituslasku";
-            String rivi3 = "Päiväys: " + LocalDate.now().toString();
+            String rivi3 = "Päiväys: " + LocalDate.now();
             String rivi5 = "Lasku nro: " + getLaskuNro();
             String rivi6 = "Asiakas: " + asiakkaanNimi(yhteysluokka, getAsiakasID());
             String rivi7 = asiakkaanYhteystiedot(yhteysluokka, getAsiakasID());
@@ -138,7 +138,7 @@ public class LaskunLuonti {
             String rivi14 = "Majoituksen loppusumma: " + getHinta() + " €";
             String rivi15 = "";
             String rivi16 = "Saaja: Mökkikodit Oy";
-            String rivi17 = "Eräpäivä: " + LocalDate.now().plusDays(14).toString();
+            String rivi17 = "Eräpäivä: " + LocalDate.now().plusDays(14);
             String rivi18 = "Viitenumero: " + getVarausNro();
             String rivi19 = "Saajan tilinumero: FI12 3456 7890 1234 56";
             String rivi20 = "";
