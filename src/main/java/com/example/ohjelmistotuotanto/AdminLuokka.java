@@ -534,10 +534,6 @@ public class AdminLuokka {
      * luodaan ikkuna jossa voidaan valita aiheittan mista halutaan luoda pdf raportti
      * @return halutun stagen
      */
-    /**
-     * luodaan ikkuna jossa voidaan valita aiheittan mista halutaan luoda pdf raportti
-     * @return halutun stagen
-     */
     public Stage luoArvostelutIkkuna(){
         Stage arvosteluStage = new Stage();
         BorderPane rootPaneeli=new BorderPane();
